@@ -1,8 +1,9 @@
 package com.github.anilople.javajvm.command;
 
-import com.github.anilople.javajvm.utils.CommandUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * common pattern in
@@ -12,18 +13,22 @@ import java.util.List;
  */
 public class Command {
 
+    private static final Logger logger = LoggerFactory.getLogger(Command.class);
+
     private Options options;
 
     private String className;
 
     private String jarfileName;
 
-    private List<String> args;
+    private String[] args;
 
     private Command() {}
 
-    private Command(List<String> optionArgs, List<String> args) {
-        this.options = Options.parse(optionArgs);
+    public Command(Options options, String className, String jarfileName, String[] args) {
+        this.options = options;
+        this.className = className;
+        this.jarfileName = jarfileName;
         this.args = args;
     }
 
@@ -33,18 +38,31 @@ public class Command {
      * @return
      */
     public static Command parse(String[] args) {
-        List<List<String>> threeParts = CommandUtils.splitToThreePart(args);
-        Command command = new Command(threeParts.get(0), threeParts.get(2));
-        if(threeParts.get(1).size() <= 0) {
-            // there no class no jarfile
+        int start = 0;
+
+        // parse options
+        Options options = new Options();
+        start = Options.parse(options, args, start);
+
+        // parse -jar jarfile or class
+        String className = null;
+        String jarfileName = null;
+        if(start < args.length - 1 && "-jar".equals(args[start])) {
+            jarfileName = args[start + 1];
+            start += 2;
+        } else if(start < args.length) {
+            className = args[start];
+            start += 1;
         } else {
-            if(CommandUtils.isClassCommand(args)) {
-                command.className = threeParts.get(1).get(0);
-            } else {
-                command.jarfileName = threeParts.get(1).get(0);
-            }
+            logger.warn("there are no class or jarfile");
         }
-        return command;
+
+        return new Command(
+                options,
+                className,
+                jarfileName,
+                Arrays.copyOfRange(args, start, args.length)
+        );
     }
 
     public Options getOptions() {
@@ -59,7 +77,7 @@ public class Command {
         return jarfileName;
     }
 
-    public List<String> getArgs() {
-        return args;
+    public String[] getArgs() {
+        return args.clone();
     }
 }
