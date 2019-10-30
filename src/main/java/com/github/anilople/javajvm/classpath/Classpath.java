@@ -13,20 +13,40 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * jvm classpath,
+ * init it for jvm searching a class file's data
+ */
 public class Classpath implements ClassContext {
 
     private static final Logger logger = LoggerFactory.getLogger(Classpath.class);
 
+    /**
+     * class under
+     * jre/lib/*
+     */
     List<ClassContext> bootList;
+
+    /**
+     * class under
+     * jre/lib/ext/*
+     */
     List<ClassContext> extList;
+
+    /**
+     * user's classes
+     * under "." directory
+     */
     List<ClassContext> userList;
 
     private Classpath() {}
 
+    /**
+     * initial a class context from command
+     * @param command
+     */
     public Classpath(Command command) {
-        String jreDirectory = JavaJvmApplication.getJreDirectory(
-                command.getOptions().getXjre()
-        );
+        String jreDirectory = ClassContextUtils.getJreDirectory(command.getOptions().getXjre());
 
         // jre/lib/*
         String jrelibDirectory = String.join(File.separator, jreDirectory, "lib", "*");
@@ -55,9 +75,8 @@ public class Classpath implements ClassContext {
                 .collect(Collectors.toList());
     }
 
-
     @Override
-    public byte[] readClass(String className) throws IOException {
+    public byte[] readClass(String className) {
 
         // from boot
         for(ClassContext classContext : bootList) {

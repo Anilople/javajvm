@@ -41,38 +41,29 @@ public class JavaJvmApplication {
         }
     }
 
+    /**
+     * print usage to user
+     */
     public static void printUsage() {
 
     }
 
+    /**
+     * initial a jvm
+     * @param command
+     */
     public JavaJvmApplication(Command command) {
         this.command = command;
         this.classContext = new Classpath(command);
     }
 
+    /**
+     * run jvm
+     */
     public void start() {
         String className = command.getClassName().replace('.', '/');
         logger.info("class name = {}", className);
-        try {
-            byte[] data = classContext.readClass(className);
-            logger.info("{}'s data bytes: {}", className, data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String getJreDirectory(String Xjre) {
-        if(null != Xjre) {
-            return Xjre;
-        }
-        if(new File("jre").exists()) {
-            return new File("jre").getPath();
-        }
-        String javaHome = System.getProperty("JAVA_HOME");
-        if(null != javaHome) {
-            return String.join(File.separator, javaHome, "jre");
-        }
-        logger.error("no jre");
-        return null;
+        byte[] data = classContext.readClass(className);
+        logger.info("{}'s data bytes: {}", className, data);
     }
 }

@@ -32,14 +32,14 @@ public class ZipClassContextImpl implements ClassContext {
     }
 
     @Override
-    public byte[] readClass(String className) throws IOException {
+    public byte[] readClass(String className) {
         // entry maybe null
         ZipEntry zipEntry = zipFile.getEntry(className);
-        if(null == zipEntry) {
-            logger.error("no class {} in zipfile {}", className, zipFile);
-            return null;
-        } else {
+        if(null != zipEntry) {
             return zipEntry.getExtra();
+        } else {
+            logger.error("class {} is not in zipfile {}", className, zipFile.getName());
+            return null;
         }
     }
 
