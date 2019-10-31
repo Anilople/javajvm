@@ -1,14 +1,12 @@
 package com.github.anilople.javajvm;
 
+import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.command.Command;
 import com.github.anilople.javajvm.constants.JVMConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
 
 public class JavaJvmApplication {
 
@@ -65,5 +63,7 @@ public class JavaJvmApplication {
         logger.info("class name = {}", className);
         byte[] data = classContext.readClass(className);
         logger.info("{}'s data bytes: {}", className, data);
+        ClassFile classFile = ClassFile.parse(new ClassFile.ClassReader(data));
+        logger.info("{}'s struct: {}", className, classFile);
     }
 }
