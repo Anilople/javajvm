@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.classfile;
 
+import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantPoolInfo;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import org.slf4j.Logger;
@@ -119,6 +120,20 @@ public class ClassFile {
         public int readU4() {
             return ByteUtils.bytes2int(readBytes(4));
         }
+
+        /**
+         * read shorts which's length pass by parameter
+         * @param length
+         * @return short array
+         */
+        public short[] readShorts(int length) {
+            short[] shorts = new short[length];
+            for(int i = 0; i < length; i++) {
+                short value = this.readU2();
+                shorts[i] = value;
+            }
+            return shorts;
+        }
     }
 
     /**
@@ -137,6 +152,22 @@ public class ClassFile {
         // read constant pool
         classFile.constantPool = ClassFile.parseConstantPool(classReader);
 
+        classFile.accessFlags = classReader.readU2();
+        classFile.thisClass = classReader.readU2();
+        classFile.superClass = classReader.readU2();
+
+        // read interfaces
+        classFile.interfaces = ClassFile.parseInterfaces(classReader);
+
+        // read fields
+        classFile.fields = FieldInfo.parseFields(classFile, classReader);
+
+        // read methods
+        classFile.methods = MethodInfo.parseMethods(classFile, classReader);
+
+        // read attributes
+        classFile.attributes = AttributeInfo.parseAttributes(classFile, classReader);
+
         return classFile;
     }
 
@@ -154,6 +185,60 @@ public class ClassFile {
             constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classReader);
         }
         return constantPool;
+    }
+
+    /**
+     * parse interfaces from class's bytes
+     * @param classReader
+     * @return
+     */
+    private static short[] parseInterfaces(ClassFile.ClassReader classReader) {
+        short interfacesCount = classReader.readU2();
+        return classReader.readShorts(interfacesCount);
+    }
+
+    public int getMagic() {
+        return magic;
+    }
+
+    public short getMinorVersion() {
+        return minorVersion;
+    }
+
+    public short getMajorVersion() {
+        return majorVersion;
+    }
+
+    public ConstantPoolInfo[] getConstantPool() {
+        return constantPool;
+    }
+
+    public short getAccessFlags() {
+        return accessFlags;
+    }
+
+    public short getThisClass() {
+        return thisClass;
+    }
+
+    public short getSuperClass() {
+        return superClass;
+    }
+
+    public short[] getInterfaces() {
+        return interfaces;
+    }
+
+    public FieldInfo[] getFields() {
+        return fields;
+    }
+
+    public MethodInfo[] getMethods() {
+        return methods;
+    }
+
+    public AttributeInfo[] getAttributes() {
+        return attributes;
     }
 }
 
