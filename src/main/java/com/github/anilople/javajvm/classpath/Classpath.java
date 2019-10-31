@@ -1,13 +1,11 @@
 package com.github.anilople.javajvm.classpath;
 
-import com.github.anilople.javajvm.JavaJvmApplication;
 import com.github.anilople.javajvm.command.Command;
 import com.github.anilople.javajvm.utils.ClassContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -77,6 +75,8 @@ public class Classpath implements ClassContext {
 
     @Override
     public byte[] readClass(String className) {
+        // add ".class" suffix
+        className = className + ".class";
 
         // from boot
         for(ClassContext classContext : bootList) {

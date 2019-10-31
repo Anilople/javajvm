@@ -1,6 +1,8 @@
 package com.github.anilople.javajvm.utils;
 
-import com.github.anilople.javajvm.classpath.*;
+import com.github.anilople.javajvm.classpath.ClassContext;
+import com.github.anilople.javajvm.classpath.ClassFileClassContextImpl;
+import com.github.anilople.javajvm.classpath.ZipClassContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

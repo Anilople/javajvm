@@ -2,8 +2,10 @@ package com.github.anilople.javajvm.classpath;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.misc.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -36,9 +38,16 @@ public class ZipClassContextImpl implements ClassContext {
         // entry maybe null
         ZipEntry zipEntry = zipFile.getEntry(className);
         if(null != zipEntry) {
-            return zipEntry.getExtra();
+            logger.debug("class {} is in zipfile {}", className, zipFile.getName());
+            try {
+                InputStream inputStream = zipFile.getInputStream(zipEntry);
+                return IOUtils.readNBytes(inputStream, Integer.MAX_VALUE);
+            } catch (IOException e) {
+                logger.debug("cannot read {} from {}", className, zipFile.getName());
+                throw new RuntimeException(e);
+            }
         } else {
-            logger.error("class {} is not in zipfile {}", className, zipFile.getName());
+            logger.debug("class {} is not in zipfile {}", className, zipFile.getName());
             return null;
         }
     }

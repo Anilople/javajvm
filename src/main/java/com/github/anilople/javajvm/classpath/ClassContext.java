@@ -1,7 +1,5 @@
 package com.github.anilople.javajvm.classpath;
 
-import java.io.IOException;
-
 /**
  * What a jvm need when it running?
  * One of functions is that read a class file by class name

@@ -25,11 +25,18 @@ public class ClassFileClassContextImpl implements ClassContext {
 
     @Override
     public byte[] readClass(String className) {
-        try {
-            return Files.readAllBytes(classfile);
-        } catch (IOException e) {
-            logger.error("no class file in this class context", e);
+        if(classfile.toString().endsWith(className)) {
+            try {
+                logger.debug("{} is in {}", className, classfile);
+                return Files.readAllBytes(classfile);
+            } catch (IOException e) {
+                logger.debug("cannot read content", e);
+            }
+        } else {
+
         }
+
+        logger.debug("class {} not match with class file {}", className, classfile);
         return null;
     }
 }
