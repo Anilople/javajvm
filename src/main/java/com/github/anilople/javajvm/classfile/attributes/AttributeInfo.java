@@ -34,6 +34,17 @@ public abstract class AttributeInfo {
      */
     public static AttributeInfo[] parseAttributes(ClassFile classFile, ClassFile.ClassReader classReader) {
         short attributesCount = classReader.readU2();
+        return parseAttributes(classFile, classReader, attributesCount);
+    }
+
+    /**
+     * parse n attributes by a given attributesCount
+     * @param classFile
+     * @param classReader
+     * @param attributesCount
+     * @return
+     */
+    public static AttributeInfo[] parseAttributes(ClassFile classFile, ClassFile.ClassReader classReader, short attributesCount) {
         AttributeInfo[] attributes = new AttributeInfo[attributesCount];
         for(short i = 0; i < attributesCount; i++) {
             attributes[i] = AttributeInfo.parseAttributeInfo(classFile, classReader);
@@ -67,6 +78,8 @@ public abstract class AttributeInfo {
                 return new EnclosingMethodAttribute(classFile, attributeNameIndex, attributeLength, info);
             case "Synthetic":
                 return new SyntheticAttribute(classFile, attributeNameIndex, attributeLength, info);
+            case "Signature":
+                return new SignatureAttribute(classFile, attributeNameIndex, attributeLength, info);
             case "SourceFile":
                 return new SourceFileAttribute(classFile, attributeNameIndex, attributeLength, info);
             case "SourceDebugExtension":

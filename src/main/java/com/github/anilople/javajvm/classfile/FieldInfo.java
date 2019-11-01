@@ -2,6 +2,8 @@ package com.github.anilople.javajvm.classfile;
 
 import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
 
+import java.util.Arrays;
+
 public class FieldInfo {
 
     private ClassFile classFile;
@@ -35,6 +37,17 @@ public class FieldInfo {
         fieldInfo.descriptorIndex = classReader.readU2();
         fieldInfo.attributes = AttributeInfo.parseAttributes(classFile, classReader);
         return fieldInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "FieldInfo{" +
+                "classFile=" + classFile +
+                ", accessFlags=" + accessFlags +
+                ", nameIndex=" + nameIndex +
+                ", descriptorIndex=" + descriptorIndex +
+                ", attributes=" + Arrays.toString(attributes) +
+                '}';
     }
 
     public ClassFile getClassFile() {

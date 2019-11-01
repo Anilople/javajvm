@@ -50,6 +50,8 @@ public abstract class ConstantPoolInfo {
         }
     }
 
+    public abstract String toString();
+
     public ClassFile getClassFile() {
         return classFile;
     }

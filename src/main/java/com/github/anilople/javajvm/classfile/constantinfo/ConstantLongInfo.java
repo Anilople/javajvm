@@ -16,6 +16,14 @@ public class ConstantLongInfo extends ConstantPoolInfo {
         return TAG;
     }
 
+    @Override
+    public String toString() {
+        return "ConstantLongInfo{" +
+                "highBytes=" + highBytes +
+                ", lowBytes=" + lowBytes +
+                '}';
+    }
+
     public ConstantLongInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
         super(classFile);
         this.highBytes = classReader.readU4();

@@ -18,6 +18,15 @@ public class ConstantMethodHandleInfo extends ConstantPoolInfo {
         return TAG;
     }
 
+    @Override
+    public String toString() {
+        return "ConstantMethodHandleInfo{" +
+                "tag=" + tag +
+                ", referenceKind=" + referenceKind +
+                ", referenceIndex=" + referenceIndex +
+                '}';
+    }
+
     public ConstantMethodHandleInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
         super(classFile);
         this.referenceKind = classReader.readU1();

@@ -19,4 +19,11 @@ public class ConstantValueAttribute extends AttributeInfo {
     public short getConstantValueIndex() {
         return constantValueIndex;
     }
+
+    @Override
+    public String toString() {
+        return "ConstantValueAttribute{" +
+                "constantValueIndex=" + constantValueIndex +
+                '}';
+    }
 }

@@ -7,4 +7,6 @@ public class AnnotationDefaultAttribute extends AttributeInfo {
     public AnnotationDefaultAttribute(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         super(classFile, attributeNameIndex, attributeLength, info);
     }
+
+
 }

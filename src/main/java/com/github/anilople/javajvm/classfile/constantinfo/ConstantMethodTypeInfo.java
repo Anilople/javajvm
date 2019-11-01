@@ -14,6 +14,13 @@ public class ConstantMethodTypeInfo extends ConstantPoolInfo {
         return TAG;
     }
 
+    @Override
+    public String toString() {
+        return "ConstantMethodTypeInfo{" +
+                "descriptorIndex=" + descriptorIndex +
+                '}';
+    }
+
     public ConstantMethodTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
         super(classFile);
         this.descriptorIndex = classReader.readU2();

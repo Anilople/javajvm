@@ -7,5 +7,4 @@ public class MethodParametersAttribute extends AttributeInfo {
     public MethodParametersAttribute(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         super(classFile, attributeNameIndex, attributeLength, info);
     }
-
 }

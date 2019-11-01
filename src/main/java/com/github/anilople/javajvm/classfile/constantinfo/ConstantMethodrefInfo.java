@@ -2,6 +2,7 @@ package com.github.anilople.javajvm.classfile.constantinfo;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.ConstantPoolTags;
+import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 
 public class ConstantMethodrefInfo extends ConstantPoolInfo {
 
@@ -14,6 +15,17 @@ public class ConstantMethodrefInfo extends ConstantPoolInfo {
     @Override
     public byte getTag() {
         return TAG;
+    }
+
+    @Override
+    public String toString() {
+        ConstantPoolInfo[] constantPool = this.getClassFile().getConstantPool();
+        return "ConstantMethodrefInfo{" +
+                ConstantPoolUtils.getClassName(constantPool, classIndex) + "." +
+                ConstantPoolUtils.getNameAndType(constantPool, this.getNameAndTypeIndex()) +
+                ", classIndex=" + classIndex +
+                ", nameAndTypeIndex=" + nameAndTypeIndex +
+                '}';
     }
 
     public ConstantMethodrefInfo(ClassFile classFile, ClassFile.ClassReader classReader) {

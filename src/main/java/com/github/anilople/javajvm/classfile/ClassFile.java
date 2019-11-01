@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * The Java ® Virtual
@@ -41,6 +43,8 @@ import java.io.InputStream;
  *  int to represent u4
  */
 public class ClassFile {
+
+    private static final Logger logger = LoggerFactory.getLogger(ClassFile.class);
 
     private int magic;
 
@@ -150,7 +154,12 @@ public class ClassFile {
         classFile.majorVersion = classReader.readU2();
 
         // read constant pool
-        classFile.constantPool = ClassFile.parseConstantPool(classReader);
+        classFile.constantPool = ClassFile.parseConstantPool(classFile, classReader);
+        logger.debug("constant pool length : {}", classFile.constantPool.length);
+        for(int i = 0; i < classFile.constantPool.length; i++) {
+            logger.debug("{} : {}", i, classFile.constantPool[i]);
+        }
+        logger.debug("parse constant pool finished.");
 
         classFile.accessFlags = classReader.readU2();
         classFile.thisClass = classReader.readU2();
@@ -158,15 +167,19 @@ public class ClassFile {
 
         // read interfaces
         classFile.interfaces = ClassFile.parseInterfaces(classReader);
+        logger.debug("parse interfaces finished. {}", classFile.interfaces);
 
         // read fields
         classFile.fields = FieldInfo.parseFields(classFile, classReader);
+        logger.debug("parse fields finished. {}", classFile.fields);
 
         // read methods
         classFile.methods = MethodInfo.parseMethods(classFile, classReader);
+        logger.debug("parse methods finished. {}", classFile.methods);
 
         // read attributes
         classFile.attributes = AttributeInfo.parseAttributes(classFile, classReader);
+        logger.debug("parse attributes finished. {}", classFile.attributes);
 
         return classFile;
     }
@@ -176,13 +189,13 @@ public class ClassFile {
      * @param classReader
      * @return the array of constant pool info, i.e constant pool
      */
-    private static ConstantPoolInfo[] parseConstantPool(ClassFile.ClassReader classReader) {
+    private static ConstantPoolInfo[] parseConstantPool(ClassFile classFile, ClassFile.ClassReader classReader) {
         short constantPoolCount = classReader.readU2();
         ConstantPoolInfo[] constantPool = new ConstantPoolInfo[constantPoolCount];
 
         // start from 1, not from 0 !!!
         for(short i = 1; i < constantPoolCount; i++) {
-            constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classReader);
+            constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classFile, classReader);
         }
         return constantPool;
     }

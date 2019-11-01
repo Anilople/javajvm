@@ -2,6 +2,8 @@ package com.github.anilople.javajvm.classfile.attributes;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 
+import java.util.Arrays;
+
 public class CodeAttribute extends AttributeInfo {
 
     private short maxStack;
@@ -41,50 +43,81 @@ public class CodeAttribute extends AttributeInfo {
         }
         return exceptionTable;
     }
-}
 
-class ExceptionTableEntry {
-
-    private short startPc;
-
-    private short endPc;
-
-    private short handlerPc;
-
-    private short catchType;
-
-    private ExceptionTableEntry() {}
-
-    private ExceptionTableEntry(short startPc, short endPc, short handlerPc, short catchType) {
-        this.startPc = startPc;
-        this.endPc = endPc;
-        this.handlerPc = handlerPc;
-        this.catchType = catchType;
+    @Override
+    public String toString() {
+        return "CodeAttribute{" +
+                "maxStack=" + maxStack +
+                ", maxLocals=" + maxLocals +
+                ", code=" + Arrays.toString(code) +
+                ", exceptionTable=" + Arrays.toString(exceptionTable) +
+                ", attributes=" + Arrays.toString(attributes) +
+                '}';
     }
 
-    public static ExceptionTableEntry parseExceptionTableEntry(ClassFile.ClassReader classReader) {
-        return new ExceptionTableEntry(
-                classReader.readU2(),
-                classReader.readU2(),
-                classReader.readU2(),
-                classReader.readU2()
-        );
+    public short getMaxStack() {
+        return maxStack;
     }
 
-    public short getStartPc() {
-        return startPc;
+    public short getMaxLocals() {
+        return maxLocals;
     }
 
-    public short getEndPc() {
-        return endPc;
+    public byte[] getCode() {
+        return code;
     }
 
-    public short getHandlerPc() {
-        return handlerPc;
+    public ExceptionTableEntry[] getExceptionTable() {
+        return exceptionTable;
     }
 
-    public short getCatchType() {
-        return catchType;
+    public AttributeInfo[] getAttributes() {
+        return attributes;
     }
 
+    public static class ExceptionTableEntry {
+
+        private short startPc;
+
+        private short endPc;
+
+        private short handlerPc;
+
+        private short catchType;
+
+        private ExceptionTableEntry() {}
+
+        private ExceptionTableEntry(short startPc, short endPc, short handlerPc, short catchType) {
+            this.startPc = startPc;
+            this.endPc = endPc;
+            this.handlerPc = handlerPc;
+            this.catchType = catchType;
+        }
+
+        public static ExceptionTableEntry parseExceptionTableEntry(ClassFile.ClassReader classReader) {
+            return new ExceptionTableEntry(
+                    classReader.readU2(),
+                    classReader.readU2(),
+                    classReader.readU2(),
+                    classReader.readU2()
+            );
+        }
+
+        public short getStartPc() {
+            return startPc;
+        }
+
+        public short getEndPc() {
+            return endPc;
+        }
+
+        public short getHandlerPc() {
+            return handlerPc;
+        }
+
+        public short getCatchType() {
+            return catchType;
+        }
+
+    }
 }

@@ -2,6 +2,8 @@ package com.github.anilople.javajvm.classfile.attributes;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 
+import java.util.Arrays;
+
 public class ExceptionsAttribute extends AttributeInfo {
 
 //    private short numberOfExceptions;
@@ -14,7 +16,7 @@ public class ExceptionsAttribute extends AttributeInfo {
 
     public ExceptionsAttribute(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         super(classFile, attributeNameIndex, attributeLength, info);
-        this.exceptionIndexTable = parseExceptionIndexTable(new ClassFile.ClassReader(info));
+        this.exceptionIndexTable = ExceptionsAttribute.parseExceptionIndexTable(new ClassFile.ClassReader(info));
     }
 
     private static short[] parseExceptionIndexTable(ClassFile.ClassReader classReader) {
@@ -25,5 +27,11 @@ public class ExceptionsAttribute extends AttributeInfo {
     public short[] getExceptionIndexTable() {
         return exceptionIndexTable;
     }
-    
+
+    @Override
+    public String toString() {
+        return "ExceptionsAttribute{" +
+                "exceptionIndexTable=" + Arrays.toString(exceptionIndexTable) +
+                '}';
+    }
 }
