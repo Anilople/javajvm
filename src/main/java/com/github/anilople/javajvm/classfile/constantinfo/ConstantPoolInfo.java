@@ -50,6 +50,22 @@ public abstract class ConstantPoolInfo {
         }
     }
 
+    /**
+     * parse to constant pool
+     * @param classReader
+     * @return the array of constant pool info, i.e constant pool
+     */
+    public static ConstantPoolInfo[] parseConstantPool(ClassFile classFile, ClassFile.ClassReader classReader) {
+        short constantPoolCount = classReader.readU2();
+        ConstantPoolInfo[] constantPool = new ConstantPoolInfo[constantPoolCount];
+
+        // start from 1, not from 0 !!!
+        for(short i = 1; i < constantPoolCount; i++) {
+            constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classFile, classReader);
+        }
+        return constantPool;
+    }
+
     public abstract String toString();
 
     public ClassFile getClassFile() {

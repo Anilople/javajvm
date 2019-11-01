@@ -154,7 +154,7 @@ public class ClassFile {
         classFile.majorVersion = classReader.readU2();
 
         // read constant pool
-        classFile.constantPool = ClassFile.parseConstantPool(classFile, classReader);
+        classFile.constantPool = ConstantPoolInfo.parseConstantPool(classFile, classReader);
         logger.debug("constant pool length : {}", classFile.constantPool.length);
         for(int i = 0; i < classFile.constantPool.length; i++) {
             logger.debug("{} : {}", i, classFile.constantPool[i]);
@@ -182,22 +182,6 @@ public class ClassFile {
         logger.debug("parse attributes finished. {}", classFile.attributes);
 
         return classFile;
-    }
-
-    /**
-     * parse to constant pool
-     * @param classReader
-     * @return the array of constant pool info, i.e constant pool
-     */
-    private static ConstantPoolInfo[] parseConstantPool(ClassFile classFile, ClassFile.ClassReader classReader) {
-        short constantPoolCount = classReader.readU2();
-        ConstantPoolInfo[] constantPool = new ConstantPoolInfo[constantPoolCount];
-
-        // start from 1, not from 0 !!!
-        for(short i = 1; i < constantPoolCount; i++) {
-            constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classFile, classReader);
-        }
-        return constantPool;
     }
 
     /**
