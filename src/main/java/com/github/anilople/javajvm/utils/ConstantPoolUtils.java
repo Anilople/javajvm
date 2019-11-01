@@ -5,6 +5,8 @@ import com.github.anilople.javajvm.classfile.constantinfo.ConstantClassInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantNameAndTypeInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantPoolInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantUtf8Info;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -12,6 +14,8 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 public class ConstantPoolUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConstantPoolUtils.class);
 
     /**
      * get cp_info
@@ -36,12 +40,14 @@ public class ConstantPoolUtils {
      * @return
      */
     public static String decodeMUTF8(byte[] bytes) {
-        DataInput dataInput = new DataInputStream(new ByteArrayInputStream(bytes));
-        try {
-            return DataInputStream.readUTF(dataInput);
-        } catch (IOException e) {
-            throw new RuntimeException("MUTF8 decode fail", e);
-        }
+        return new String(bytes);
+//        DataInput dataInput = new DataInputStream(new ByteArrayInputStream(bytes));
+//        try {
+//            return DataInputStream.readUTF(dataInput);
+//        } catch (IOException e) {
+//            logger.error("cannot decode {}", bytes);
+//            throw new RuntimeException("MUTF8 decode fail", e);
+//        }
     }
 
     /**
@@ -72,8 +78,39 @@ public class ConstantPoolUtils {
         return getUtf8(constantPool, constantClassInfo.getNameIndex());
     }
 
-//    public static getNameAndType(ConstantPoolInfo[] constantPool, short index) {
-//        ConstantNameAndTypeInfo constantNameAndTypeInfo = (ConstantNameAndTypeInfo) constantPool[index];
-//
-//    }
+    /**
+     * just get name string
+     * @param constantPool
+     * @param constantNameAndTypeInfo
+     * @return
+     */
+    public static String getName(ConstantPoolInfo[] constantPool, ConstantNameAndTypeInfo constantNameAndTypeInfo) {
+        short nameIndex = constantNameAndTypeInfo.getNameIndex();
+        return ConstantPoolUtils.getUtf8(constantPool, nameIndex);
+    }
+
+    /**
+     * just get type string
+     * @param constantPool
+     * @param constantNameAndTypeInfo
+     * @return
+     */
+    public static String getType(ConstantPoolInfo[] constantPool, ConstantNameAndTypeInfo constantNameAndTypeInfo) {
+         short descriptorIndex = constantNameAndTypeInfo.getDescriptorIndex();
+         return ConstantPoolUtils.getUtf8(constantPool, descriptorIndex);
+    }
+
+    /**
+     * concat name string and type string
+     * @param constantPool
+     * @param nameAndTypeIndex
+     * @return name&type
+     */
+    public static String getNameAndType(ConstantPoolInfo[] constantPool, short nameAndTypeIndex) {
+        ConstantNameAndTypeInfo constantNameAndTypeInfo = (ConstantNameAndTypeInfo) constantPool[nameAndTypeIndex];
+        String name = ConstantPoolUtils.getName(constantPool, constantNameAndTypeInfo);
+        String type = ConstantPoolUtils.getType(constantPool, constantNameAndTypeInfo);
+        return name + "&" + type;
+    }
+
 }

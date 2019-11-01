@@ -77,4 +77,16 @@ public class ByteUtils {
         value |= lowValue;
         return value;
     }
+
+    /**
+     * convert 2 int to long
+     * @param highBytes
+     * @param lowBytes
+     * @return
+     */
+    public static long int2long(int highBytes, int lowBytes) {
+        long high = highBytes;
+        long low = lowBytes;
+        return (highBytes << 32) & lowBytes;
+    }
 }

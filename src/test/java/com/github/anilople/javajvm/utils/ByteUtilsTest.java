@@ -38,4 +38,12 @@ public class ByteUtilsTest {
         byte[] zero = new byte[8];
         Assertions.assertEquals(0L, ByteUtils.bytes2long(zero));
     }
+
+    @Test
+    public void int2longTest() {
+        Assertions.assertEquals(0, ByteUtils.int2long(0, 0));
+        Assertions.assertEquals(-1, ByteUtils.int2long(-1, -1));
+        Assertions.assertEquals(2, ByteUtils.int2long(0, 2));
+        Assertions.assertEquals(0x80000000L, ByteUtils.int2long(0, Integer.MIN_VALUE));
+    }
 }

@@ -37,7 +37,7 @@ public class ClassContextUtils {
             || pathname.endsWith(".zip") || pathname.endsWith(".ZIP")) {
             return new ZipClassContextImpl(path);
         } else {
-            logger.warn("{} cannot be recognized", path);
+            logger.debug("{} cannot be recognized", path);
             return null;
         }
     }
