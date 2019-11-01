@@ -11,14 +11,13 @@ public class ConstantUtf8Info extends ConstantPoolInfo {
 
     private byte[] bytes;
 
-    private ConstantUtf8Info() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantUtf8Info(ClassFile.ClassReader classReader) {
+    public ConstantUtf8Info(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.length = classReader.readU2();
         this.bytes = classReader.readBytes(this.length);
     }

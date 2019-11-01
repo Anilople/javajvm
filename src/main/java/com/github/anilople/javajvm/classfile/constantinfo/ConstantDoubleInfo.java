@@ -11,16 +11,15 @@ public class ConstantDoubleInfo extends ConstantPoolInfo {
 
     private int lowBytes;
 
-    private ConstantDoubleInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantDoubleInfo(ClassFile.ClassReader classReader) {
+    public ConstantDoubleInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.highBytes = classReader.readU4();
-        this.highBytes = classReader.readU4();
+        this.lowBytes = classReader.readU4();
     }
 
     public int getHighBytes() {

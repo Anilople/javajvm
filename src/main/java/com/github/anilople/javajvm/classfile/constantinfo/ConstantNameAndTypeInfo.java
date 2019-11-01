@@ -11,14 +11,13 @@ public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
 
     private short descriptorIndex;
 
-    private ConstantNameAndTypeInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantNameAndTypeInfo(ClassFile.ClassReader classReader) {
+    public ConstantNameAndTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.nameIndex = classReader.readU2();
         this.descriptorIndex = classReader.readU2();
     }

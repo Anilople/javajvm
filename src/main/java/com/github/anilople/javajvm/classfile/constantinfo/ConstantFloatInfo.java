@@ -9,14 +9,13 @@ public class ConstantFloatInfo extends ConstantPoolInfo {
 
     private int bytes;
 
-    private ConstantFloatInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantFloatInfo(ClassFile.ClassReader classReader) {
+    public ConstantFloatInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.bytes = classReader.readU4();
     }
 }

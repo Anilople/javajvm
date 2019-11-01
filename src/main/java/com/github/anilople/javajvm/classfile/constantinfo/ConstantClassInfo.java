@@ -14,8 +14,8 @@ public class ConstantClassInfo extends ConstantPoolInfo {
         return TAG;
     }
 
-    public ConstantClassInfo(ClassFile.ClassReader classReader) {
-        super();
+    public ConstantClassInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         nameIndex = classReader.readU2();
     }
 

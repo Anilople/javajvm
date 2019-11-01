@@ -11,14 +11,13 @@ public class ConstantInterfaceMethodrefInfo extends ConstantPoolInfo {
 
     private short nameAndTypeIndex;
 
-    private ConstantInterfaceMethodrefInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantInterfaceMethodrefInfo(ClassFile.ClassReader classReader) {
+    public ConstantInterfaceMethodrefInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.classIndex = classReader.readU2();
         this.nameAndTypeIndex = classReader.readU2();
     }

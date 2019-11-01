@@ -11,14 +11,13 @@ public class ConstantFieldrefInfo extends ConstantPoolInfo {
 
     private short nameAndTypeIndex;
 
-    private ConstantFieldrefInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantFieldrefInfo(ClassFile.ClassReader classReader) {
+    public ConstantFieldrefInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.classIndex = classReader.readU2();
         this.nameAndTypeIndex = classReader.readU2();
     }

@@ -11,14 +11,13 @@ public class ConstantLongInfo extends ConstantPoolInfo {
 
     private int lowBytes;
 
-    private ConstantLongInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantLongInfo(ClassFile.ClassReader classReader) {
+    public ConstantLongInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.highBytes = classReader.readU4();
         this.lowBytes = classReader.readU4();
     }

@@ -9,14 +9,13 @@ public class ConstantStringInfo extends ConstantPoolInfo {
 
     private short stringIndex;
 
-    private ConstantStringInfo() {}
-
     @Override
     public byte getTag() {
         return TAG;
     }
 
-    public ConstantStringInfo(ClassFile.ClassReader classReader) {
+    public ConstantStringInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
         this.stringIndex = classReader.readU2();
     }
 
