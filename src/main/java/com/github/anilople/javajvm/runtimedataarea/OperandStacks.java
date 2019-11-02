@@ -2,15 +2,21 @@ package com.github.anilople.javajvm.runtimedataarea;
 
 import java.util.Stack;
 
-public class OperandStack {
+/**
+ * Each frame (§2.6) contains a last-in-first-out (LIFO) stack known as its operand
+ * stack. The maximum depth of the operand stack of a frame is determined at
+ * compile-time and is supplied along with the code for the method associated with
+ * the frame (§4.7.3).
+ */
+public class OperandStacks {
     
     private int maxStack;
     
     private Stack<LocalVariable> operandStack;
     
-    private OperandStack() {}
+    private OperandStacks() {}
     
-    public OperandStack(int maxStack) {
+    public OperandStacks(int maxStack) {
         this.maxStack = maxStack;
         operandStack = new Stack<>();
     }

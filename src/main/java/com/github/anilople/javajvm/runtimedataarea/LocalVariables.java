@@ -4,6 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Each frame (§2.6) contains an array of variables known as its local variables. The
+ * length of the local variable array of a frame is determined at compile-time and
+ * supplied in the binary representation of a class or interface along with the code for
+ * the method associated with the frame (§4.7.3).
+ *
+ * A value of type long or type double occupies two consecutive local variables.
+ * Such a value may only be addressed using the lesser index. For example, a value of
+ * type double stored in the local variable array at index n actually occupies the local
+ * variables with indices n and n+1; however, the local variable at index n+1 cannot
+ * be loaded from. It can be stored into. However, doing so invalidates the contents
+ * of local variable n.
+ *
+ * however, in this implement, long and double do not occupies two consecutive local variables
+ * they are abstracted to 1 single local variable
+ */
 public class LocalVariables {
 
     private int maxLocals;

@@ -1,5 +1,10 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+/**
+ * A single local variable can hold a value of type boolean , byte , char , short , int ,
+ * float , reference , or returnAddress . A pair of local variables can hold a value
+ * of type long or double
+ */
 public class LocalVariable {
 
     private boolean booleanValue;

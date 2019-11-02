@@ -3,11 +3,11 @@ package com.github.anilople.javajvm.runtimedataarea;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class OperandStackTest {
+public class OperandStacksTest {
 
     @Test
     public void OperandStackTest() {
-        OperandStack operandStack = new OperandStack(100);
+        OperandStacks operandStack = new OperandStacks(100);
         operandStack.pushBooleanValue(false);
         operandStack.pushByteValue(Byte.MAX_VALUE);
         operandStack.pushCharValue('9');

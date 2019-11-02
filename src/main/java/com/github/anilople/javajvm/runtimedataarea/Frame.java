@@ -1,20 +1,22 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
+/**
+ * A frame is used to store data and partial results, as well as to perform dynamic
+ * linking, return values for methods, and dispatch exceptions.
+ */
 public class Frame {
 
     private LocalVariables localVariables;
 
-    private Stack<LocalVariable> operandStacks;
+    private OperandStacks operandStacks;
 
     private Frame() {}
 
     public Frame(int maxLocals, int maxStack) {
         this.localVariables = new LocalVariables(maxLocals);
-        this.operandStacks = new Stack<>();
+        this.operandStacks = new OperandStacks(maxStack);
     }
 
 }
