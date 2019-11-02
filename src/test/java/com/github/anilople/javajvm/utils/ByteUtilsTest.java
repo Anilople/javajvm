@@ -44,6 +44,6 @@ public class ByteUtilsTest {
         Assertions.assertEquals(0, ByteUtils.int2long(0, 0));
         Assertions.assertEquals(-1, ByteUtils.int2long(-1, -1));
         Assertions.assertEquals(2, ByteUtils.int2long(0, 2));
-        Assertions.assertEquals(0x80000000L, ByteUtils.int2long(0, Integer.MIN_VALUE));
+        Assertions.assertEquals(Integer.MIN_VALUE, ByteUtils.int2long(0, Integer.MIN_VALUE));
     }
 }
