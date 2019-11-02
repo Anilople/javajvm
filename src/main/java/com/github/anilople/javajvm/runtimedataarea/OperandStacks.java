@@ -21,6 +21,13 @@ public class OperandStacks {
         operandStack = new Stack<>();
     }
 
+    public void push(LocalVariable localVariable) {
+        operandStack.push(localVariable);
+    }
+
+    public LocalVariable pop() {
+        return operandStack.pop();
+    }
 
     public boolean popBooleanValue() {
         return operandStack.pop().getBooleanValue();
