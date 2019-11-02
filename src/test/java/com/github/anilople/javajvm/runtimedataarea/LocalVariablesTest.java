@@ -4,8 +4,6 @@ package com.github.anilople.javajvm.runtimedataarea;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-
 public class LocalVariablesTest {
 
     @Test
@@ -42,8 +40,8 @@ public class LocalVariablesTest {
         Assertions.assertEquals(- 0.12323434234234324D, localVariables.getDoubleValue(index));
         index += 1;
 
-        Object object = new Object();
-        localVariables.setReference(index, object);
-        Assertions.assertEquals(object, localVariables.getReference(index));
+        Reference reference = new Reference();
+        localVariables.setReference(index, reference);
+        Assertions.assertEquals(reference, localVariables.getReference(index));
     }
 }

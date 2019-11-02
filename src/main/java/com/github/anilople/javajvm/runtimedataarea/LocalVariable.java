@@ -19,7 +19,7 @@ public class LocalVariable {
 
     private float floatValue;
 
-    private Object reference;
+    private Reference reference;
 
     private int returnAddress;
 
@@ -53,7 +53,7 @@ public class LocalVariable {
         return floatValue;
     }
 
-    public Object getReference() {
+    public Reference getReference() {
         return reference;
     }
 
@@ -99,7 +99,7 @@ public class LocalVariable {
         return this;
     }
 
-    public LocalVariable setReference(Object reference) {
+    public LocalVariable setReference(Reference reference) {
         this.reference = reference;
         return this;
     }

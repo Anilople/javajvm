@@ -46,7 +46,7 @@ public class OperandStacks {
         return operandStack.pop().getFloatValue();
     }
 
-    public Object popReference() {
+    public Reference popReference() {
         return operandStack.pop().getReference();
     }
 
@@ -87,7 +87,7 @@ public class OperandStacks {
         operandStack.push(new LocalVariable().setFloatValue(floatValue));
     }
 
-    public void pushReference(Object reference) {
+    public void pushReference(Reference reference) {
         operandStack.push(new LocalVariable().setReference(reference));
     }
 

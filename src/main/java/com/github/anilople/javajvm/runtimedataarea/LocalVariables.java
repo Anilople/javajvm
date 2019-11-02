@@ -1,6 +1,5 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class LocalVariables {
         return localVariables.get(index).getFloatValue();
     }
 
-    public Object getReference(int index) {
+    public Reference getReference(int index) {
         return localVariables.get(index).getReference();
     }
 
@@ -97,7 +96,7 @@ public class LocalVariables {
         localVariables.set(index, new LocalVariable().setFloatValue(floatValue));
     }
 
-    public void setReference(int index, Object reference) {
+    public void setReference(int index, Reference reference) {
         localVariables.set(index, new LocalVariable().setReference(reference));
     }
 
