@@ -19,4 +19,11 @@ public class Frame {
         this.operandStacks = new OperandStacks(maxStack);
     }
 
+    public LocalVariables getLocalVariables() {
+        return localVariables;
+    }
+
+    public OperandStacks getOperandStacks() {
+        return operandStacks;
+    }
 }
