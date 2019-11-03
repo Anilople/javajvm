@@ -29,7 +29,7 @@ public class CodeAttribute extends AttributeInfo {
         ClassFile.ClassReader classReader = new ClassFile.ClassReader(info);
         this.maxStack = classReader.readU2();
         this.maxLocals = classReader.readU2();
-        int codeLength = classReader.readU2();
+        int codeLength = classReader.readU4();
         this.code = classReader.readBytes(codeLength);
         this.exceptionTable = parseExceptionTable(classReader);
         this.attributes = AttributeInfo.parseAttributes(this.getClassFile(), classReader);
