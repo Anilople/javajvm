@@ -13,6 +13,7 @@ public interface ClassContext {
      * like java/lang/Object
      * like java/lang/String
      * return bytes of this class file
+     *
      * @param className class name
      * @return null if there is no this class
      */

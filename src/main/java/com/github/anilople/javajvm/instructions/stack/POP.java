@@ -6,20 +6,26 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 
 /**
  * Operation:
- *      Pop the top operand stack value
+ * Pop the top operand stack value
  * Description:
- *      Pop the top value from the operand stack.
- *      The pop instruction must not be used unless value is a value of a
- *      category 1 computational type (§2.11.1).
+ * Pop the top value from the operand stack.
+ * The pop instruction must not be used unless value is a value of a
+ * category 1 computational type (§2.11.1).
  */
 public class POP implements Instruction {
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         frame.getOperandStacks().pop();
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

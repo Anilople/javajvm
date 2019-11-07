@@ -32,12 +32,12 @@ public class LocalVariablesTest {
         Assertions.assertEquals(-100000000000L, localVariables.getLongValue(index));
         index += 1;
 
-        localVariables.setFloatValue(index, - 0.123234F);
-        Assertions.assertEquals(- 0.123234F, localVariables.getFloatValue(index));
+        localVariables.setFloatValue(index, -0.123234F);
+        Assertions.assertEquals(-0.123234F, localVariables.getFloatValue(index));
         index += 1;
 
-        localVariables.setDoubleValue(index, - 0.12323434234234324D);
-        Assertions.assertEquals(- 0.12323434234234324D, localVariables.getDoubleValue(index));
+        localVariables.setDoubleValue(index, -0.12323434234234324D);
+        Assertions.assertEquals(-0.12323434234234324D, localVariables.getDoubleValue(index));
         index += 1;
 
         Reference reference = new Reference();

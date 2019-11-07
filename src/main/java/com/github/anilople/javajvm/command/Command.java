@@ -7,9 +7,9 @@ import java.util.Arrays;
 
 /**
  * common pattern in
- *  java [-options] class [args...]
+ * java [-options] class [args...]
  * and
- *  java [-options] -jar jarfile [args...]
+ * java [-options] -jar jarfile [args...]
  */
 public class Command {
 
@@ -23,7 +23,8 @@ public class Command {
 
     private String[] args;
 
-    private Command() {}
+    private Command() {
+    }
 
     public Command(Options options, String className, String jarfileName, String[] args) {
         this.options = options;
@@ -34,6 +35,7 @@ public class Command {
 
     /**
      * parse from args
+     *
      * @param args
      * @return
      */
@@ -47,10 +49,10 @@ public class Command {
         // parse -jar jarfile or class
         String className = null;
         String jarfileName = null;
-        if(start < args.length - 1 && "-jar".equals(args[start])) {
+        if (start < args.length - 1 && "-jar".equals(args[start])) {
             jarfileName = args[start + 1];
             start += 2;
-        } else if(start < args.length) {
+        } else if (start < args.length) {
             className = args[start];
             start += 1;
         } else {

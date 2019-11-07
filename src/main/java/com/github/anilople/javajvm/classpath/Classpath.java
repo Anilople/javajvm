@@ -37,10 +37,12 @@ public class Classpath implements ClassContext {
      */
     List<ClassContext> userList;
 
-    private Classpath() {}
+    private Classpath() {
+    }
 
     /**
      * initial a class context from command
+     *
      * @param command
      */
     public Classpath(Command command) {
@@ -79,25 +81,25 @@ public class Classpath implements ClassContext {
         className = className + ".class";
 
         // from boot
-        for(ClassContext classContext : bootList) {
+        for (ClassContext classContext : bootList) {
             byte[] data = classContext.readClass(className);
-            if(null != data) {
+            if (null != data) {
                 return data;
             }
         }
 
         // from ext
-        for(ClassContext classContext : extList) {
+        for (ClassContext classContext : extList) {
             byte[] data = classContext.readClass(className);
-            if(null != data) {
+            if (null != data) {
                 return data;
             }
         }
 
         // from user
-        for(ClassContext classContext : userList) {
+        for (ClassContext classContext : userList) {
             byte[] data = classContext.readClass(className);
-            if(null != data) {
+            if (null != data) {
                 return data;
             }
         }

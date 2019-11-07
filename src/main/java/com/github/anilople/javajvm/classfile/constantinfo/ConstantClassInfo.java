@@ -16,6 +16,11 @@ public class ConstantClassInfo extends ConstantPoolInfo {
      */
     private short nameIndex;
 
+    public ConstantClassInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        nameIndex = classReader.readU2();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -25,13 +30,6 @@ public class ConstantClassInfo extends ConstantPoolInfo {
     public String toString() {
         return ConstantPoolUtils.getUtf8(this.getClassFile().getConstantPool(), this.getNameIndex());
     }
-
-    public ConstantClassInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        nameIndex = classReader.readU2();
-    }
-
-
 
     public short getNameIndex() {
         return nameIndex;

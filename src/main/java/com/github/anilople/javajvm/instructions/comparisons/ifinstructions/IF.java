@@ -1,14 +1,21 @@
-package com.github.anilople.javajvm.instructions.math.bitwiseand;
+package com.github.anilople.javajvm.instructions.comparisons.ifinstructions;
 
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
-public class LAND implements Instruction {
+public abstract class IF implements Instruction {
+
+//    private byte branchbyte1;
+
+//    private byte branchbyte2;
+
+    // use a short to replace 2 bytes above
+    private short branchShort;
 
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
-
+        this.branchShort = bytecodeReader.readU2();
     }
 
     @Override
@@ -19,7 +26,7 @@ public class LAND implements Instruction {
 
     @Override
     public int size() {
-        return 1;
+        return 3;
     }
 
 }

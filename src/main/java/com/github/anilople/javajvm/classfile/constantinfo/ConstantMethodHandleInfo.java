@@ -13,6 +13,12 @@ public class ConstantMethodHandleInfo extends ConstantPoolInfo {
 
     private byte referenceIndex;
 
+    public ConstantMethodHandleInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.referenceKind = classReader.readU1();
+        this.referenceIndex = classReader.readU1();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -25,12 +31,6 @@ public class ConstantMethodHandleInfo extends ConstantPoolInfo {
                 ", referenceKind=" + referenceKind +
                 ", referenceIndex=" + referenceIndex +
                 '}';
-    }
-
-    public ConstantMethodHandleInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.referenceKind = classReader.readU1();
-        this.referenceIndex = classReader.readU1();
     }
 
     public byte getReferenceKind() {

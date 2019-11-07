@@ -11,6 +11,12 @@ public class ConstantInvokeDynamicInfo extends ConstantPoolInfo {
 
     private short nameAndTypeIndex;
 
+    public ConstantInvokeDynamicInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.bootstrapMethodAttrIndex = classReader.readU2();
+        this.nameAndTypeIndex = classReader.readU2();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -22,12 +28,6 @@ public class ConstantInvokeDynamicInfo extends ConstantPoolInfo {
                 "bootstrapMethodAttrIndex=" + bootstrapMethodAttrIndex +
                 ", nameAndTypeIndex=" + nameAndTypeIndex +
                 '}';
-    }
-
-    public ConstantInvokeDynamicInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.bootstrapMethodAttrIndex = classReader.readU2();
-        this.nameAndTypeIndex = classReader.readU2();
     }
 
     public short getBootstrapMethodAttrIndex() {

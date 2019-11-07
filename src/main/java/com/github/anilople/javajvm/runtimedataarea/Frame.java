@@ -1,6 +1,6 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
-import java.util.Stack;
+import com.github.anilople.javajvm.classfile.ClassFile;
 
 /**
  * A frame is used to store data and partial results, as well as to perform dynamic
@@ -8,15 +8,26 @@ import java.util.Stack;
  */
 public class Frame {
 
+    private ClassFile classFile;
+
+    private JvmThread jvmThread;
+
     private LocalVariables localVariables;
 
     private OperandStacks operandStacks;
 
-    private Frame() {}
+    private Frame() {
+    }
 
-    public Frame(int maxLocals, int maxStack) {
+    public Frame(ClassFile classFile, JvmThread jvmThread, int maxLocals, int maxStack) {
+        this.classFile = classFile;
+        this.jvmThread = jvmThread;
         this.localVariables = new LocalVariables(maxLocals);
         this.operandStacks = new OperandStacks(maxStack);
+    }
+
+    public JvmThread getJvmThread() {
+        return jvmThread;
     }
 
     public LocalVariables getLocalVariables() {

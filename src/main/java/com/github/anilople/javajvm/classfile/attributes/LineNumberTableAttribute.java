@@ -23,7 +23,8 @@ public class LineNumberTableAttribute extends AttributeInfo {
 
         private short lineNumber;
 
-        private LineNumberTableEntry() {}
+        private LineNumberTableEntry() {
+        }
 
         private LineNumberTableEntry(short startPc, short lineNumber) {
             this.startPc = startPc;
@@ -40,7 +41,7 @@ public class LineNumberTableAttribute extends AttributeInfo {
         public static LineNumberTableEntry[] parseLineNumberTable(ClassFile.ClassReader classReader) {
             short lineNumberTableLength = classReader.readU2();
             LineNumberTableEntry[] lineNumberTable = new LineNumberTableEntry[lineNumberTableLength];
-            for(short i = 0; i < lineNumberTableLength; i++) {
+            for (short i = 0; i < lineNumberTableLength; i++) {
                 lineNumberTable[i] = LineNumberTableEntry.parseLineNumberTableEntry(classReader);
             }
             return lineNumberTable;

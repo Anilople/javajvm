@@ -9,6 +9,11 @@ public class ConstantIntegerInfo extends ConstantPoolInfo {
 
     private int bytes;
 
+    public ConstantIntegerInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.bytes = classReader.readU4();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -19,11 +24,6 @@ public class ConstantIntegerInfo extends ConstantPoolInfo {
         return "ConstantIntegerInfo{" +
                 "bytes=" + bytes +
                 '}';
-    }
-
-    public ConstantIntegerInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.bytes = classReader.readU4();
     }
 
     public int getBytes() {

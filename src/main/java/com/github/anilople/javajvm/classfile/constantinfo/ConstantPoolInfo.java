@@ -1,18 +1,24 @@
 package com.github.anilople.javajvm.classfile.constantinfo;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * all class in constant pool must inherit from this class
+ */
 public abstract class ConstantPoolInfo {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConstantPoolInfo.class);
 
     private ClassFile classFile;
 
-    private ConstantPoolInfo() {}
+    private ConstantPoolInfo() {
+    }
 
     public ConstantPoolInfo(ClassFile classFile) {
         this.classFile = classFile;
     }
-
-    public abstract byte getTag();
 
     public static ConstantPoolInfo parseConstantPoolInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
         byte tag = classReader.readU1();
@@ -52,6 +58,7 @@ public abstract class ConstantPoolInfo {
 
     /**
      * parse to constant pool
+     *
      * @param classReader
      * @return the array of constant pool info, i.e constant pool
      */
@@ -60,11 +67,21 @@ public abstract class ConstantPoolInfo {
         ConstantPoolInfo[] constantPool = new ConstantPoolInfo[constantPoolCount];
 
         // start from 1, not from 0 !!!
-        for(short i = 1; i < constantPoolCount; i++) {
+        for (short i = 1; i < constantPoolCount; i++) {
             constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classFile, classReader);
+            if(constantPool[i].getClass().equals(ConstantDoubleInfo.class)) {
+                i += 1;
+                constantPool[i] = new ConstantDoubleInfo(classFile, classReader);
+            } else if(constantPool[i].getClass().equals(ConstantLongInfo.class)) {
+                i += 1;
+                constantPool[i] = new ConstantLongInfo(classFile, classReader);
+            }
+            logger.debug("read one constant pool: {}", constantPool[i]);
         }
         return constantPool;
     }
+
+    public abstract byte getTag();
 
     public abstract String toString();
 

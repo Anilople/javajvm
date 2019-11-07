@@ -8,28 +8,28 @@ import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
 
 /**
  * Operation:
- *      Swap the top two operand stack values
+ * Swap the top two operand stack values
  * Operand:
- *      ..., value2, value1 →
+ * ..., value2, value1 →
  * Stack:
- *      ..., value1, value2
+ * ..., value1, value2
  * Description:
- *      Swap the top two values on the operand stack.
- *      The swap instruction must not be used unless value1 and value2
- *      are both values of a category 1 computational type (§2.11.1).
+ * Swap the top two values on the operand stack.
+ * The swap instruction must not be used unless value1 and value2
+ * are both values of a category 1 computational type (§2.11.1).
  * Notes:
- *      The Java Virtual Machine does not provide an instruction
- *      implementing a swap on operands of category 2 computational
- *      types.
+ * The Java Virtual Machine does not provide an instruction
+ * implementing a swap on operands of category 2 computational
+ * types.
  */
 public class SWAP implements Instruction {
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         OperandStacks operandStacks = frame.getOperandStacks();
 
         LocalVariable value1 = operandStacks.pop();
@@ -38,5 +38,12 @@ public class SWAP implements Instruction {
         // push them in reversed order
         operandStacks.push(value1);
         operandStacks.push(value2);
+
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

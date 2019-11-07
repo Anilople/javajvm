@@ -12,6 +12,12 @@ public class ConstantMethodrefInfo extends ConstantPoolInfo {
 
     private short nameAndTypeIndex;
 
+    public ConstantMethodrefInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.classIndex = classReader.readU2();
+        this.nameAndTypeIndex = classReader.readU2();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -26,12 +32,6 @@ public class ConstantMethodrefInfo extends ConstantPoolInfo {
                 ", classIndex=" + classIndex +
                 ", nameAndTypeIndex=" + nameAndTypeIndex +
                 '}';
-    }
-
-    public ConstantMethodrefInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.classIndex = classReader.readU2();
-        this.nameAndTypeIndex = classReader.readU2();
     }
 
     public short getClassIndex() {

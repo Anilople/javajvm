@@ -9,6 +9,11 @@ public class ConstantMethodTypeInfo extends ConstantPoolInfo {
 
     private short descriptorIndex;
 
+    public ConstantMethodTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.descriptorIndex = classReader.readU2();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -19,11 +24,6 @@ public class ConstantMethodTypeInfo extends ConstantPoolInfo {
         return "ConstantMethodTypeInfo{" +
                 "descriptorIndex=" + descriptorIndex +
                 '}';
-    }
-
-    public ConstantMethodTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.descriptorIndex = classReader.readU2();
     }
 
     public short getDescriptorIndex() {

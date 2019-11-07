@@ -10,22 +10,22 @@ import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
  * Why exist this instruction?
  * the answer is that long or double occupies 2 LocalVariable,
  * when we dup an long or a double, we need to dup 2 LocalVariable
- *
+ * <p>
  * Operation:
- *      Duplicate the top operand stack value and insert two or three
- *      values down
+ * Duplicate the top operand stack value and insert two or three
+ * values down
  * Description:
- *      Duplicate the top value on the operand stack and insert the
- *      duplicated value two or three values down in the operand stack.
+ * Duplicate the top value on the operand stack and insert the
+ * duplicated value two or three values down in the operand stack.
  */
 public class DUP_X2 implements Instruction {
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         OperandStacks operandStacks = frame.getOperandStacks();
 
         // because we have abstract long and double
@@ -37,5 +37,12 @@ public class DUP_X2 implements Instruction {
         operandStacks.push(value1);
         operandStacks.push(value2);
         operandStacks.push(value1);
+
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

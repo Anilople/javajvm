@@ -10,6 +10,11 @@ public class ConstantStringInfo extends ConstantPoolInfo {
 
     private short stringIndex;
 
+    public ConstantStringInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.stringIndex = classReader.readU2();
+    }
+
     @Override
     public byte getTag() {
         return TAG;
@@ -21,11 +26,6 @@ public class ConstantStringInfo extends ConstantPoolInfo {
                 "stringIndex=" + stringIndex +
                 "content=" + ConstantPoolUtils.getUtf8(this.getClassFile().getConstantPool(), this.getStringIndex()) +
                 '}';
-    }
-
-    public ConstantStringInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.stringIndex = classReader.readU2();
     }
 
     public short getStringIndex() {

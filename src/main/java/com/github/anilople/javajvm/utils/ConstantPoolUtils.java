@@ -8,11 +8,6 @@ import com.github.anilople.javajvm.classfile.constantinfo.ConstantUtf8Info;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.IOException;
-
 public class ConstantPoolUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(ConstantPoolUtils.class);
@@ -20,13 +15,14 @@ public class ConstantPoolUtils {
     /**
      * get cp_info
      * from constant pool by index
+     *
      * @param constantPool
      * @param index
      * @return
      */
     public static ConstantPoolInfo getConstantPoolInfo(ConstantPoolInfo[] constantPool, short index) {
         ConstantPoolInfo constantPoolInfo = constantPool[index];
-        if(null == constantPoolInfo) {
+        if (null == constantPoolInfo) {
             throw new RuntimeException("Invalid constant pool index!");
         }
         return constantPoolInfo;
@@ -36,6 +32,7 @@ public class ConstantPoolUtils {
      * string save in
      * CONSTANT_Utf8_info
      * is encode by MUTF8(Modified UTF-8).
+     *
      * @param bytes
      * @return
      */
@@ -52,13 +49,14 @@ public class ConstantPoolUtils {
 
     /**
      * get utf8 constant with string form
+     *
      * @param constantPool
      * @param index
      * @return string decode by MUTF8
      */
     public static String getUtf8(ConstantPoolInfo[] constantPool, short index) {
         ConstantPoolInfo constantPoolInfo = getConstantPoolInfo(constantPool, index);
-        if(!(constantPoolInfo instanceof ConstantUtf8Info)) {
+        if (!(constantPoolInfo instanceof ConstantUtf8Info)) {
             throw new RuntimeException(index + " in constant pool is not an CONSTANT_Utf8_info");
         }
         ConstantUtf8Info constantUtf8Info = (ConstantUtf8Info) constantPoolInfo;
@@ -69,6 +67,7 @@ public class ConstantPoolUtils {
      * first get CONSTANT_Class_info,
      * then by name_index in CONSTANT_Class_info,
      * find the class name
+     *
      * @param constantPool
      * @param index
      * @return class name
@@ -80,6 +79,7 @@ public class ConstantPoolUtils {
 
     /**
      * just get name string
+     *
      * @param constantPool
      * @param constantNameAndTypeInfo
      * @return
@@ -91,17 +91,19 @@ public class ConstantPoolUtils {
 
     /**
      * just get type string
+     *
      * @param constantPool
      * @param constantNameAndTypeInfo
      * @return
      */
     public static String getType(ConstantPoolInfo[] constantPool, ConstantNameAndTypeInfo constantNameAndTypeInfo) {
-         short descriptorIndex = constantNameAndTypeInfo.getDescriptorIndex();
-         return ConstantPoolUtils.getUtf8(constantPool, descriptorIndex);
+        short descriptorIndex = constantNameAndTypeInfo.getDescriptorIndex();
+        return ConstantPoolUtils.getUtf8(constantPool, descriptorIndex);
     }
 
     /**
      * concat name string and type string
+     *
      * @param constantPool
      * @param nameAndTypeIndex
      * @return name&type

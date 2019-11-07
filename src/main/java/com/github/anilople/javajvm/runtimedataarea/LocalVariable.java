@@ -7,86 +7,51 @@ package com.github.anilople.javajvm.runtimedataarea;
  */
 public class LocalVariable {
 
-    private boolean booleanValue;
-
-    private byte byteValue;
-
-    private char charValue;
-
-    private short shortValue;
-
     private int intValue;
-
-    private float floatValue;
 
     private Reference reference;
 
-    private int returnAddress;
-
-    private long longValue;
-
-    private double doubleValue;
-
-    public LocalVariable() {}
+    public LocalVariable() {
+    }
 
     public boolean getBooleanValue() {
-        return booleanValue;
+        return 0 != intValue;
+    }
+
+    public LocalVariable setBooleanValue(boolean booleanValue) {
+        this.intValue = booleanValue ? 1 : 0;
+        return this;
     }
 
     public byte getByteValue() {
-        return byteValue;
+        return (byte) intValue;
+    }
+
+    public LocalVariable setByteValue(byte byteValue) {
+        this.intValue = byteValue;
+        return this;
     }
 
     public char getCharValue() {
-        return charValue;
+        return (char) intValue;
+    }
+
+    public LocalVariable setCharValue(char charValue) {
+        this.intValue = charValue;
+        return this;
     }
 
     public short getShortValue() {
-        return shortValue;
+        return (short) intValue;
+    }
+
+    public LocalVariable setShortValue(short shortValue) {
+        this.intValue = shortValue;
+        return this;
     }
 
     public int getIntValue() {
         return intValue;
-    }
-
-    public float getFloatValue() {
-        return floatValue;
-    }
-
-    public Reference getReference() {
-        return reference;
-    }
-
-    public int getReturnAddress() {
-        return returnAddress;
-    }
-
-    public long getLongValue() {
-        return longValue;
-    }
-
-    public double getDoubleValue() {
-        return doubleValue;
-    }
-
-    public LocalVariable setBooleanValue(boolean booleanValue) {
-        this.booleanValue = booleanValue;
-        return this;
-    }
-
-    public LocalVariable setByteValue(byte byteValue) {
-        this.byteValue = byteValue;
-        return this;
-    }
-
-    public LocalVariable setCharValue(char charValue) {
-        this.charValue = charValue;
-        return this;
-    }
-
-    public LocalVariable setShortValue(short shortValue) {
-        this.shortValue = shortValue;
-        return this;
     }
 
     public LocalVariable setIntValue(int intValue) {
@@ -94,9 +59,17 @@ public class LocalVariable {
         return this;
     }
 
+    public float getFloatValue() {
+        return Float.intBitsToFloat(intValue);
+    }
+
     public LocalVariable setFloatValue(float floatValue) {
-        this.floatValue = floatValue;
+        this.intValue = Float.floatToRawIntBits(floatValue);
         return this;
+    }
+
+    public Reference getReference() {
+        return reference;
     }
 
     public LocalVariable setReference(Reference reference) {
@@ -104,18 +77,13 @@ public class LocalVariable {
         return this;
     }
 
+    public int getReturnAddress() {
+        return intValue;
+    }
+
     public LocalVariable setReturnAddress(int returnAddress) {
-        this.returnAddress = returnAddress;
+        this.intValue = returnAddress;
         return this;
     }
 
-    public LocalVariable setLongValue(long longValue) {
-        this.longValue = longValue;
-        return this;
-    }
-
-    public LocalVariable setDoubleValue(double doubleValue) {
-        this.doubleValue = doubleValue;
-        return this;
-    }
 }

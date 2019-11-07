@@ -8,26 +8,25 @@ import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
 
 /**
  * Operation:
- *      Duplicate the top operand stack value and insert two values down
+ * Duplicate the top operand stack value and insert two values down
  * Operand:
- *      ..., value2, value1 →
+ * ..., value2, value1 →
  * Stack:
- *      ..., value1, value2, value1
+ * ..., value1, value2, value1
  * Description:
- *      Duplicate the top value on the operand stack and insert the
- *      duplicated value two values down in the operand stack.
- *      The dup_x1 instruction must not be used unless both value1 and
- *      value2 are values of a category 1 computational type (§2.11.1).
- *
+ * Duplicate the top value on the operand stack and insert the
+ * duplicated value two values down in the operand stack.
+ * The dup_x1 instruction must not be used unless both value1 and
+ * value2 are values of a category 1 computational type (§2.11.1).
  */
 public class DUP_X1 implements Instruction {
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         OperandStacks operandStacks = frame.getOperandStacks();
 
         LocalVariable value1 = operandStacks.pop();
@@ -36,5 +35,12 @@ public class DUP_X1 implements Instruction {
         operandStacks.push(value1);
         operandStacks.push(value2);
         operandStacks.push(value1);
+
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

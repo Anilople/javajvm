@@ -9,7 +9,8 @@ public class UnparsedAttribute extends AttributeInfo {
 
     private byte[] info;
 
-    private UnparsedAttribute() {}
+    private UnparsedAttribute() {
+    }
 
     public UnparsedAttribute(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         super(classFile, attributeNameIndex, attributeLength, info);

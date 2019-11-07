@@ -1,7 +1,6 @@
 package com.github.anilople.javajvm.classfile.attributes;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
-import com.github.anilople.javajvm.classfile.constantinfo.ConstantPoolInfo;
 import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,8 @@ public abstract class AttributeInfo {
 
     private int attributeLength;
 
-    public AttributeInfo() {}
+    public AttributeInfo() {
+    }
 
     public AttributeInfo(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         this.classFile = classFile;
@@ -28,6 +28,7 @@ public abstract class AttributeInfo {
      * parse multiple attributes from class reader and constant pool
      * parse attributes_count first,
      * then parse attributes_count attribute info
+     *
      * @param classFile
      * @param classReader
      * @return
@@ -39,6 +40,7 @@ public abstract class AttributeInfo {
 
     /**
      * parse n attributes by a given attributesCount
+     *
      * @param classFile
      * @param classReader
      * @param attributesCount
@@ -46,7 +48,7 @@ public abstract class AttributeInfo {
      */
     public static AttributeInfo[] parseAttributes(ClassFile classFile, ClassFile.ClassReader classReader, short attributesCount) {
         AttributeInfo[] attributes = new AttributeInfo[attributesCount];
-        for(short i = 0; i < attributesCount; i++) {
+        for (short i = 0; i < attributesCount; i++) {
             attributes[i] = AttributeInfo.parseAttributeInfo(classFile, classReader);
         }
         return attributes;
@@ -54,6 +56,7 @@ public abstract class AttributeInfo {
 
     /**
      * parse 1 attribute info from class reader and constant pool
+     *
      * @param classFile
      * @param classReader
      * @return

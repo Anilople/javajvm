@@ -8,41 +8,49 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 
 /**
  * Operation:
- *      Load int from local variable
+ * Load int from local variable
  * Description:
- *      The index is an unsigned byte that must be an index into the local
- *      variable array of the current frame (§2.6). The local variable at
- *      index must contain an int . The value of the local variable at index
- *      is pushed onto the operand stack.
+ * The index is an unsigned byte that must be an index into the local
+ * variable array of the current frame (§2.6). The local variable at
+ * index must contain an int . The value of the local variable at index
+ * is pushed onto the operand stack.
  * Notes
- *      The iload opcode can be used in conjunction with the wide
- *      instruction (§wide) to access a local variable using a two-byte
- *      unsigned index.
+ * The iload opcode can be used in conjunction with the wide
+ * instruction (§wide) to access a local variable using a two-byte
+ * unsigned index.
  */
 public class ILOAD implements Instruction {
 
     private int index;
 
+    /**
+     * get an int value from local variables (by index)
+     * then push this int value to the top of operand stack
+     *
+     * @param frame
+     * @param index
+     * @return how many bytes this instruction occupies
+     */
+    public static int execute(Frame frame, int index) {
+        LocalVariables localVariables = frame.getLocalVariables();
+        int value = localVariables.getIntValue(index);
+        frame.getOperandStacks().pushIntValue(value);
+        return 1;
+    }
+
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
         byte unsignedByte = bytecodeReader.readU1();
         this.index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByte);
     }
 
     @Override
-    public void Execute(Frame frame) {
-        Execute(frame, this.index);
+    public int execute(Frame frame) {
+        return execute(frame, this.index);
     }
 
-    /**
-     * get an int value from local variables (by index)
-     * then push this int value to the top of operand stack
-     * @param frame
-     * @param index
-     */
-    public static void Execute(Frame frame, int index) {
-        LocalVariables localVariables = frame.getLocalVariables();
-        int value = localVariables.getIntValue(index);
-        frame.getOperandStacks().pushIntValue(value);
+    @Override
+    public int size() {
+        return 1;
     }
 }

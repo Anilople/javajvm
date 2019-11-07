@@ -6,7 +6,7 @@ import java.util.Stack;
  * Per-thread data areas are created when a thread is
  * created and destroyed when the thread exits.
  */
-public class Thread {
+public class JvmThread {
 
     /**
      * 2.5.1 The pc Register
@@ -23,7 +23,7 @@ public class Thread {
     private int pc;
 
     /**
-     *  If the computation in a thread requires a larger Java Virtual Machine stack than
+     * If the computation in a thread requires a larger Java Virtual Machine stack than
      * is permitted, the Java Virtual Machine throws a StackOverflowError
      */
     private int maxStackSize;
@@ -34,28 +34,28 @@ public class Thread {
      */
     private Stack<Frame> stack;
 
-    public Thread() {
+    public JvmThread() {
         this.pc = 0;
         this.maxStackSize = 1024;
         this.stack = new Stack<>();
     }
 
     public void pushFrame(Frame frame) {
-        if(stack.size() >= maxStackSize) {
+        if (stack.size() >= maxStackSize) {
             throw new RuntimeException("java.lang.StackOverflowError");
         }
         stack.push(frame);
     }
 
     public void popFrame() {
-        if(stack.size() <= 0) {
+        if (stack.size() <= 0) {
             throw new RuntimeException("jvm stack is empty!");
         }
         stack.pop();
     }
 
     public Frame currentFrame() {
-        if(stack.size() <= 0) {
+        if (stack.size() <= 0) {
             throw new RuntimeException("jvm stack is empty!");
         }
         return stack.peek();

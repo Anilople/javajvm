@@ -11,12 +11,13 @@ public class CommandUtils {
      * 1. java [-options] class [args...]
      * 2. java [-options] -jar jarfile [args...]
      * check it is 1 or 2
+     *
      * @param args
      * @return
      */
     public static boolean isClassCommand(String[] args) {
-        for(String arg : args) {
-            if(arg.startsWith("-jar")) {
+        for (String arg : args) {
+            if (arg.startsWith("-jar")) {
                 return false;
             }
         }

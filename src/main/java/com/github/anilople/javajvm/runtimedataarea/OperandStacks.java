@@ -1,5 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+import com.github.anilople.javajvm.utils.ByteUtils;
+
 import java.util.Stack;
 
 /**
@@ -9,13 +11,14 @@ import java.util.Stack;
  * the frame (§4.7.3).
  */
 public class OperandStacks {
-    
+
     private int maxStack;
-    
+
     private Stack<LocalVariable> operandStack;
-    
-    private OperandStacks() {}
-    
+
+    private OperandStacks() {
+    }
+
     public OperandStacks(int maxStack) {
         this.maxStack = maxStack;
         operandStack = new Stack<>();
@@ -62,11 +65,19 @@ public class OperandStacks {
     }
 
     public long popLongValue() {
-        return operandStack.pop().getLongValue();
+        LocalVariable localVariable2 = operandStack.pop();
+        LocalVariable localVariable1 = operandStack.pop();
+        // pop high bytes
+        int intValue2 = localVariable2.getIntValue();
+        // pop low bytes
+        int intValue1 = localVariable1.getIntValue();
+        return ByteUtils.int2long(intValue2, intValue1);
     }
 
     public double popDoubleValue() {
-        return operandStack.pop().getDoubleValue();
+        return Double.longBitsToDouble(
+                this.popLongValue()
+        );
     }
 
 
@@ -102,11 +113,26 @@ public class OperandStacks {
         operandStack.push(new LocalVariable().setReturnAddress(returnAddress));
     }
 
+    /**
+     * a long value occupies 2 local variables
+     * push low bytes first
+     * then push high bytes
+     *
+     * @param longValue
+     */
     public void pushLongValue(long longValue) {
-        operandStack.push(new LocalVariable().setLongValue(longValue));
+        // low bytes
+        int intValue1 = (int) (longValue);
+        // high bytes
+        int intValue2 = (int) (longValue >> 32);
+
+        this.pushIntValue(intValue1);
+        this.pushIntValue(intValue2);
     }
 
     public void pushDoubleValue(double doubleValue) {
-        operandStack.push(new LocalVariable().setDoubleValue(doubleValue));
+        this.pushLongValue(
+                Double.doubleToLongBits(doubleValue)
+        );
     }
 }

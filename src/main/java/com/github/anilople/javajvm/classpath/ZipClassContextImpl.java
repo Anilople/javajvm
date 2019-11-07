@@ -20,7 +20,8 @@ public class ZipClassContextImpl implements ClassContext {
 
     private ZipFile zipFile;
 
-    private ZipClassContextImpl() {}
+    private ZipClassContextImpl() {
+    }
 
     public ZipClassContextImpl(Path path) {
         try {
@@ -37,7 +38,7 @@ public class ZipClassContextImpl implements ClassContext {
     public byte[] readClass(String className) {
         // entry maybe null
         ZipEntry zipEntry = zipFile.getEntry(className);
-        if(null != zipEntry) {
+        if (null != zipEntry) {
             logger.debug("class {} is in zipfile {}", className, zipFile.getName());
             try {
                 InputStream inputStream = zipFile.getInputStream(zipEntry);

@@ -6,25 +6,30 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 
 /**
  * Operation:
- *      Load int from local variable
+ * Load int from local variable
  * Description:
- *      The <n> must be an index into the local variable array of the
- *      current frame (§2.6). The local variable at <n> must contain an
- *      int . The value of the local variable at <n> is pushed onto the
- *      operand stack.
+ * The <n> must be an index into the local variable array of the
+ * current frame (§2.6). The local variable at <n> must contain an
+ * int . The value of the local variable at <n> is pushed onto the
+ * operand stack.
  * Notes:
- *      Each of the iload_<n> instructions is the same as iload with an
- *      index of <n>, except that the operand <n> is implicit.
+ * Each of the iload_<n> instructions is the same as iload with an
+ * index of <n>, except that the operand <n> is implicit.
  */
 public class ILOAD_3 implements Instruction {
 
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
-        ILOAD.Execute(frame, 3);
+    public int execute(Frame frame) {
+        return ILOAD.execute(frame, 3);
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

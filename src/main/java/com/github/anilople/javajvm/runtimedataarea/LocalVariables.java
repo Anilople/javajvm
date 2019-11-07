@@ -1,5 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+import com.github.anilople.javajvm.utils.ByteUtils;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -8,16 +10,13 @@ import java.util.List;
  * length of the local variable array of a frame is determined at compile-time and
  * supplied in the binary representation of a class or interface along with the code for
  * the method associated with the frame (§4.7.3).
- *
+ * <p>
  * A value of type long or type double occupies two consecutive local variables.
  * Such a value may only be addressed using the lesser index. For example, a value of
  * type double stored in the local variable array at index n actually occupies the local
  * variables with indices n and n+1; however, the local variable at index n+1 cannot
  * be loaded from. It can be stored into. However, doing so invalidates the contents
  * of local variable n.
- *
- * however, in this implement, long and double do not occupies two consecutive local variables
- * they are abstracted to 1 single local variable
  */
 public class LocalVariables {
 
@@ -25,7 +24,8 @@ public class LocalVariables {
 
     private List<LocalVariable> localVariables;
 
-    private LocalVariables() {}
+    private LocalVariables() {
+    }
 
     public LocalVariables(int maxLocals) {
         this.maxLocals = maxLocals;
@@ -65,11 +65,14 @@ public class LocalVariables {
     }
 
     public long getLongValue(int index) {
-        return localVariables.get(index).getLongValue();
+        int value0 = localVariables.get(index).getIntValue();
+        int value1 = localVariables.get(index + 1).getIntValue();
+        return ByteUtils.int2long(value0, value1);
     }
 
     public double getDoubleValue(int index) {
-        return localVariables.get(index).getDoubleValue();
+        long longValue = this.getLongValue(index);
+        return Double.longBitsToDouble(longValue);
     }
 
     public void setBooleanValue(int index, boolean booleanValue) {
@@ -105,11 +108,16 @@ public class LocalVariables {
     }
 
     public void setLongValue(int index, long longValue) {
-        localVariables.set(index, new LocalVariable().setLongValue(longValue));
+        // high bytes
+        int value0 = int.class.cast(longValue >> 32);
+        int value1 = int.class.cast(longValue);
+        localVariables.set(index, new LocalVariable().setIntValue(value0));
+        localVariables.set(index + 1, new LocalVariable().setIntValue(value1));
     }
 
     public void setDoubleValue(int index, double doubleValue) {
-        localVariables.set(index, new LocalVariable().setDoubleValue(doubleValue));
+        long longValue = Double.doubleToLongBits(doubleValue);
+        this.setLongValue(index, longValue);
     }
 
 }

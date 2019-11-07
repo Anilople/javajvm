@@ -1,4 +1,4 @@
-package com.github.anilople.javajvm.instructions.comparisons;
+package com.github.anilople.javajvm.instructions.comparisons.ifinstructions;
 
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
@@ -7,13 +7,19 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 public class IFLE implements Instruction {
 
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
+        return this.size();
 
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 
 }

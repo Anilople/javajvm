@@ -9,15 +9,13 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * The Java ® Virtual
  * Machine Specification
  * Java SE 8 Edition
  * 4.1 The ClassFile Structure
- *
+ * <p>
  * ClassFile {
  * u4 magic;
  * u2 minor_version;
@@ -36,11 +34,11 @@ import java.util.Arrays;
  * u2 attributes_count;
  * attribute_info attributes[attributes_count];
  * }
- *
+ * <p>
  * we use
- *  byte to represent u1
- *  short to represent u2
- *  int to represent u4
+ * byte to represent u1
+ * short to represent u2
+ * int to represent u4
  */
 public class ClassFile {
 
@@ -78,70 +76,12 @@ public class ClassFile {
 
     private AttributeInfo[] attributes;
 
-    private ClassFile() {}
-
-    /**
-     * warpper an input stream to read byte, short, int ...
-     */
-    public static class ClassReader {
-
-        private static final Logger logger = LoggerFactory.getLogger(ClassReader.class);
-
-        private InputStream inputStream;
-
-        private ClassReader() {}
-
-        public ClassReader(byte[] bytes) {
-            this.inputStream = new ByteArrayInputStream(bytes.clone());
-        }
-
-        /**
-         * given a length, read bytes which length match
-         * @param length
-         * @return
-         */
-        public byte[] readBytes(int length) {
-            if(length < 0) {
-                throw new RuntimeException(length + " must >= 0");
-            }
-            byte[] bytes = new byte[length];
-            try {
-                inputStream.read(bytes);
-                return bytes;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        public byte readU1() {
-            return readBytes(1)[0];
-        }
-
-        public short readU2() {
-            return ByteUtils.bytes2short(readBytes(2));
-        }
-
-        public int readU4() {
-            return ByteUtils.bytes2int(readBytes(4));
-        }
-
-        /**
-         * read shorts which's length pass by parameter
-         * @param length
-         * @return short array
-         */
-        public short[] readShorts(int length) {
-            short[] shorts = new short[length];
-            for(int i = 0; i < length; i++) {
-                short value = this.readU2();
-                shorts[i] = value;
-            }
-            return shorts;
-        }
+    private ClassFile() {
     }
 
     /**
      * parse a class file from a classReader
+     *
      * @param classReader suppose it is not null
      * @return a class file struct
      */
@@ -156,7 +96,7 @@ public class ClassFile {
         // read constant pool
         classFile.constantPool = ConstantPoolInfo.parseConstantPool(classFile, classReader);
         logger.debug("constant pool length : {}", classFile.constantPool.length);
-        for(int i = 0; i < classFile.constantPool.length; i++) {
+        for (int i = 0; i < classFile.constantPool.length; i++) {
             logger.debug("{} : {}", i, classFile.constantPool[i]);
         }
         logger.debug("parse constant pool finished.");
@@ -186,6 +126,7 @@ public class ClassFile {
 
     /**
      * parse interfaces from class's bytes
+     *
      * @param classReader
      * @return
      */
@@ -236,6 +177,69 @@ public class ClassFile {
 
     public AttributeInfo[] getAttributes() {
         return attributes;
+    }
+
+    /**
+     * warpper an input stream to read byte, short, int ...
+     */
+    public static class ClassReader {
+
+        private static final Logger logger = LoggerFactory.getLogger(ClassReader.class);
+
+        private InputStream inputStream;
+
+        private ClassReader() {
+        }
+
+        public ClassReader(byte[] bytes) {
+            this.inputStream = new ByteArrayInputStream(bytes.clone());
+        }
+
+        /**
+         * given a length, read bytes which length match
+         *
+         * @param length
+         * @return
+         */
+        public byte[] readBytes(int length) {
+            if (length < 0) {
+                throw new RuntimeException(length + " must >= 0");
+            }
+            byte[] bytes = new byte[length];
+            try {
+                inputStream.read(bytes);
+                return bytes;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public byte readU1() {
+            return readBytes(1)[0];
+        }
+
+        public short readU2() {
+            return ByteUtils.bytes2short(readBytes(2));
+        }
+
+        public int readU4() {
+            return ByteUtils.bytes2int(readBytes(4));
+        }
+
+        /**
+         * read shorts which's length pass by parameter
+         *
+         * @param length
+         * @return short array
+         */
+        public short[] readShorts(int length) {
+            short[] shorts = new short[length];
+            for (int i = 0; i < length; i++) {
+                short value = this.readU2();
+                shorts[i] = value;
+            }
+            return shorts;
+        }
     }
 }
 

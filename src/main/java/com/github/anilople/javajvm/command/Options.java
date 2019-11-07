@@ -38,28 +38,29 @@ public class Options {
 
     /**
      * parse command line
+     *
      * @param options will change in this function
-     * @param args arguments in command line
-     * @param start which location to start parsing
+     * @param args    arguments in command line
+     * @param start   which location to start parsing
      * @return location of the part which need to parse
      */
     public static int parse(Options options, String[] args, int start) {
         int newStart = start;
-        while(newStart < args.length) {
+        while (newStart < args.length) {
             String nowArg = args[newStart];
-            if("-version".equals(nowArg)) {
+            if ("-version".equals(nowArg)) {
                 options.versionFlag = true;
                 newStart += 1;
-            } else if("-?".equals(nowArg) || "-help".equals(nowArg)) {
+            } else if ("-?".equals(nowArg) || "-help".equals(nowArg)) {
                 options.helpFlag = true;
                 newStart += 1;
-            } else if("-classpath".equals(nowArg) || "-cp".equals(nowArg)) {
+            } else if ("-classpath".equals(nowArg) || "-cp".equals(nowArg)) {
                 options.classpath = args[newStart + 1];
                 newStart += 2;
-            } else if("-Xjre".equals(nowArg)) {
+            } else if ("-Xjre".equals(nowArg)) {
                 options.Xjre = args[newStart + 1];
                 newStart += 2;
-            } else if(args[newStart].startsWith("-")){
+            } else if (args[newStart].startsWith("-")) {
                 logger.warn("{} is not recognized", nowArg);
                 newStart += 1;
             } else {
@@ -68,6 +69,7 @@ public class Options {
         }
         return newStart;
     }
+
     public boolean isVersionFlag() {
         return versionFlag;
     }

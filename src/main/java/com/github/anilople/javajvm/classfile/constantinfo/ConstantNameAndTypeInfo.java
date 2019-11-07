@@ -2,7 +2,6 @@ package com.github.anilople.javajvm.classfile.constantinfo;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.ConstantPoolTags;
-import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 
 public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
 
@@ -11,6 +10,12 @@ public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
     private short nameIndex;
 
     private short descriptorIndex;
+
+    public ConstantNameAndTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
+        super(classFile);
+        this.nameIndex = classReader.readU2();
+        this.descriptorIndex = classReader.readU2();
+    }
 
     @Override
     public byte getTag() {
@@ -23,12 +28,6 @@ public class ConstantNameAndTypeInfo extends ConstantPoolInfo {
                 "nameIndex=" + nameIndex +
                 ", descriptorIndex=" + descriptorIndex +
                 '}';
-    }
-
-    public ConstantNameAndTypeInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
-        super(classFile);
-        this.nameIndex = classReader.readU2();
-        this.descriptorIndex = classReader.readU2();
     }
 
     public short getNameIndex() {

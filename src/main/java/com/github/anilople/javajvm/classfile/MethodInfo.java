@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.classfile;
 
 import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
+import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 
 import java.util.Arrays;
 
@@ -18,7 +19,8 @@ public class MethodInfo {
 
     private AttributeInfo[] attributes;
 
-    private MethodInfo() {}
+    private MethodInfo() {
+    }
 
     private static MethodInfo parseMethodInfo(ClassFile classFile, ClassFile.ClassReader classReader) {
         MethodInfo methodInfo = new MethodInfo();
@@ -34,7 +36,7 @@ public class MethodInfo {
     public static MethodInfo[] parseMethods(ClassFile classFile, ClassFile.ClassReader classReader) {
         short methodsCount = classReader.readU2();
         MethodInfo[] methods = new MethodInfo[methodsCount];
-        for(short i = 0; i < methodsCount; i++) {
+        for (short i = 0; i < methodsCount; i++) {
             methods[i] = MethodInfo.parseMethodInfo(classFile, classReader);
         }
         return methods;
@@ -49,6 +51,10 @@ public class MethodInfo {
                 ", descriptorIndex=" + descriptorIndex +
                 ", attributes=" + Arrays.toString(attributes) +
                 '}';
+    }
+
+    public String getName() {
+        return ConstantPoolUtils.getUtf8(this.classFile.getConstantPool(), this.nameIndex);
     }
 
     public ClassFile getClassFile() {

@@ -19,7 +19,8 @@ public class StackMapTableAttribute extends AttributeInfo {
 
     public static class StackMapFrame {
 
-        private StackMapFrame() {}
+        private StackMapFrame() {
+        }
 
         public static StackMapFrame parseStackMapFrame(ClassFile.ClassReader classReader) {
             return null;

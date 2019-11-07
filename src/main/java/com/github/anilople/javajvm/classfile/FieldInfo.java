@@ -18,12 +18,13 @@ public class FieldInfo {
 
     private AttributeInfo[] attributes;
 
-    private FieldInfo() {}
+    private FieldInfo() {
+    }
 
     public static FieldInfo[] parseFields(ClassFile classFile, ClassFile.ClassReader classReader) {
         short fieldsCount = classReader.readU2();
         FieldInfo[] fields = new FieldInfo[fieldsCount];
-        for(short i = 0; i < fieldsCount; i++) {
+        for (short i = 0; i < fieldsCount; i++) {
             fields[i] = FieldInfo.parseFieldInfo(classFile, classReader);
         }
         return fields;

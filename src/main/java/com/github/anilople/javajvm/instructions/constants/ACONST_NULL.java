@@ -12,12 +12,18 @@ import com.github.anilople.javajvm.runtimedataarea.Reference;
 public class ACONST_NULL implements Instruction {
 
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         frame.getOperandStacks().pushReference(Reference.NULL);
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

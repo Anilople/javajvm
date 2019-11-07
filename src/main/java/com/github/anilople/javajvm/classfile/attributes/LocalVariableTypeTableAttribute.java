@@ -26,7 +26,8 @@ public class LocalVariableTypeTableAttribute extends AttributeInfo {
 
         private short index;
 
-        private LocalVariableTypeTableEntry() {}
+        private LocalVariableTypeTableEntry() {
+        }
 
         public static LocalVariableTypeTableEntry parseLocalVariableTypeTableEntry(ClassFile.ClassReader classReader) {
             LocalVariableTypeTableEntry localVariableTypeTableEntry = new LocalVariableTypeTableEntry();
@@ -41,7 +42,7 @@ public class LocalVariableTypeTableAttribute extends AttributeInfo {
         public static LocalVariableTypeTableEntry[] parseLocalVariableTypeTable(ClassFile.ClassReader classReader) {
             short localVariableTypeTableLength = classReader.readU2();
             LocalVariableTypeTableEntry[] localVariableTypeTable = new LocalVariableTypeTableEntry[localVariableTypeTableLength];
-            for(short i = 0; i < localVariableTypeTableLength; i++) {
+            for (short i = 0; i < localVariableTypeTableLength; i++) {
                 localVariableTypeTable[i] = parseLocalVariableTypeTableEntry(classReader);
             }
             return localVariableTypeTable;

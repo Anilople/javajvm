@@ -6,6 +6,6 @@ public class FrameTest {
 
     @Test
     public void FrameTest() {
-        Frame frame = new Frame(100, 100);
+        Frame frame = new Frame(null, null, 100, 100);
     }
 }

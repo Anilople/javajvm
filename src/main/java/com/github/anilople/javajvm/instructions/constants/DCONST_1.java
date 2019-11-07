@@ -9,12 +9,18 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
  */
 public class DCONST_1 implements Instruction {
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
         frame.getOperandStacks().pushDoubleValue(1.0D);
+        return this.size();
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

@@ -6,23 +6,20 @@ import java.util.Arrays;
 
 public class CodeAttribute extends AttributeInfo {
 
-    private short maxStack;
-
-    private short maxLocals;
-
-//    private int codeLength;
-
     byte[] code;
-
-//    private short exceptionTableLength;
-
-    private ExceptionTableEntry[] exceptionTable;
-
-//    private short attributesCount;
-
     AttributeInfo[] attributes;
 
-    private CodeAttribute() {}
+//    private int codeLength;
+    private short maxStack;
+
+//    private short exceptionTableLength;
+    private short maxLocals;
+
+//    private short attributesCount;
+    private ExceptionTableEntry[] exceptionTable;
+
+    private CodeAttribute() {
+    }
 
     public CodeAttribute(ClassFile classFile, short attributeNameIndex, int attributeLength, byte[] info) {
         super(classFile, attributeNameIndex, attributeLength, info);
@@ -38,7 +35,7 @@ public class CodeAttribute extends AttributeInfo {
     private static ExceptionTableEntry[] parseExceptionTable(ClassFile.ClassReader classReader) {
         short exceptionTableLength = classReader.readU2();
         ExceptionTableEntry[] exceptionTable = new ExceptionTableEntry[exceptionTableLength];
-        for(short i = 0; i < exceptionTableLength; i++) {
+        for (short i = 0; i < exceptionTableLength; i++) {
             exceptionTable[i] = ExceptionTableEntry.parseExceptionTableEntry(classReader);
         }
         return exceptionTable;
@@ -85,7 +82,8 @@ public class CodeAttribute extends AttributeInfo {
 
         private short catchType;
 
-        private ExceptionTableEntry() {}
+        private ExceptionTableEntry() {
+        }
 
         private ExceptionTableEntry(short startPc, short endPc, short handlerPc, short catchType) {
             this.startPc = startPc;

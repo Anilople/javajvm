@@ -14,12 +14,18 @@ public class LDC2_W implements Instruction {
     private short index;
 
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
         this.index = bytecodeReader.readU2();
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
+        return this.size();
 
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

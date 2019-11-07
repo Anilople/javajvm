@@ -5,14 +5,20 @@ import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
 public class DUP2_X2 implements Instruction {
-    
+
     @Override
-    public void FetchOperands(BytecodeReader bytecodeReader) {
+    public void fetchOperands(BytecodeReader bytecodeReader) {
 
     }
 
     @Override
-    public void Execute(Frame frame) {
+    public int execute(Frame frame) {
+        return this.size();
 
+    }
+
+    @Override
+    public int size() {
+        return 1;
     }
 }

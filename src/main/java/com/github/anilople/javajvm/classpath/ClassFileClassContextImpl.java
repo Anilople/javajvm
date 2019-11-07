@@ -17,7 +17,8 @@ public class ClassFileClassContextImpl implements ClassContext {
 
     private Path classfile;
 
-    private ClassFileClassContextImpl() {}
+    private ClassFileClassContextImpl() {
+    }
 
     public ClassFileClassContextImpl(Path classfile) {
         this.classfile = classfile;
@@ -25,7 +26,7 @@ public class ClassFileClassContextImpl implements ClassContext {
 
     @Override
     public byte[] readClass(String className) {
-        if(classfile.toString().endsWith(className)) {
+        if (classfile.toString().endsWith(className)) {
             try {
                 logger.debug("{} is in {}", className, classfile);
                 return Files.readAllBytes(classfile);

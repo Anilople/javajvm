@@ -26,7 +26,8 @@ public class BootstrapMethodsAttribute extends AttributeInfo {
 
         private short[] bootstrapArguments;
 
-        private BootstrapMethod() {}
+        private BootstrapMethod() {
+        }
 
         public static BootstrapMethod parseBootstrapMethod(ClassFile.ClassReader classReader) {
             BootstrapMethod bootstrapMethod = new BootstrapMethod();
@@ -39,7 +40,7 @@ public class BootstrapMethodsAttribute extends AttributeInfo {
         public static BootstrapMethod[] parseBootstrapMethods(ClassFile.ClassReader classReader) {
             short numBootstrapMethods = classReader.readU2();
             BootstrapMethod[] bootstrapMethods = new BootstrapMethod[numBootstrapMethods];
-            for(short i = 0; i < numBootstrapMethods; i++) {
+            for (short i = 0; i < numBootstrapMethods; i++) {
                 bootstrapMethods[i] = parseBootstrapMethod(classReader);
             }
             return bootstrapMethods;

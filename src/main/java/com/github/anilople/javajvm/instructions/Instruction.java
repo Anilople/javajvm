@@ -1,24 +1,48 @@
 package com.github.anilople.javajvm.instructions;
 
 import com.github.anilople.javajvm.instructions.comparisons.*;
+import com.github.anilople.javajvm.instructions.comparisons.ifinstructions.*;
 import com.github.anilople.javajvm.instructions.constants.*;
 import com.github.anilople.javajvm.instructions.control.*;
 import com.github.anilople.javajvm.instructions.conversions.*;
 import com.github.anilople.javajvm.instructions.extended.*;
 import com.github.anilople.javajvm.instructions.loads.*;
-import com.github.anilople.javajvm.instructions.math.*;
-import com.github.anilople.javajvm.instructions.math.add.*;
-import com.github.anilople.javajvm.instructions.math.bitwiseand.*;
-import com.github.anilople.javajvm.instructions.math.bitwiseexclusiveor.*;
-import com.github.anilople.javajvm.instructions.math.bitwiseor.*;
-import com.github.anilople.javajvm.instructions.math.divide.*;
-import com.github.anilople.javajvm.instructions.math.multiply.*;
-import com.github.anilople.javajvm.instructions.math.negate.*;
-import com.github.anilople.javajvm.instructions.math.remainder.*;
+import com.github.anilople.javajvm.instructions.math.IINC;
+import com.github.anilople.javajvm.instructions.math.add.DADD;
+import com.github.anilople.javajvm.instructions.math.add.FADD;
+import com.github.anilople.javajvm.instructions.math.add.IADD;
+import com.github.anilople.javajvm.instructions.math.add.LADD;
+import com.github.anilople.javajvm.instructions.math.bitwiseand.IAND;
+import com.github.anilople.javajvm.instructions.math.bitwiseand.LAND;
+import com.github.anilople.javajvm.instructions.math.bitwiseexclusiveor.LOR;
+import com.github.anilople.javajvm.instructions.math.bitwiseexclusiveor.LXOR;
+import com.github.anilople.javajvm.instructions.math.bitwiseor.IOR;
+import com.github.anilople.javajvm.instructions.math.bitwiseor.IXOR;
+import com.github.anilople.javajvm.instructions.math.divide.DDIV;
+import com.github.anilople.javajvm.instructions.math.divide.FDIV;
+import com.github.anilople.javajvm.instructions.math.divide.IDIV;
+import com.github.anilople.javajvm.instructions.math.divide.LDIV;
+import com.github.anilople.javajvm.instructions.math.multiply.DMUL;
+import com.github.anilople.javajvm.instructions.math.multiply.FMUL;
+import com.github.anilople.javajvm.instructions.math.multiply.IMUL;
+import com.github.anilople.javajvm.instructions.math.multiply.LMUL;
+import com.github.anilople.javajvm.instructions.math.negate.DNEG;
+import com.github.anilople.javajvm.instructions.math.negate.FNEG;
+import com.github.anilople.javajvm.instructions.math.negate.INEG;
+import com.github.anilople.javajvm.instructions.math.negate.LNEG;
+import com.github.anilople.javajvm.instructions.math.remainder.DREM;
+import com.github.anilople.javajvm.instructions.math.remainder.FREM;
+import com.github.anilople.javajvm.instructions.math.remainder.IREM;
+import com.github.anilople.javajvm.instructions.math.remainder.LREM;
 import com.github.anilople.javajvm.instructions.math.shift.*;
-import com.github.anilople.javajvm.instructions.math.subtract.*;
+import com.github.anilople.javajvm.instructions.math.subtract.DSUB;
+import com.github.anilople.javajvm.instructions.math.subtract.FSUB;
+import com.github.anilople.javajvm.instructions.math.subtract.ISUB;
+import com.github.anilople.javajvm.instructions.math.subtract.LSUB;
 import com.github.anilople.javajvm.instructions.references.*;
-import com.github.anilople.javajvm.instructions.reserved.*;
+import com.github.anilople.javajvm.instructions.reserved.BREAKPOINT;
+import com.github.anilople.javajvm.instructions.reserved.IMPDEP1;
+import com.github.anilople.javajvm.instructions.reserved.IMPDEP2;
 import com.github.anilople.javajvm.instructions.stack.*;
 import com.github.anilople.javajvm.instructions.stores.*;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
@@ -28,20 +52,6 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
  * any instruction must implement this interface
  */
 public interface Instruction {
-
-    /**
-     * some instruct fetch no operand
-     * other fetch some operands
-     * @param bytecodeReader
-     */
-    void FetchOperands(BytecodeReader bytecodeReader);
-
-    /**
-     * the execution of byte code dependencies the environment
-     * i.e a stack frame
-     * @param frame
-     */
-    void Execute(Frame frame);
 
     static Instruction readInstruction(BytecodeReader bytecodeReader) {
         byte opcode = bytecodeReader.readU1();
@@ -461,5 +471,27 @@ public interface Instruction {
                 throw new IllegalStateException("Unexpected value: " + unsignedOpcode);
         }
     }
+
+    /**
+     * some instruct fetch no operand
+     * other fetch some operands
+     *
+     * @param bytecodeReader
+     */
+    void fetchOperands(BytecodeReader bytecodeReader);
+
+    /**
+     * the execution of byte code dependencies the environment
+     * i.e a stack frame
+     *
+     * @param frame
+     * @return next pc
+     */
+    int execute(Frame frame);
+
+    /**
+     * @return how many bytes this instruction occupies
+     */
+    int size();
 
 }

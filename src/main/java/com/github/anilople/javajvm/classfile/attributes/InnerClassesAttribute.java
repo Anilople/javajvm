@@ -27,7 +27,8 @@ public class InnerClassesAttribute extends AttributeInfo {
 
         private short innerClassAccessFlags;
 
-        private ClassesEntry() {}
+        private ClassesEntry() {
+        }
 
         private ClassesEntry(short innerClassInfoIndex, short outerClassInfoIndex, short innerNameIndex, short innerClassAccessFlags) {
             this.innerClassInfoIndex = innerClassInfoIndex;
@@ -48,7 +49,7 @@ public class InnerClassesAttribute extends AttributeInfo {
         public static ClassesEntry[] parseClasses(ClassFile.ClassReader classReader) {
             short numberOfClasses = classReader.readU2();
             ClassesEntry[] classes = new ClassesEntry[numberOfClasses];
-            for(short i = 0; i < numberOfClasses; i++) {
+            for (short i = 0; i < numberOfClasses; i++) {
                 classes[i] = parseClassesEntry(classReader);
             }
             return classes;
