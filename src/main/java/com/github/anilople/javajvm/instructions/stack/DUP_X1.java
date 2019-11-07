@@ -36,7 +36,7 @@ public class DUP_X1 implements Instruction {
         operandStacks.push(value2);
         operandStacks.push(value1);
 
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

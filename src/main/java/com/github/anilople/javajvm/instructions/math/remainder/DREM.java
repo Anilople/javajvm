@@ -13,7 +13,7 @@ public class DREM implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
 
     }
 

@@ -41,7 +41,7 @@ public class IADD implements Instruction {
         int result = value1 + value2;
 
         operandStacks.pushIntValue(result);
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

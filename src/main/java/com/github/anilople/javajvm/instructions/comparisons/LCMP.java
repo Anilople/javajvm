@@ -38,7 +38,7 @@ public class LCMP implements Instruction {
         } else {
             operandStacks.pushIntValue(-1);
         }
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

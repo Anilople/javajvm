@@ -3,6 +3,9 @@ package com.github.anilople.javajvm.instructions.constants;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.utils.ByteUtils;
+
+import java.util.Arrays;
 
 /**
  * Operation: Push short
@@ -14,17 +17,22 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
  */
 public class SIPUSH implements Instruction {
 
-    private short shortValue;
+    private byte byte1;
+
+    private byte byte2;
 
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
-        this.shortValue = bytecodeReader.readU2();
+        this.byte1 = bytecodeReader.readU1();
+        this.byte2 = bytecodeReader.readU1();
     }
 
     @Override
     public int execute(Frame frame) {
-        frame.getOperandStacks().pushShortValue(this.shortValue);
-        return this.size();
+        frame.getOperandStacks().pushShortValue(
+                ByteUtils.bytes2short(new byte[]{byte1, byte2})
+        );
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

@@ -25,8 +25,7 @@ public class ISTORE_3 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        ISTORE.Execute(frame, 3);
-        return this.size();
+        return ISTORE.execute(this, frame, 3);
     }
 
     @Override

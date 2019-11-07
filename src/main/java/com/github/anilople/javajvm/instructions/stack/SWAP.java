@@ -39,7 +39,7 @@ public class SWAP implements Instruction {
         operandStacks.push(value1);
         operandStacks.push(value2);
 
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

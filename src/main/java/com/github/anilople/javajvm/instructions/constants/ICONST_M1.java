@@ -11,6 +11,19 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
  * the respective value of <i>, except that the operand <i> is implicit.
  */
 public class ICONST_M1 implements Instruction {
+
+    /**
+     * push the int constant i onto the operand stack
+     * @param instruction
+     * @param frame
+     * @param i
+     * @return
+     */
+    public static int execute(Instruction instruction, Frame frame, int i) {
+        frame.getOperandStacks().pushIntValue(i);
+        return frame.getJvmThread().getPc() + instruction.size();
+    }
+
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
 
@@ -18,8 +31,7 @@ public class ICONST_M1 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        frame.getOperandStacks().pushIntValue(-1);
-        return this.size();
+        return ICONST_M1.execute(this, frame, -1);
     }
 
     @Override

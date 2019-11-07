@@ -18,8 +18,7 @@ public class ICONST_0 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        frame.getOperandStacks().pushIntValue(0);
-        return this.size();
+        return ICONST_M1.execute(this, frame, 0);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class POP2 implements Instruction {
     @Override
     public int execute(Frame frame) {
         frame.getOperandStacks().pop();
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

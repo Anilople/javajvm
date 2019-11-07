@@ -44,7 +44,7 @@ public class ALOAD implements Instruction {
         Reference reference = frame.getLocalVariables().getReference(index);
         frame.getOperandStacks().pushReference(reference);
 
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

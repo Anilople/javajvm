@@ -19,7 +19,7 @@ public class ACONST_NULL implements Instruction {
     @Override
     public int execute(Frame frame) {
         frame.getOperandStacks().pushReference(Reference.NULL);
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

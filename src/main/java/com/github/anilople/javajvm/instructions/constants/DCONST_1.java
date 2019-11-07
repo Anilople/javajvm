@@ -16,7 +16,7 @@ public class DCONST_1 implements Instruction {
     @Override
     public int execute(Frame frame) {
         frame.getOperandStacks().pushDoubleValue(1.0D);
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

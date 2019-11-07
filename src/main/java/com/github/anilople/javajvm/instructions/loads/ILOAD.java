@@ -31,11 +31,11 @@ public class ILOAD implements Instruction {
      * @param index
      * @return how many bytes this instruction occupies
      */
-    public static int execute(Frame frame, int index) {
+    public static int execute(Instruction instruction, Frame frame, int index) {
         LocalVariables localVariables = frame.getLocalVariables();
         int value = localVariables.getIntValue(index);
         frame.getOperandStacks().pushIntValue(value);
-        return 1;
+        return frame.getJvmThread().getPc() + instruction.size();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class ILOAD implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        return execute(frame, this.index);
+        return execute(this, frame, this.index);
     }
 
     @Override

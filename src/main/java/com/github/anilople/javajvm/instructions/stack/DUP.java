@@ -32,7 +32,7 @@ public class DUP implements Instruction {
         operandStacks.push(localVariable);
         operandStacks.push(localVariable);
 
-        return this.size();
+        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override
