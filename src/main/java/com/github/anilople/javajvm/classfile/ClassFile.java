@@ -3,6 +3,7 @@ package com.github.anilople.javajvm.classfile;
 import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantPoolInfo;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,6 +178,32 @@ public class ClassFile {
 
     public AttributeInfo[] getAttributes() {
         return attributes;
+    }
+
+    public String getClassName() {
+        return ConstantPoolUtils.getClassName(this.getConstantPool(), this.getThisClass());
+    }
+
+    /**
+     * remember that java.lang.Object have no super class,
+     * so the value superClass in java.lang.Object is 0,
+     * which is no mean to constant pool
+     * @return
+     */
+    public String getSuperClassName() {
+        return ConstantPoolUtils.getClassName(this.getConstantPool(), this.getSuperClass());
+    }
+
+    public boolean existSuperClass() {
+        return 0 != this.superClass;
+    }
+
+    public String[] getInterfaceNames() {
+        String[] interfaceNames = new String[this.getInterfaces().length];
+        for(int i = 0; i < interfaceNames.length; i++) {
+            interfaceNames[i] = ConstantPoolUtils.getClassName(this.getConstantPool(), this.getInterfaces()[i]);
+        }
+        return interfaceNames;
     }
 
     /**

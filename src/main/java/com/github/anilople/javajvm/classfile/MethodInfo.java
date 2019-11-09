@@ -57,6 +57,10 @@ public class MethodInfo {
         return ConstantPoolUtils.getUtf8(this.classFile.getConstantPool(), this.nameIndex);
     }
 
+    public String getDescriptor() {
+        return ConstantPoolUtils.getUtf8(this.classFile.getConstantPool(), this.descriptorIndex);
+    }
+
     public ClassFile getClassFile() {
         return classFile;
     }
