@@ -15,6 +15,11 @@ public class ByteUtilsTest {
         Assertions.assertEquals((short) 0, ByteUtils.bytes2short(minorVersion));
         byte[] majorVersion = {(byte) 0x00, (byte) 0x34};
         Assertions.assertEquals((short) 52, ByteUtils.bytes2short(majorVersion));
+
+        // bytes2short(byte highByte, byte lowByte)
+        Assertions.assertEquals((short) 0, ByteUtils.bytes2short((byte) 0, (byte) 0));
+        Assertions.assertEquals((short) -1, ByteUtils.bytes2short((byte) 0xFF, (byte) 0xFF));
+        Assertions.assertEquals((short) 52, ByteUtils.bytes2short((byte) 0x00, (byte) 0x34));
     }
 
     @Test

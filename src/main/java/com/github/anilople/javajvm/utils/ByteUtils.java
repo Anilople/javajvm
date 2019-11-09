@@ -39,6 +39,16 @@ public class ByteUtils {
     }
 
     /**
+     * convert 2 bytes to a short
+     * @param highByte
+     * @param lowByte
+     * @return
+     */
+    public static short bytes2short(byte highByte, byte lowByte) {
+        return ByteUtils.bytes2short(new byte[]{ highByte, lowByte});
+    }
+
+    /**
      * convert 4 bytes to an int
      * when a byte extend to an int
      * 0xF0 -> 0xFFFFFFF0
