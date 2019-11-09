@@ -7,7 +7,10 @@ import com.github.anilople.javajvm.classfile.attributes.CodeAttribute;
 import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.command.Command;
-import com.github.anilople.javajvm.constants.JVMConstants;
+import com.github.anilople.javajvm.constants.JvmProperties;
+import com.github.anilople.javajvm.heap.JvmClass;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
+import com.github.anilople.javajvm.heap.JvmMethod;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
@@ -50,7 +53,7 @@ public class JavaJvmApplication {
         Command command = Command.parse(args);
         logger.info("command : {}", command);
         if (command.getOptions().isVersionFlag()) {
-            logger.info("java version {}", JVMConstants.VERSION);
+            logger.info("java version {}", JvmProperties.VERSION);
         } else if (command.getOptions().isHelpFlag()) {
             printUsage();
         } else if (null != command.getClassName()) {
@@ -66,22 +69,12 @@ public class JavaJvmApplication {
 
     }
 
-    public static void interpret(MethodInfo methodInfo) {
-        logger.debug("interpret method {}", methodInfo);
-        AttributeInfo[] attributes = methodInfo.getAttributes();
-        for (AttributeInfo attributeInfo : attributes) {
-            if (CodeAttribute.class.equals(attributeInfo.getClass())) {
-                CodeAttribute codeAttribute = CodeAttribute.class.cast(attributeInfo);
-                short maxLocals = codeAttribute.getMaxLocals();
-                short maxStack = codeAttribute.getMaxStack();
-                byte[] bytecode = codeAttribute.getCode();
-
-                JvmThread jvmThread = new JvmThread();
-                jvmThread.pushFrame(new Frame(methodInfo.getClassFile(), jvmThread, maxLocals, maxStack));
-
-                loop(jvmThread, bytecode);
-            }
-        }
+    public static void interpret(JvmMethod jvmMethod) {
+        logger.debug("interpret method {}", jvmMethod);
+        byte[] bytecode = jvmMethod.getCode();
+        JvmThread jvmThread = new JvmThread();
+        jvmThread.pushFrame(new Frame(jvmThread, jvmMethod));
+        loop(jvmThread, bytecode);
     }
 
     public static void loop(JvmThread jvmThread, byte[] bytecode) {
@@ -107,15 +100,14 @@ public class JavaJvmApplication {
     public void start() {
         String className = command.getClassName().replace('.', '/');
         logger.debug("class name = {}", className);
-        byte[] data = classContext.readClass(className);
-        logger.debug("{}'s data bytes: {}", className, data);
-        ClassFile classFile = ClassFile.parse(new ClassFile.ClassReader(data));
-        logger.debug("{}'s struct: {}", className, classFile);
-        MethodInfo[] methods = classFile.getMethods();
-        for (MethodInfo methodInfo : methods) {
-            logger.debug("method name: {}, {}", methodInfo.getName(), methodInfo);
-            if ("main".equals(methodInfo.getName())) {
-                interpret(methodInfo);
+
+        JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classContext);
+        JvmClass jvmClass = jvmClassLoader.loadClass(className);
+
+        for(JvmMethod jvmMethod : jvmClass.getJvmMethods()) {
+            logger.debug("jvm method : {}", jvmMethod);
+            if("main".equals(jvmMethod.getName())) {
+                interpret(jvmMethod);
             }
         }
     }
