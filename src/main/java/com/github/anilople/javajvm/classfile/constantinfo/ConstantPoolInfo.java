@@ -69,12 +69,12 @@ public abstract class ConstantPoolInfo {
         // start from 1, not from 0 !!!
         for (short i = 1; i < constantPoolCount; i++) {
             constantPool[i] = ConstantPoolInfo.parseConstantPoolInfo(classFile, classReader);
+
+            // double and long will read 8 bytes, so we need to plus 1 to i
             if(constantPool[i].getClass().equals(ConstantDoubleInfo.class)) {
                 i += 1;
-                constantPool[i] = new ConstantDoubleInfo(classFile, classReader);
             } else if(constantPool[i].getClass().equals(ConstantLongInfo.class)) {
                 i += 1;
-                constantPool[i] = new ConstantLongInfo(classFile, classReader);
             }
             logger.debug("read one constant pool: {}", constantPool[i]);
         }
