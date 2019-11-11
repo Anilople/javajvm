@@ -37,4 +37,8 @@ public class Frame {
     public OperandStacks getOperandStacks() {
         return operandStacks;
     }
+
+    public JvmMethod getJvmMethod() {
+        return jvmMethod;
+    }
 }
