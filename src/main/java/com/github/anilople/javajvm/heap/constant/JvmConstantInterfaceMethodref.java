@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantInterfaceMethodrefInfo;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public class JvmConstantInterfaceMethodref extends JvmConstant {
 
@@ -10,7 +11,8 @@ public class JvmConstantInterfaceMethodref extends JvmConstant {
 
     }
 
-    public JvmConstantInterfaceMethodref(ConstantInterfaceMethodrefInfo constantInterfaceMethodrefInfo) {
+    public JvmConstantInterfaceMethodref(JvmClass jvmClass, ConstantInterfaceMethodrefInfo constantInterfaceMethodrefInfo) {
+        super(jvmClass);
         this.constantInterfaceMethodrefInfo = constantInterfaceMethodrefInfo;
     }
 }

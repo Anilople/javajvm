@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantInvokeDynamicInfo;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public class JvmConstantInvokeDynamic extends JvmConstant {
 
@@ -10,7 +11,8 @@ public class JvmConstantInvokeDynamic extends JvmConstant {
 
     }
 
-    public JvmConstantInvokeDynamic(ConstantInvokeDynamicInfo constantInvokeDynamicInfo) {
+    public JvmConstantInvokeDynamic(JvmClass jvmClass, ConstantInvokeDynamicInfo constantInvokeDynamicInfo) {
+        super(jvmClass);
         this.constantInvokeDynamicInfo = constantInvokeDynamicInfo;
     }
 }

@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantFloatInfo;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public class JvmConstantFloat extends JvmConstant {
 
@@ -11,7 +12,8 @@ public class JvmConstantFloat extends JvmConstant {
     }
 
 
-    public JvmConstantFloat(ConstantFloatInfo constantFloatInfo) {
+    public JvmConstantFloat(JvmClass jvmClass, ConstantFloatInfo constantFloatInfo) {
+        super(jvmClass);
         this.constantFloatInfo = constantFloatInfo;
     }
 }

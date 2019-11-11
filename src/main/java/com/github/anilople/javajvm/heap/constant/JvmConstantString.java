@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantStringInfo;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public class JvmConstantString extends JvmConstant {
 
@@ -10,7 +11,8 @@ public class JvmConstantString extends JvmConstant {
 
     }
 
-    public JvmConstantString(ConstantStringInfo constantStringInfo) {
+    public JvmConstantString(JvmClass jvmClass, ConstantStringInfo constantStringInfo) {
+        super(jvmClass);
         this.constantStringInfo = constantStringInfo;
     }
 }

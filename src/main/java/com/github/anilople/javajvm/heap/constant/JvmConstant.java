@@ -1,42 +1,57 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.*;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public abstract class JvmConstant {
 
-    public static JvmConstant generateJvmConstant(ConstantPoolInfo constantPoolInfo) {
+    private JvmClass jvmClass;
+
+    public JvmConstant() {
+
+    }
+
+    public JvmConstant(JvmClass jvmClass) {
+        this.jvmClass = jvmClass;
+    }
+
+    public static JvmConstant generateJvmConstant(JvmClass jvmClass, ConstantPoolInfo constantPoolInfo) {
         switch (constantPoolInfo.getTag()) {
             case ConstantClassInfo.TAG:
-                return new JvmConstantClass((ConstantClassInfo) constantPoolInfo);
+                return new JvmConstantClass(jvmClass, (ConstantClassInfo) constantPoolInfo);
             case ConstantDoubleInfo.TAG:
-                return new JvmConstantDouble((ConstantDoubleInfo) constantPoolInfo);
+                return new JvmConstantDouble(jvmClass, (ConstantDoubleInfo) constantPoolInfo);
             case ConstantFieldrefInfo.TAG:
-                return new JvmConstantFieldref((ConstantFieldrefInfo) constantPoolInfo);
+                return new JvmConstantFieldref(jvmClass, (ConstantFieldrefInfo) constantPoolInfo);
             case ConstantFloatInfo.TAG:
-                return new JvmConstantFloat((ConstantFloatInfo) constantPoolInfo);
+                return new JvmConstantFloat(jvmClass, (ConstantFloatInfo) constantPoolInfo);
             case ConstantIntegerInfo.TAG:
-                return new JvmConstantInteger((ConstantIntegerInfo) constantPoolInfo);
+                return new JvmConstantInteger(jvmClass, (ConstantIntegerInfo) constantPoolInfo);
             case ConstantInterfaceMethodrefInfo.TAG:
-                return new JvmConstantInterfaceMethodref((ConstantInterfaceMethodrefInfo) constantPoolInfo);
+                return new JvmConstantInterfaceMethodref(jvmClass, (ConstantInterfaceMethodrefInfo) constantPoolInfo);
             case ConstantInvokeDynamicInfo.TAG:
-                return new JvmConstantInvokeDynamic((ConstantInvokeDynamicInfo) constantPoolInfo);
+                return new JvmConstantInvokeDynamic(jvmClass, (ConstantInvokeDynamicInfo) constantPoolInfo);
             case ConstantLongInfo.TAG:
-                return new JvmConstantLong((ConstantLongInfo) constantPoolInfo);
+                return new JvmConstantLong(jvmClass, (ConstantLongInfo) constantPoolInfo);
             case ConstantMethodHandleInfo.TAG:
-                return new JvmConstantMethodHandle((ConstantMethodHandleInfo) constantPoolInfo);
+                return new JvmConstantMethodHandle(jvmClass, (ConstantMethodHandleInfo) constantPoolInfo);
             case ConstantMethodrefInfo.TAG:
-                return new JvmConstantMethodref((ConstantMethodrefInfo) constantPoolInfo);
+                return new JvmConstantMethodref(jvmClass, (ConstantMethodrefInfo) constantPoolInfo);
             case ConstantMethodTypeInfo.TAG:
-                return new JvmConstantMethodType((ConstantMethodTypeInfo) constantPoolInfo);
+                return new JvmConstantMethodType(jvmClass, (ConstantMethodTypeInfo) constantPoolInfo);
             case ConstantNameAndTypeInfo.TAG:
-                return new JvmConstantNameAndType((ConstantNameAndTypeInfo) constantPoolInfo);
+                return new JvmConstantNameAndType(jvmClass, (ConstantNameAndTypeInfo) constantPoolInfo);
             case ConstantStringInfo.TAG:
-                return new JvmConstantString((ConstantStringInfo) constantPoolInfo);
+                return new JvmConstantString(jvmClass, (ConstantStringInfo) constantPoolInfo);
             case ConstantUtf8Info.TAG:
-                return new JvmConstantUtf8((ConstantUtf8Info) constantPoolInfo);
+                return new JvmConstantUtf8(jvmClass, (ConstantUtf8Info) constantPoolInfo);
             default:
                 throw new IllegalStateException("Unexpected constant pool tag value: " + constantPoolInfo.getTag());
         }
+    }
+
+    public JvmClass getJvmClass() {
+        return jvmClass;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.heap.constant;
 
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantUtf8Info;
+import com.github.anilople.javajvm.heap.JvmClass;
 
 public class JvmConstantUtf8 extends JvmConstant {
 
@@ -10,7 +11,8 @@ public class JvmConstantUtf8 extends JvmConstant {
 
     }
 
-    public JvmConstantUtf8(ConstantUtf8Info constantUtf8Info) {
+    public JvmConstantUtf8(JvmClass jvmClass, ConstantUtf8Info constantUtf8Info) {
+        super(jvmClass);
         this.constantUtf8Info = constantUtf8Info;
     }
 }

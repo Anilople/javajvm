@@ -29,7 +29,7 @@ public class JvmConstantPool {
         // remember that from index 1
         for(int i = 1; i < jvmConstants.length; i++) {
             logger.debug("constant pool info : {}", constantPool[i]);
-            jvmConstants[i] = JvmConstant.generateJvmConstant(constantPool[i]);
+            jvmConstants[i] = JvmConstant.generateJvmConstant(jvmClass, constantPool[i]);
             if(constantPool[i] instanceof ConstantDoubleInfo) {
                 logger.debug("inc i, double constant pool info {}", constantPool[i]);
                 i += 1;
