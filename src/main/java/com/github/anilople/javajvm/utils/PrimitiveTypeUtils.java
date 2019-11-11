@@ -9,4 +9,8 @@ public class PrimitiveTypeUtils {
     public static short shortFormUnsignedByte(byte b) {
         return (short) intFormUnsignedByte(b);
     }
+
+    public static int intFormUnsignedShort(short s) {
+        return 0x0000FFFF & s;
+    }
 }
