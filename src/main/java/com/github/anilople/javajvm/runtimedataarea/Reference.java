@@ -1,13 +1,14 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
+
 /**
- * Object reference
+ * reference
  */
-public class Reference {
+public interface Reference {
 
     /**
      * null value of reference
      */
-    public static final Reference NULL = new Reference();
-
+    Reference NULL = new NullReference();
 }

@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
 
+import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ public class LocalVariablesTest {
         Assertions.assertEquals(-0.12323434234234324D, localVariables.getDoubleValue(index));
         index += 1;
 
-        Reference reference = new Reference();
+        Reference reference = new NullReference();
         localVariables.setReference(index, reference);
         Assertions.assertEquals(reference, localVariables.getReference(index));
     }
