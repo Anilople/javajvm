@@ -10,5 +10,5 @@ public interface Reference {
     /**
      * null value of reference
      */
-    Reference NULL = new NullReference();
+    Reference NULL = NullReference.getInstance();
 }
