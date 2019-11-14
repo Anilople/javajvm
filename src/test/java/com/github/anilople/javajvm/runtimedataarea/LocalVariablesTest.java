@@ -41,7 +41,7 @@ public class LocalVariablesTest {
         Assertions.assertEquals(-0.12323434234234324D, localVariables.getDoubleValue(index));
         index += 1;
 
-        Reference reference = new NullReference();
+        Reference reference = Reference.NULL;
         localVariables.setReference(index, reference);
         Assertions.assertEquals(reference, localVariables.getReference(index));
     }
