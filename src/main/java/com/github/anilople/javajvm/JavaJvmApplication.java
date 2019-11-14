@@ -89,6 +89,8 @@ public class JavaJvmApplication {
             instruction.fetchOperands(bytecodeReader);
             int nextPc = instruction.execute(jvmThread.currentFrame());
 
+            jvmThread.currentFrame().traceStatus();
+
             jvmThread.setPc(nextPc);
 
         }

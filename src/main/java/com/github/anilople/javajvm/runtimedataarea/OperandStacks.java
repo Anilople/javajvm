@@ -24,6 +24,14 @@ public class OperandStacks {
         operandStack = new Stack<>();
     }
 
+    @Override
+    public String toString() {
+        return "OperandStacks{" +
+                "maxStack=" + maxStack +
+                ", operandStack=" + operandStack +
+                '}';
+    }
+
     public void push(LocalVariable localVariable) {
         operandStack.push(localVariable);
     }

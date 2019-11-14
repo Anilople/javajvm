@@ -32,6 +32,14 @@ public class LocalVariables {
         this.localVariables = Arrays.asList(new LocalVariable[maxLocals]);
     }
 
+    @Override
+    public String toString() {
+        return "LocalVariables{" +
+                "maxLocals=" + maxLocals +
+                ", localVariables=" + localVariables +
+                '}';
+    }
+
     public boolean getBooleanValue(int index) {
         return localVariables.get(index).getBooleanValue();
     }

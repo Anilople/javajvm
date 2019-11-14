@@ -14,6 +14,14 @@ public class LocalVariable {
     public LocalVariable() {
     }
 
+    @Override
+    public String toString() {
+        return "LocalVariable{" +
+                "intValue=" + intValue +
+                ", reference=" + reference +
+                '}';
+    }
+
     public boolean getBooleanValue() {
         return 0 != intValue;
     }
