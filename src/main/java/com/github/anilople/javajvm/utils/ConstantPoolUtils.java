@@ -73,6 +73,7 @@ public class ConstantPoolUtils {
      * @return class name
      */
     public static String getClassName(ConstantPoolInfo[] constantPool, short index) {
+        logger.trace("getClassName index {} of constant pool {}", index, constantPool);
         ConstantClassInfo constantClassInfo = (ConstantClassInfo) constantPool[index];
         return getUtf8(constantPool, constantClassInfo.getNameIndex());
     }
