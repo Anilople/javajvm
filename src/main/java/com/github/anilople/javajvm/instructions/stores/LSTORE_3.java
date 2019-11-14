@@ -13,8 +13,7 @@ public class LSTORE_3 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        return frame.getJvmThread().getPc() + this.size();
-
+        return LSTORE.execute(this, frame, 3);
     }
 
     @Override
