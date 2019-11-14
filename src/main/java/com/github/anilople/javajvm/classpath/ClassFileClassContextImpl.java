@@ -37,7 +37,7 @@ public class ClassFileClassContextImpl implements ClassContext {
 
         }
 
-        logger.debug("class {} not match with class file {}", className, classfile);
+        logger.trace("class {} not match with class file {}", className, classfile);
         return null;
     }
 }
