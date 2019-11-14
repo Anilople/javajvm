@@ -29,27 +29,34 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
  */
 public class ALOAD implements Instruction {
 
-    private byte index;
+    private byte unsignedByteIndex;
 
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
-        bytecodeReader.readU1();
+        this.unsignedByteIndex = bytecodeReader.readU1();
     }
 
     @Override
     public int execute(Frame frame) {
-        short shortIndex = PrimitiveTypeUtils.shortFormUnsignedByte(index);
-
-        // may add the check here
-        Reference reference = frame.getLocalVariables().getReference(index);
-        frame.getOperandStacks().pushReference(reference);
-
+        int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
+        ALOAD.execute(frame, index);
         return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override
     public int size() {
         return 2;
+    }
+
+    /**
+     * load reference from local variable in position index
+     * @param frame
+     * @param index
+     */
+    public static void execute(Frame frame, int index) {
+        // may add the check here, ignore returnAddress simply
+        Reference reference = frame.getLocalVariables().getReference(index);
+        frame.getOperandStacks().pushReference(reference);
     }
 
 }

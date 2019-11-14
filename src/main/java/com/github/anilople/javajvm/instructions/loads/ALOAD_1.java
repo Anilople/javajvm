@@ -13,8 +13,8 @@ public class ALOAD_1 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
+        ALOAD.execute(frame, 1);
         return frame.getJvmThread().getPc() + this.size();
-
     }
 
     @Override

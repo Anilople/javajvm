@@ -13,8 +13,8 @@ public class ASTORE_2 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
+        ASTORE.execute(frame, 2);
         return frame.getJvmThread().getPc() + this.size();
-
     }
 
     @Override
