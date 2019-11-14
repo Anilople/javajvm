@@ -28,7 +28,9 @@ public class ConstantClassInfo extends ConstantPoolInfo {
 
     @Override
     public String toString() {
-        return ConstantPoolUtils.getUtf8(this.getClassFile().getConstantPool(), this.getNameIndex());
+        return "ConstantClassInfo{" +
+                "nameIndex=" + nameIndex +
+                '}';
     }
 
     public short getNameIndex() {

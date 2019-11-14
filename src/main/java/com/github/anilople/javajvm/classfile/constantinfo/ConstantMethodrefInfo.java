@@ -25,11 +25,8 @@ public class ConstantMethodrefInfo extends ConstantPoolInfo {
 
     @Override
     public String toString() {
-        ConstantPoolInfo[] constantPool = this.getClassFile().getConstantPool();
         return "ConstantMethodrefInfo{" +
-                ConstantPoolUtils.getClassName(constantPool, classIndex) + "." +
-                ConstantPoolUtils.getNameAndType(constantPool, this.getNameAndTypeIndex()) +
-                ", classIndex=" + classIndex +
+                "classIndex=" + classIndex +
                 ", nameAndTypeIndex=" + nameAndTypeIndex +
                 '}';
     }

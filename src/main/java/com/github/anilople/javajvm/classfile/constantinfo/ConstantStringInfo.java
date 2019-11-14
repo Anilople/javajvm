@@ -24,7 +24,6 @@ public class ConstantStringInfo extends ConstantPoolInfo {
     public String toString() {
         return "ConstantStringInfo{" +
                 "stringIndex=" + stringIndex +
-                "content=" + ConstantPoolUtils.getUtf8(this.getClassFile().getConstantPool(), this.getStringIndex()) +
                 '}';
     }
 
