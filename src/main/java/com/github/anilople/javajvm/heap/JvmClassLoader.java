@@ -31,6 +31,12 @@ public class JvmClassLoader {
         this.classConcurrentMap = new ConcurrentHashMap<>();
     }
 
+    /**
+     * if a class has been loaded,
+     * then simply return
+     * @param className
+     * @return
+     */
     public JvmClass loadClass(String className) {
         if(!classConcurrentMap.containsKey(className)) {
             this.loadNonArrayClass(className);

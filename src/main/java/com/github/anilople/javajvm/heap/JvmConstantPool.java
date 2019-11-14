@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.classfile.constantinfo.ConstantDoubleInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantLongInfo;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantPoolInfo;
 import com.github.anilople.javajvm.heap.constant.JvmConstant;
+import com.github.anilople.javajvm.heap.constant.JvmConstantUtf8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ public class JvmConstantPool {
 
         // remember that from index 1
         for(int i = 1; i < jvmConstants.length; i++) {
-            logger.debug("constant pool info : {}", constantPool[i]);
+            logger.debug("constant pool {} info : {}", i, constantPool[i]);
             jvmConstants[i] = JvmConstant.generateJvmConstant(jvmClass, constantPool[i]);
             if(constantPool[i] instanceof ConstantDoubleInfo) {
                 logger.debug("inc i, double constant pool info {}", constantPool[i]);
@@ -46,5 +47,16 @@ public class JvmConstantPool {
             return jvmConstant;
         }
         throw new RuntimeException("No constants at index " + index);
+    }
+
+    /**
+     * suppose JvmConstant in position index is a JvmConstantUtf8
+     * @param index
+     * @return String content
+     */
+    public String getUtf8String(int index) {
+        JvmConstant jvmConstant = jvmConstants[index];
+        JvmConstantUtf8 jvmConstantUtf8 = (JvmConstantUtf8) jvmConstant;
+        return jvmConstantUtf8.toString();
     }
 }
