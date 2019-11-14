@@ -13,7 +13,7 @@ public class LLOAD_3 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        return frame.getJvmThread().getPc() + this.size();
+        return LLOAD.execute(this, frame, 3);
 
     }
 
