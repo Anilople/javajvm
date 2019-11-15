@@ -3,6 +3,7 @@ package com.github.anilople.javajvm.heap;
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.AccessFlags;
 import com.github.anilople.javajvm.constants.Descriptors;
+import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +50,13 @@ public class JvmClass {
 
     private JvmClass[] interfaces;
 
+    /**
+     * static fields cache
+     * to save current class's static fields's value
+     */
+    private LocalVariables staticFieldsValue;
+
+
     private JvmClass() {
 
     }
@@ -77,6 +85,9 @@ public class JvmClass {
         for(int i = 0; i < this.interfaceNames.length; i++) {
             interfaces[i] = jvmClassLoader.loadClass(this.interfaceNames[i]);
         }
+
+        // static fields value
+        this.staticFieldsValue = new LocalVariables(JvmClass.getStaticFieldsSize(this));
     }
 
 
@@ -160,7 +171,7 @@ public class JvmClass {
 
         // remember that long and double occupies 2 * 4 bytes
         for(JvmField jvmField : allFields) {
-            if(!jvmField.isStatic()) {
+            if(jvmField.isStatic()) {
                 number += jvmField.getSize();
             }
         }
@@ -264,5 +275,9 @@ public class JvmClass {
 
     public JvmClass[] getInterfaces() {
         return interfaces;
+    }
+
+    public LocalVariables getStaticFieldsValue() {
+        return staticFieldsValue;
     }
 }
