@@ -68,4 +68,8 @@ public class JvmThread {
     public void setPc(int pc) {
         this.pc = pc;
     }
+
+    public boolean existFrame() {
+        return stack.size() > 0;
+    }
 }

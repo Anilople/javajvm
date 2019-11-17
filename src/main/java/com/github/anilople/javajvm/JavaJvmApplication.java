@@ -78,10 +78,12 @@ public class JavaJvmApplication {
     }
 
     public static void loop(JvmThread jvmThread, byte[] bytecode) {
+        logger.trace("start loop: {}", jvmThread);
 
-        while (true) {
+        while (jvmThread.existFrame()) {
+            jvmThread.currentFrame().traceStatus();
+
             int pc = jvmThread.getPc();
-
             BytecodeReader bytecodeReader = new BytecodeReader(Arrays.copyOfRange(bytecode, pc, bytecode.length));
 
             Instruction instruction = Instruction.readInstruction(bytecodeReader);
@@ -89,11 +91,11 @@ public class JavaJvmApplication {
             instruction.fetchOperands(bytecodeReader);
             int nextPc = instruction.execute(jvmThread.currentFrame());
 
-            jvmThread.currentFrame().traceStatus();
-
             jvmThread.setPc(nextPc);
 
         }
+
+        logger.trace("loop finished: {}", jvmThread);
     }
 
     /**
