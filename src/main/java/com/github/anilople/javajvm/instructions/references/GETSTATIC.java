@@ -6,10 +6,12 @@ import com.github.anilople.javajvm.heap.constant.JvmConstantFieldref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.krb5.internal.crypto.Des;
 
 /**
  * Operation
@@ -67,7 +69,26 @@ public class GETSTATIC implements Instruction {
 
         String descriptor = jvmField.getDescriptor();
         logger.debug("descriptor: {}", descriptor);
+        if(Descriptors.isBaseType(descriptor)) {
+            // BaseType
+            executeGetBaseType(frame, jvmField);
+        } else if(Descriptors.isObjectType(descriptor)) {
+            // ObjectType
+            executeGetObjectType(frame, jvmField);
+        } else if(Descriptors.isArrayType(descriptor)){
+            // ArrayType
+            executeGetArrayType(frame, jvmField);
+        } else {
+            throw new IllegalStateException("Unexpected descriptor: " + descriptor);
+        }
+
+        return frame.getJvmThread().getPc() + this.size();
+    }
+
+    public static void executeGetBaseType(Frame frame, JvmField jvmField) {
+        logger.trace("base type get: {} {}", jvmField.getDescriptor(), jvmField.getName());
         int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        String descriptor = jvmField.getDescriptor();
         switch (descriptor) {
             case Descriptors.BaseType.BOOLEAN:
                 boolean booleanValue = jvmField.getJvmClass().getStaticFieldsValue().getBooleanValue(staticFieldOffset);
@@ -104,8 +125,22 @@ public class GETSTATIC implements Instruction {
             default:
                 throw new IllegalStateException("Unexpected descriptor: " + descriptor);
         }
+    }
 
-        return frame.getJvmThread().getPc() + this.size();
+    public static void executeGetObjectType(Frame frame, JvmField jvmField) {
+        logger.trace("object type get: {} {}", jvmField.getDescriptor(), jvmField.getName());
+        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        Reference reference = jvmField.getJvmClass().getStaticFieldsValue().getReference(staticFieldOffset);
+        frame.getOperandStacks().pushReference(reference);
+    }
+
+    /**
+     * to do
+     * @param frame
+     * @param jvmField
+     */
+    public static void executeGetArrayType(Frame frame, JvmField jvmField) {
+        throw new RuntimeException("executeGetArrayType not implement!");
     }
 
     @Override

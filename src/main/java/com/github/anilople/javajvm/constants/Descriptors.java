@@ -65,4 +65,49 @@ public class Descriptors {
 
     }
 
+    /**
+     * BaseType:
+     *  (one of)
+     *  B C D F I J S Z
+     * @param descriptor
+     * @return
+     */
+    public static boolean isBaseType(String descriptor) {
+        return descriptor.equals(BaseType.BOOLEAN)
+                || descriptor.equals(BaseType.BYTE)
+                || descriptor.equals(BaseType.CHAR)
+                || descriptor.equals(BaseType.SHORT)
+                || descriptor.equals(BaseType.INT)
+                || descriptor.equals(BaseType.LONG)
+                || descriptor.equals(BaseType.FLOAT)
+                || descriptor.equals(BaseType.DOUBLE);
+    }
+
+    /**
+     * ObjectType:
+     *  L ClassName ;
+     * @param descriptor
+     * @return
+     */
+    public static boolean isObjectType(String descriptor) {
+        return descriptor.startsWith("L") && descriptor.endsWith(";");
+    }
+
+    /**
+     * suppose that descriptor is ObjectType
+     * @param descriptor
+     * @return class name
+     */
+    public static String getClassName(String descriptor) {
+        return descriptor.substring(1, descriptor.length() - 1);
+    }
+
+    /**
+     * to do
+     * @param descriptor
+     * @return
+     */
+    public static boolean isArrayType(String descriptor) {
+        return descriptor.startsWith("[");
+    }
 }
