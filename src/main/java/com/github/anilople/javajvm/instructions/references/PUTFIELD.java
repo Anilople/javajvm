@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.instructions.references;
 
 import com.github.anilople.javajvm.constants.Descriptors;
+import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmConstantPool;
 import com.github.anilople.javajvm.heap.JvmField;
@@ -72,7 +73,7 @@ public class PUTFIELD implements Instruction {
                 throw new IllegalAccessError(jvmConstantFieldref + "is final, but not in current class " + jvmClass.getName());
             }
 
-            if(!"<init>".equals(frame.getJvmMethod().getName())) {
+            if(!SpecialMethods.INIT.equals(frame.getJvmMethod().getName())) {
                 // the instruction must occur in an instance
                 // initialization method ( <init> ) of the current class.
                 throw new IllegalAccessError(frame.getJvmMethod().getName() + " is not <init>");

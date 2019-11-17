@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.instructions.references;
 
 import com.github.anilople.javajvm.constants.Descriptors;
+import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.heap.constant.JvmConstantFieldref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
@@ -84,7 +85,7 @@ public class PUTSTATIC implements Instruction {
             logger.error("IncompatibleClassChangeError");
             throw new IncompatibleClassChangeError();
         }
-        if(jvmField.isFinal() && !"<clinit>".equals(jvmField.getName())) {
+        if(jvmField.isFinal() && !SpecialMethods.CLINIT.equals(jvmField.getName())) {
             // if the field is final , it must be declared in the current
             // class, and the instruction must occur in the <clinit> method of
             // the current class. Otherwise, an IllegalAccessError is thrown.
