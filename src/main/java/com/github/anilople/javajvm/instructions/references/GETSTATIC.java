@@ -8,6 +8,7 @@ import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +70,13 @@ public class GETSTATIC implements Instruction {
 
         String descriptor = jvmField.getDescriptor();
         logger.debug("descriptor: {}", descriptor);
-        if(Descriptors.isBaseType(descriptor)) {
+        if(DescriptorUtils.isBaseType(descriptor)) {
             // BaseType
             executeGetBaseType(frame, jvmField);
-        } else if(Descriptors.isObjectType(descriptor)) {
+        } else if(DescriptorUtils.isObjectType(descriptor)) {
             // ObjectType
             executeGetObjectType(frame, jvmField);
-        } else if(Descriptors.isArrayType(descriptor)){
+        } else if(DescriptorUtils.isArrayType(descriptor)){
             // ArrayType
             executeGetArrayType(frame, jvmField);
         } else {
