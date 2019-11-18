@@ -1,6 +1,11 @@
 package com.github.anilople.javajvm.utils;
 
 import com.github.anilople.javajvm.constants.Descriptors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * some tools for descriptor
@@ -36,6 +41,8 @@ import com.github.anilople.javajvm.constants.Descriptors;
  *      V
  */
 public class DescriptorUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(DescriptorUtils.class);
 
     /**
      * FieldDescriptor:
@@ -180,6 +187,49 @@ public class DescriptorUtils {
      */
     public static String getClassName(String descriptor) {
         return descriptor.substring(1, descriptor.length() - 1);
+    }
+
+    /**
+     * MethodDescriptor:
+     *      ( {ParameterDescriptor} ) ReturnDescriptor
+     * @param methodDescriptor
+     * @return
+     */
+    public static List<String> getParameterDescriptor(String methodDescriptor) {
+        logger.trace("methodDescriptor: {}", methodDescriptor);
+        List<String> parameterDescriptors = new ArrayList<>();
+
+        String parameterDescriptor =  getInFirstParentheses(methodDescriptor);
+        logger.trace("parameterDescriptor: {}", parameterDescriptor);
+        for(int i = 0; i < parameterDescriptor.length(); i++) {
+            if('L' == parameterDescriptor.charAt(i)) {
+                // object reference
+                logger.trace("object reference i = {}", i);
+                // find character ';', dangerous! for loop
+                int semicolonIndex = -1;
+                for(semicolonIndex = i + 1;
+                    semicolonIndex < parameterDescriptor.length() && ';' != parameterDescriptor.charAt(semicolonIndex);
+                    semicolonIndex++) {
+
+                }
+                logger.trace("; semicolonIndex = {}", semicolonIndex);
+                String objectReferenceDescriptor = parameterDescriptor.substring(i, semicolonIndex + 1);
+                logger.trace("objectReferenceDescriptor: {}", objectReferenceDescriptor);
+                parameterDescriptors.add(objectReferenceDescriptor);
+                // update i
+                i = semicolonIndex + 1;
+            } else if('[' == parameterDescriptor.charAt(i)) {
+                // array reference
+                logger.trace("array reference i = {}", i);
+                throw new RuntimeException("no support array reference now");
+            } else {
+                // base type
+                logger.trace("base type i = {}, char = {}", i, parameterDescriptor.charAt(i));
+                parameterDescriptors.add(String.valueOf(parameterDescriptor.charAt(i)));
+            }
+        }
+
+        return parameterDescriptors;
     }
 
 }
