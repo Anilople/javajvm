@@ -85,12 +85,17 @@ public class PUTSTATIC implements Instruction {
             logger.error("IncompatibleClassChangeError");
             throw new IncompatibleClassChangeError();
         }
-        if(jvmField.isFinal() && !SpecialMethods.CLINIT.equals(jvmField.getName())) {
+        if(jvmField.isFinal()) {
             // if the field is final , it must be declared in the current
             // class, and the instruction must occur in the <clinit> method of
             // the current class. Otherwise, an IllegalAccessError is thrown.
-            logger.error("IllegalAccessError");
-            throw new IllegalAccessError();
+
+            // check belong to current class or not, to do...
+
+            // check this method is <clinit> or not
+            if(!SpecialMethods.CLINIT.equals(frame.getJvmMethod().getName())) {
+                throw new IllegalAccessError("the instruction must occur in the <clinit> method");
+            }
         }
 
         String descriptor = jvmField.getDescriptor();
