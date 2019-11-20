@@ -37,10 +37,14 @@ public class INVOKESTATIC implements Instruction {
         // ignore interface method
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmField();
-        logger.trace("jvm method: {}", jvmMethod);
+        logger.trace("jvm class: {}, method: {}", jvmMethod.getJvmClass().getName(), jvmMethod);
         if(jvmMethod.isNative()) {
-            logger.debug("native method: {}, {}", jvmMethod.getName(), jvmMethod.getDescriptor());
+            logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());
             // check register or not, to do
+            // early return here
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+            return frame.getJvmThread().getPc() + this.size();
         }
 
         //
@@ -114,7 +118,7 @@ public class INVOKESTATIC implements Instruction {
 
     @Override
     public int size() {
-        return 1;
+        return 3;
     }
 
 }
