@@ -32,6 +32,8 @@ public class SIPUSH implements Instruction {
         frame.getOperandStacks().pushShortValue(
                 ByteUtils.bytes2short(new byte[]{byte1, byte2})
         );
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

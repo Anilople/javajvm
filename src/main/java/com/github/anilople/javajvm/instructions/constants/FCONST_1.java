@@ -17,6 +17,8 @@ public class FCONST_1 implements Instruction {
     @Override
     public int execute(Frame frame) {
         frame.getOperandStacks().pushFloatValue(1.0F);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

@@ -56,6 +56,8 @@ public class LSTORE implements Instruction {
     public static int execute(Instruction instruction, Frame frame, int index) {
         long longValue = frame.getOperandStacks().popLongValue();
         frame.getLocalVariables().setLongValue(index, longValue);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + instruction.size();
     }
 

@@ -2,7 +2,6 @@ package com.github.anilople.javajvm.heap;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.AccessFlags;
-import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,6 +176,105 @@ public class JvmClass {
         }
 
         return number;
+    }
+
+    /**
+     *
+     * @param jvmClass a class
+     * @param accessFlag method's access flag
+     * @return methods with access flag
+     */
+    private static List<JvmMethod> getMethodsWith(JvmClass jvmClass, short accessFlag) {
+        List<JvmMethod> methods = new ArrayList<>();
+        for(JvmMethod jvmMethod : jvmClass.getJvmMethods()) {
+            if(0 != (jvmMethod.getAccessFlags() & accessFlag)) {
+                // match this access flag
+                methods.add(jvmMethod);
+            }
+        }
+        return methods;
+    }
+
+    /**
+     *
+     * @param jvmClass
+     * @return static methods
+     */
+    public static List<JvmMethod> getStaticMethods(JvmClass jvmClass) {
+        return JvmClass.getMethodsWith(jvmClass, AccessFlags.MethodFlags.ACC_STATIC);
+    }
+
+    /**
+     *
+     * @param jvmClass
+     * @return non static methods
+     */
+    public static List<JvmMethod> getNonStaticMethods(JvmClass jvmClass) {
+        List<JvmMethod> nonStaticMethods = new ArrayList<>();
+        for(JvmMethod jvmMethod : jvmClass.getJvmMethods()) {
+            if(!jvmMethod.isStatic()) {
+                // non static method
+                nonStaticMethods.add(jvmMethod);
+            }
+        }
+        return nonStaticMethods;
+    }
+
+    /**
+     * get a method from class(include super classes) whether it is static or not
+     * @param jvmClass
+     * @param name
+     * @param descriptor
+     * @return null if method does not existed
+     */
+    public static JvmMethod getMethod(JvmClass jvmClass, String name, String descriptor) {
+        for(JvmClass nowClass = jvmClass; null != nowClass; nowClass = nowClass.getSuperClass()) {
+            for(JvmMethod jvmMethod : nowClass.getJvmMethods()) {
+                if(jvmMethod.getName().equals(name) && jvmMethod.getDescriptor().equals(descriptor)) {
+                    return jvmMethod;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * judge method exist in a class(include super classes) or not
+     * @param jvmClass
+     * @param name
+     * @param descriptor
+     * @return
+     */
+    public static boolean existMethod(JvmClass jvmClass, String name, String descriptor) {
+        for(JvmClass nowClass = jvmClass; null != nowClass; nowClass = nowClass.getSuperClass()) {
+            for(JvmMethod jvmMethod : nowClass.getJvmMethods()) {
+                if(jvmMethod.getName().equals(name) && jvmMethod.getDescriptor().equals(descriptor)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * judge method exist in this class or not
+     * @param name
+     * @param descriptor
+     * @return
+     */
+    public boolean existMethod(String name, String descriptor) {
+        return JvmClass.existMethod(this, name, descriptor);
+    }
+
+    /**
+     * get method in this class
+     * @param name
+     * @param descriptor
+     * @return
+     */
+    public JvmMethod getMethod(String name, String descriptor) {
+        return JvmClass.getMethod(this, name, descriptor);
     }
 
     /**

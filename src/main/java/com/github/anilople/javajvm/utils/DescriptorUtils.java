@@ -232,4 +232,14 @@ public class DescriptorUtils {
         return parameterDescriptors;
     }
 
+    /**
+     * MethodDescriptor:
+     *      ( {ParameterDescriptor} ) ReturnDescriptor
+     * @param methodDescriptor
+     * @return ReturnDescriptor
+     */
+    public static String getReturnDescriptor(String methodDescriptor) {
+        int rightParenthesesIndex = methodDescriptor.indexOf(")");
+        return methodDescriptor.substring(rightParenthesesIndex + 1, methodDescriptor.length());
+    }
 }

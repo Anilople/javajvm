@@ -37,6 +37,8 @@ public class RETURN implements Instruction {
     public int execute(Frame frame) {
         frame.getJvmThread().popFrame();
         logger.trace("pop frame: {}", frame);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

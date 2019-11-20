@@ -5,6 +5,8 @@ import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
 import com.github.anilople.javajvm.classfile.attributes.CodeAttribute;
 import com.github.anilople.javajvm.constants.AccessFlags;
 
+import java.util.List;
+
 public class JvmMethod extends JvmClassMember {
 
     private short maxStack;
@@ -47,6 +49,14 @@ public class JvmMethod extends JvmClassMember {
         }
         return jvmMethods;
     }
+
+//    public static List<String> getMethodDescriptorParameters(String descriptor) {
+//
+//    }
+//
+//    public static String getMethodDescriptorReturnType(String descriptor) {
+//
+//    }
 
     public boolean isPublic() {
         return 0 != (this.getAccessFlags() & AccessFlags.MethodFlags.ACC_PUBLIC);

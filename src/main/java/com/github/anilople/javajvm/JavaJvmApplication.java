@@ -1,9 +1,5 @@
 package com.github.anilople.javajvm;
 
-import com.github.anilople.javajvm.classfile.ClassFile;
-import com.github.anilople.javajvm.classfile.MethodInfo;
-import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
-import com.github.anilople.javajvm.classfile.attributes.CodeAttribute;
 import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.command.Command;
@@ -71,27 +67,31 @@ public class JavaJvmApplication {
 
     public static void interpret(JvmMethod jvmMethod) {
         logger.debug("interpret method {}", jvmMethod);
-        byte[] bytecode = jvmMethod.getCode();
         JvmThread jvmThread = new JvmThread();
         jvmThread.pushFrame(new Frame(jvmThread, jvmMethod));
-        loop(jvmThread, bytecode);
+        loop(jvmThread);
     }
 
-    public static void loop(JvmThread jvmThread, byte[] bytecode) {
+    public static void loop(JvmThread jvmThread) {
         logger.trace("start loop: {}", jvmThread);
 
         while (jvmThread.existFrame()) {
             jvmThread.currentFrame().traceStatus();
 
-            int pc = jvmThread.getPc();
+            // frame -> method -> method's code
+            byte[] bytecode = jvmThread.currentFrame().getJvmMethod().getCode();
+
+            int pc = jvmThread.currentFrame().getNextPc();
             BytecodeReader bytecodeReader = new BytecodeReader(Arrays.copyOfRange(bytecode, pc, bytecode.length));
 
             Instruction instruction = Instruction.readInstruction(bytecodeReader);
             logger.debug("read instruction: {}", instruction);
             instruction.fetchOperands(bytecodeReader);
-            int nextPc = instruction.execute(jvmThread.currentFrame());
 
-            jvmThread.setPc(nextPc);
+            // change nextPc in top frame
+            instruction.execute(jvmThread.currentFrame());
+
+//            jvmThread.setPc(nextPc);
 
         }
 

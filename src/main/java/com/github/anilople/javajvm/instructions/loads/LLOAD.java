@@ -54,6 +54,8 @@ public class LLOAD implements Instruction {
     public static int execute(Instruction instruction, Frame frame, int index) {
         long longValue = frame.getLocalVariables().getLongValue(index);
         frame.getOperandStacks().pushLongValue(longValue);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + instruction.size();
     }
 

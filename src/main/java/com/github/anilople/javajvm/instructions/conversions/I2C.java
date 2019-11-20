@@ -13,6 +13,8 @@ public class I2C implements Instruction {
 
     @Override
     public int execute(Frame frame) {
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
 
     }

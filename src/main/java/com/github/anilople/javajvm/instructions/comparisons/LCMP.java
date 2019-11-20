@@ -38,6 +38,8 @@ public class LCMP implements Instruction {
         } else {
             operandStacks.pushIntValue(-1);
         }
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

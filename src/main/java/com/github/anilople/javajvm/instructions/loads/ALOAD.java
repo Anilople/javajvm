@@ -40,6 +40,8 @@ public class ALOAD implements Instruction {
     public int execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
         ALOAD.execute(frame, index);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

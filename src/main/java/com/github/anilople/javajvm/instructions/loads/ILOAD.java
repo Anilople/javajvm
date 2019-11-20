@@ -35,6 +35,8 @@ public class ILOAD implements Instruction {
         LocalVariables localVariables = frame.getLocalVariables();
         int value = localVariables.getIntValue(index);
         frame.getOperandStacks().pushIntValue(value);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + instruction.size();
     }
 

@@ -23,6 +23,8 @@ public class BIPUSH implements Instruction {
     public int execute(Frame frame) {
         int intValue = (int) byteValue;
         frame.getOperandStacks().pushIntValue(intValue);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

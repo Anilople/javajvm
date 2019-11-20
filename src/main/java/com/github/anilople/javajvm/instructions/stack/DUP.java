@@ -32,6 +32,8 @@ public class DUP implements Instruction {
         operandStacks.push(localVariable);
         operandStacks.push(localVariable);
 
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

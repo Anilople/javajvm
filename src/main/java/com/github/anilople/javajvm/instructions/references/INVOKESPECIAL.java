@@ -1,11 +1,15 @@
 package com.github.anilople.javajvm.instructions.references;
 
+import com.github.anilople.javajvm.heap.JvmMethod;
 import com.github.anilople.javajvm.heap.constant.JvmConstantMethodref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Operation
@@ -30,6 +34,8 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
  */
 public class INVOKESPECIAL implements Instruction {
 
+    private static final Logger logger = LoggerFactory.getLogger(INVOKESPECIAL.class);
+
     private byte indexByte1;
 
     private byte indexByte2;
@@ -44,14 +50,38 @@ public class INVOKESPECIAL implements Instruction {
     public int execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
+        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmField();
+        logger.trace("jvm method: {}", jvmMethod);
+        if(jvmMethod.isNative()) {
+            logger.debug("native method: {}", jvmMethod);
+        }
 
         // exception
+        if(null == jvmMethod) {
+            throw new NoSuchMethodError(INVOKESPECIAL.class + " " + jvmMethod);
+        }
+        if(jvmMethod.isStatic()) {
+            throw new IncompatibleClassChangeError(INVOKESPECIAL.class + " " + jvmMethod);
+        }
 
+        if(jvmMethod.isAbstract()) {
+            throw new AbstractMethodError();
+        }
+
+
+        String descriptor = jvmMethod.getDescriptor();
+        logger.trace("descriptor: {}", descriptor);
         // pop args
 
-        // pop object reference
-        frame.getOperandStacks().popReference();
 
+        // pop object reference
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException(INVOKESPECIAL.class.toString());
+        }
+
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

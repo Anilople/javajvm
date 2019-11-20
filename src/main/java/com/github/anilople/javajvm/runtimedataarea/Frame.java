@@ -20,6 +20,8 @@ public class Frame {
 
     private JvmMethod jvmMethod;
 
+    private int nextPc;
+
     private Frame() {
     }
 
@@ -54,5 +56,13 @@ public class Frame {
 
     public JvmMethod getJvmMethod() {
         return jvmMethod;
+    }
+
+    public int getNextPc() {
+        return nextPc;
+    }
+
+    public void setNextPc(int nextPc) {
+        this.nextPc = nextPc;
     }
 }

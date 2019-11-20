@@ -31,6 +31,8 @@ public class ISTORE implements Instruction {
     public static int execute(Instruction instruction, Frame frame, int index) {
         int value = frame.getOperandStacks().popIntValue();
         frame.getLocalVariables().setIntValue(index, value);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + instruction.size();
     }
 

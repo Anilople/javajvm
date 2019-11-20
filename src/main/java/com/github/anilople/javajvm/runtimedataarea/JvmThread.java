@@ -20,6 +20,7 @@ public class JvmThread {
      * Virtual Machine's pc register is wide enough to hold a returnAddress or a native
      * pointer on the specific platform.
      */
+    @Deprecated // save it to frame
     private int pc;
 
     /**
@@ -61,10 +62,12 @@ public class JvmThread {
         return stack.peek();
     }
 
+    @Deprecated
     public int getPc() {
         return pc;
     }
 
+    @Deprecated
     public void setPc(int pc) {
         this.pc = pc;
     }

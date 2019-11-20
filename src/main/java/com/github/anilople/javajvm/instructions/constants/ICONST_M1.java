@@ -21,6 +21,8 @@ public class ICONST_M1 implements Instruction {
      */
     public static int execute(Instruction instruction, Frame frame, int i) {
         frame.getOperandStacks().pushIntValue(i);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + instruction.size();
     }
 

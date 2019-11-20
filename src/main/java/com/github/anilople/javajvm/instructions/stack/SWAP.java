@@ -39,6 +39,8 @@ public class SWAP implements Instruction {
         operandStacks.push(value1);
         operandStacks.push(value2);
 
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

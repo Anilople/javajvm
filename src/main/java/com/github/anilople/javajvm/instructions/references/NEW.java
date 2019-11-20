@@ -68,6 +68,8 @@ public class NEW implements Instruction {
         ObjectReference objectReference = new ObjectReference(jvmConstantClass.getJvmClass());
         frame.getOperandStacks().pushReference(objectReference);
 
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

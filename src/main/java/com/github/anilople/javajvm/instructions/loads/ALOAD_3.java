@@ -14,6 +14,8 @@ public class ALOAD_3 implements Instruction {
     @Override
     public int execute(Frame frame) {
         ALOAD.execute(frame, 3);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

@@ -16,6 +16,8 @@ public class LCONST_0 implements Instruction {
     @Override
     public int execute(Frame frame) {
         frame.getOperandStacks().pushLongValue(0);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 

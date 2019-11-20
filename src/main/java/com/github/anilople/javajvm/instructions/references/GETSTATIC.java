@@ -83,6 +83,8 @@ public class GETSTATIC implements Instruction {
             throw new IllegalStateException("Unexpected descriptor: " + descriptor);
         }
 
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
         return frame.getJvmThread().getPc() + this.size();
     }
 
