@@ -13,9 +13,7 @@ public class ASTORE_3 implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        ASTORE.execute(frame, 3);
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        ASTORE.execute(this, frame, 3);
         return frame.getJvmThread().getPc() + this.size();
     }
 

@@ -44,9 +44,8 @@ public class ASTORE implements Instruction {
     @Override
     public int execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
-        ASTORE.execute(frame, index);
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        ASTORE.execute(this, frame, index);
+
         return frame.getJvmThread().getPc() + this.size();
     }
 
@@ -57,13 +56,16 @@ public class ASTORE implements Instruction {
 
     /**
      * store reference into local variable position index
+     * @param instruction
      * @param frame
      * @param index
      */
-    public static void execute(Frame frame, int index) {
+    public static void execute(Instruction instruction, Frame frame, int index) {
         // simply ignore returnAddress
         Reference reference = frame.getOperandStacks().popReference();
         frame.getLocalVariables().setReference(index, reference);
+        int nextPc = frame.getNextPc() + instruction.size();
+        frame.setNextPc(nextPc);
     }
 
 }
