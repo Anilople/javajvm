@@ -50,7 +50,7 @@ public class INVOKESTATIC implements Instruction {
 
         String methodDescriptor = jvmMethod.getDescriptor();
         logger.trace("method descriptor: {}", methodDescriptor);
-        if(DescriptorUtils.isMethodDescriptor(methodDescriptor)) {
+        if(!DescriptorUtils.isMethodDescriptor(methodDescriptor)) {
             throw new RuntimeException(methodDescriptor + " is not a method descriptor");
         }
         List<String> descriptorParameters = DescriptorUtils.getParameterDescriptor(methodDescriptor);

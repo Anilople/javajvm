@@ -150,7 +150,9 @@ public class DescriptorUtils {
      */
     public static boolean isMethodDescriptor(String descriptor) {
         String parameterDescriptor =  getInFirstParentheses(descriptor);
+        logger.trace("parameterDescriptor: {}", parameterDescriptor);
         String returnDescriptor = descriptor.substring(descriptor.lastIndexOf(')') + 1);
+        logger.trace("returnDescriptor: {}", returnDescriptor);
         return (parameterDescriptor.length() <= 0 || isParameterDescriptor(parameterDescriptor))
                 && isReturnDescriptor(returnDescriptor);
     }
