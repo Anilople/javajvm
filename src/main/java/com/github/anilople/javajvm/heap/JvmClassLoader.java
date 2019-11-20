@@ -1,7 +1,9 @@
 package com.github.anilople.javajvm.heap;
 
+import com.github.anilople.javajvm.JavaJvmApplication;
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.classpath.ClassContext;
+import com.github.anilople.javajvm.constants.SpecialMethods;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,10 @@ public class JvmClassLoader {
         prepare(jvmClass);
 
         // initializing
+        JvmMethod clinit = jvmClass.getMethod(SpecialMethods.CLINIT, "()V");
+        logger.debug("class {}, static init {}", jvmClass.getName(), clinit.getName());
+        JavaJvmApplication.interpret(clinit);
+
         return jvmClass;
     }
 
