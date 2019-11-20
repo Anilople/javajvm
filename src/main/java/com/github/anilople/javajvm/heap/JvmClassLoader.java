@@ -67,8 +67,12 @@ public class JvmClassLoader {
 
         // initializing
         JvmMethod clinit = jvmClass.getMethod(SpecialMethods.CLINIT, "()V");
-        logger.debug("class {}, static init {}", jvmClass.getName(), clinit.getName());
-        JavaJvmApplication.interpret(clinit);
+        if(null != clinit) {
+            logger.debug("class {}, static init {}", jvmClass.getName(), clinit.getName());
+            JavaJvmApplication.interpret(clinit);
+        } else {
+            logger.debug("class {} have no {} method", jvmClass.getName(), SpecialMethods.CLINIT);
+        }
 
         return jvmClass;
     }
