@@ -117,8 +117,8 @@ public class LocalVariables {
 
     public void setLongValue(int index, long longValue) {
         // high bytes
-        int value0 = int.class.cast(longValue >> 32);
-        int value1 = int.class.cast(longValue);
+        int value0 = (int) (longValue >> 32);
+        int value1 = (int) (longValue);
         localVariables.set(index, new LocalVariable().setIntValue(value0));
         localVariables.set(index + 1, new LocalVariable().setIntValue(value1));
     }
