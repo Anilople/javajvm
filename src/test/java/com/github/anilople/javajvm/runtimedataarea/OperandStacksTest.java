@@ -5,6 +5,15 @@ import org.junit.jupiter.api.Test;
 
 public class OperandStacksTest {
 
+    private static final int defaultStackSize = 100;
+
+    @Test
+    public void longValueTest() {
+        OperandStacks operandStack = new OperandStacks(defaultStackSize);
+        operandStack.pushLongValue(100000000000000L);
+        Assertions.assertEquals(100000000000000L, operandStack.popLongValue());
+    }
+
     @Test
     public void OperandStackTest() {
         OperandStacks operandStack = new OperandStacks(100);

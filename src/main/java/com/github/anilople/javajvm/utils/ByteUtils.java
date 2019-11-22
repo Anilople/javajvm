@@ -101,6 +101,6 @@ public class ByteUtils {
     public static long int2long(int highBytes, int lowBytes) {
         long high = highBytes;
         long low = lowBytes;
-        return (highBytes << 32) | lowBytes;
+        return (high << 32) | low;
     }
 }
