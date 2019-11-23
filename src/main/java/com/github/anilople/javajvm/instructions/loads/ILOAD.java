@@ -21,7 +21,7 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
  */
 public class ILOAD implements Instruction {
 
-    private int index;
+    private byte unsignedByteIndex;
 
     /**
      * get an int value from local variables (by index)
@@ -42,17 +42,17 @@ public class ILOAD implements Instruction {
 
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
-        byte unsignedByte = bytecodeReader.readU1();
-        this.index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByte);
+        this.unsignedByteIndex = bytecodeReader.readU1();
     }
 
     @Override
     public int execute(Frame frame) {
-        return execute(this, frame, this.index);
+        int index = PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
+        return execute(this, frame, index);
     }
 
     @Override
     public int size() {
-        return 1;
+        return 2;
     }
 }
