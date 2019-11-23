@@ -122,4 +122,12 @@ public abstract class IF {
         return 3;
     }
 
+    public byte getBranchbyte1() {
+        return branchbyte1;
+    }
+
+    public byte getBranchbyte2() {
+        return branchbyte2;
+    }
+
 }
