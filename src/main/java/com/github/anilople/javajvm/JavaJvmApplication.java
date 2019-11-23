@@ -115,5 +115,6 @@ public class JavaJvmApplication {
                 interpret(jvmMethod);
             }
         }
+        throw new RuntimeException("cannot find main method in class " + jvmClass.getName());
     }
 }
