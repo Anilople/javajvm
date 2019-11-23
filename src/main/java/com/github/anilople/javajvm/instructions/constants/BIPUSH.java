@@ -6,6 +6,10 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 
 /**
  * Operation: Push byte
+ *
+ * Operand ... →
+ * Stack ..., value
+ *
  * Description:
  * The immediate byte is sign-extended to an int value. That value
  * is pushed onto the operand stack.
@@ -21,6 +25,7 @@ public class BIPUSH implements Instruction {
 
     @Override
     public int execute(Frame frame) {
+        // sign-extended
         int intValue = (int) byteValue;
         frame.getOperandStacks().pushIntValue(intValue);
         int nextPc = frame.getNextPc() + this.size();

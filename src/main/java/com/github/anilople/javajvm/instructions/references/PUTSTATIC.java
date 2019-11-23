@@ -10,6 +10,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,23 +101,43 @@ public class PUTSTATIC implements Instruction {
 
         String descriptor = jvmField.getDescriptor();
         logger.debug("descriptor: {}", descriptor);
+        if(DescriptorUtils.isBaseType(descriptor)) {
+            // BaseType
+            executePutBaseType(frame, jvmField);
+        } else if(DescriptorUtils.isObjectType(descriptor)) {
+            // ObjectType
+            executePutObjectType(frame, jvmField);
+        } else if(DescriptorUtils.isArrayType(descriptor)){
+            // ArrayType
+            executePutArrayType(frame, jvmField);
+        } else {
+            throw new IllegalStateException("Unexpected descriptor: " + descriptor);
+        }
+
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
+        return frame.getJvmThread().getPc() + this.size();
+    }
+
+    public static void executePutBaseType(Frame frame, JvmField jvmField) {
         int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        String descriptor = jvmField.getDescriptor();
         switch (descriptor) {
             case Descriptors.BaseType.BOOLEAN: // boolean
                 boolean booleanValue = frame.getOperandStacks().popBooleanValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setBooleanValue(index, booleanValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setBooleanValue(staticFieldOffset, booleanValue);
                 break;
             case Descriptors.BaseType.BYTE: // byte
                 byte byteValue = frame.getOperandStacks().popByteValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setByteValue(index, byteValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setByteValue(staticFieldOffset, byteValue);
                 break;
             case Descriptors.BaseType.CHAR: // char
                 char charValue = frame.getOperandStacks().popCharValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setCharValue(index, charValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setCharValue(staticFieldOffset, charValue);
                 break;
             case Descriptors.BaseType.SHORT: // short
                 short shortValue = frame.getOperandStacks().popShortValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setShortValue(index, shortValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setShortValue(staticFieldOffset, shortValue);
                 break;
             case Descriptors.BaseType.INT:
                 int intValue = frame.getOperandStacks().popIntValue();
@@ -124,22 +145,29 @@ public class PUTSTATIC implements Instruction {
                 break;
             case Descriptors.BaseType.FLOAT:
                 float floatValue = frame.getOperandStacks().popFloatValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setFloatValue(index, floatValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setFloatValue(staticFieldOffset, floatValue);
                 break;
             case Descriptors.BaseType.LONG:
                 long longValue = frame.getOperandStacks().popLongValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setLongValue(index, longValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setLongValue(staticFieldOffset, longValue);
                 break;
             case Descriptors.BaseType.DOUBLE:
                 double doubleValue = frame.getOperandStacks().popDoubleValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setDoubleValue(index, doubleValue);
+                jvmField.getJvmClass().getStaticFieldsValue().setDoubleValue(staticFieldOffset, doubleValue);
                 break;
             default:
                 throw new IllegalStateException("Unexpected descriptor: " + descriptor);
         }
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
+    }
+
+    public static void executePutObjectType(Frame frame, JvmField jvmField) {
+        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        Reference reference = frame.getOperandStacks().popReference();
+        jvmField.getJvmClass().getStaticFieldsValue().setReference(staticFieldOffset, reference);
+    }
+
+    public static void executePutArrayType(Frame frame, JvmField jvmField) {
+        throw new RuntimeException("cannot support array type");
     }
 
     @Override
