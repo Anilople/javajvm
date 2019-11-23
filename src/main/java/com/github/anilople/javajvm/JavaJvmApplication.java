@@ -14,6 +14,7 @@ import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class JavaJvmApplication {
@@ -102,7 +103,7 @@ public class JavaJvmApplication {
      * run jvm
      */
     public void start() {
-        String className = command.getClassName().replace('.', '/');
+        String className = command.getClassName().replace('.', File.separatorChar);
         logger.debug("class name = {}", className);
 
         JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classContext);
