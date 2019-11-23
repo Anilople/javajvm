@@ -109,12 +109,15 @@ public class JavaJvmApplication {
         JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classContext);
         JvmClass jvmClass = jvmClassLoader.loadClass(className);
 
+        if(!jvmClass.existMethod("main", "([Ljava/lang/String;)V")) {
+            throw new RuntimeException("cannot find main method in class " + jvmClass.getName());
+        }
+
         for(JvmMethod jvmMethod : jvmClass.getJvmMethods()) {
             logger.debug("jvm method : {}", jvmMethod);
             if("main".equals(jvmMethod.getName())) {
                 interpret(jvmMethod);
             }
         }
-        throw new RuntimeException("cannot find main method in class " + jvmClass.getName());
     }
 }
