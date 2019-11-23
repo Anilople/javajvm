@@ -49,6 +49,17 @@ public class ByteUtilsTest {
         Assertions.assertEquals(0, ByteUtils.int2long(0, 0));
         Assertions.assertEquals(-1, ByteUtils.int2long(-1, -1));
         Assertions.assertEquals(2, ByteUtils.int2long(0, 2));
-        Assertions.assertEquals(Integer.MIN_VALUE, ByteUtils.int2long(0, Integer.MIN_VALUE));
+        Assertions.assertEquals(1L << 32 - 1, ByteUtils.int2long(0, Integer.MIN_VALUE));
+
+        Assertions.assertEquals(((long) Integer.MIN_VALUE) << 32, ByteUtils.int2long(Integer.MIN_VALUE, 0));
+        Assertions.assertEquals(-1, ByteUtils.int2long(-1, -1));
+
+        // long overflow
+        Assertions.assertEquals(0xFFFF_FFFF_FFFF_FFFFL, ByteUtils.int2long(-1, -1));
+
+        Assertions.assertEquals(-0xFFFF_FFFF, ByteUtils.int2long(0, 1));
+
+        Assertions.assertEquals(0xF_FFFF_FFFFL, ByteUtils.int2long(0xF, 0xFFFF_FFFF));
+        Assertions.assertEquals(-0xF_FFFF_FFFFL, ByteUtils.int2long(0xFFFF_FFF0, 1));
     }
 }

@@ -99,8 +99,8 @@ public class ByteUtils {
      * @return
      */
     public static long int2long(int highBytes, int lowBytes) {
-        long high = highBytes;
-        long low = lowBytes;
-        return (high << 32) | low;
+        long high = 0xFFFF_FFFF_0000_0000L & (((long) highBytes) << 32);
+        long low = 0x0000_0000_FFFF_FFFFL & ((long) lowBytes);
+        return high | low;
     }
 }

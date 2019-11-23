@@ -7,9 +7,19 @@ import org.junit.jupiter.api.Test;
 
 public class LocalVariablesTest {
 
+    private static final int defaultMaxLocals = 100;
+
+    @Test
+    public void longValueTest() {
+        LocalVariables localVariables = new LocalVariables(defaultMaxLocals);
+        int index = 0;
+        localVariables.setLongValue(index, -100000000000L);
+        Assertions.assertEquals(-100000000000L, localVariables.getLongValue(index));
+    }
+
     @Test
     public void LocalVariablesTest() {
-        LocalVariables localVariables = new LocalVariables(100);
+        LocalVariables localVariables = new LocalVariables(defaultMaxLocals);
 
         int index = 0;
 
