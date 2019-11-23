@@ -1,27 +1,14 @@
 package com.github.anilople.javajvm.instructions.comparisons.ifinstructions;
 
-import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
-public class IF_ICMPNE implements Instruction {
-
-    @Override
-    public void fetchOperands(BytecodeReader bytecodeReader) {
-
-    }
+public class IF_ICMPNE extends IF implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        this.execute(frame, (value1, value2) -> !value1.equals(value2));
         return frame.getJvmThread().getPc() + this.size();
-
-    }
-
-    @Override
-    public int size() {
-        return 1;
     }
 
 }

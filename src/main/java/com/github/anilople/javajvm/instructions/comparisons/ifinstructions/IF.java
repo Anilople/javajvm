@@ -5,6 +5,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 
+import java.util.function.BiFunction;
 import java.util.function.IntPredicate;
 
 public abstract class IF {
@@ -65,6 +66,57 @@ public abstract class IF {
         }
     }
 
+    /**
+     * if_icmp<cond>
+     *
+     * Operation
+     * Branch if int comparison succeeds
+     *
+     * Operand ..., value1, value2 →
+     * Stack ...
+     *
+     * Description
+     * Both value1 and value2 must be of type int . They are both popped
+     * from the operand stack and compared. All comparisons are signed.
+     * The results of the comparison are as follows:
+     * • if_icmpeq succeeds if and only if value1 = value2
+     * • if_icmpne succeeds if and only if value1 ≠ value2
+     * • if_icmplt succeeds if and only if value1 < value2
+     * • if_icmple succeeds if and only if value1 ≤ value2
+     * • if_icmpgt succeeds if and only if value1 > value2
+     * • if_icmpge succeeds if and only if value1 ≥ value2
+     *
+     * If the comparison succeeds, the unsigned branchbyte1 and
+     * branchbyte2 are used to construct a signed 16-bit offset, where
+     * the offset is calculated to be (branchbyte1 << 8) | branchbyte2.
+     *
+     * Execution then proceeds at that offset from the address of the
+     * opcode of this if_icmp<cond> instruction.
+     *
+     * The target address must be that of an opcode of an instruction within the method that
+     * contains this if_icmp<cond> instruction.
+     * Otherwise, execution proceeds at the address of the instruction
+     * following this if_icmp<cond> instruction.
+     *
+     * compare 2 int values which pop from operand stack
+     * @param frame
+     * @param succeeds (int, int) -> bool
+     */
+    public void execute(Frame frame, BiFunction<Integer, Integer, Boolean> succeeds) {
+        int value2 = frame.getOperandStacks().popIntValue();
+        int value1 = frame.getOperandStacks().popIntValue();
+
+        // if succeeds
+        if(succeeds.apply(value1, value2)) {
+            // succeed
+            short branchOffset = ByteUtils.bytes2short(branchbyte1, branchbyte2);
+            int nextPc = frame.getNextPc() + PrimitiveTypeUtils.intFormSignedShort(branchOffset);
+            frame.setNextPc(nextPc);
+        } else {
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+        }
+    }
 
     public int size() {
         return 3;
