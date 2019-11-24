@@ -26,7 +26,11 @@ public class ClassFileClassContextImpl implements ClassContext {
 
     @Override
     public byte[] readClass(String className) {
-        if (classfile.toString().endsWith(className)) {
+        // damn file separator, '\' in windows, but '/' in linux and class file
+        String classfilePathName = classfile.toString();
+        String windowPathName = classfilePathName.replace('/', '\\');
+        String linuxPathName = classfilePathName.replace('\\', '/');
+        if (windowPathName.endsWith(className) || linuxPathName.endsWith(className)) {
             try {
                 logger.debug("{} is in {}", className, classfile);
                 return Files.readAllBytes(classfile);

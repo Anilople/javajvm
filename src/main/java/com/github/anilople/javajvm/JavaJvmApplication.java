@@ -103,7 +103,7 @@ public class JavaJvmApplication {
      * run jvm
      */
     public void start() {
-        String className = command.getClassName().replace('.', File.separatorChar);
+        String className = command.getClassName().replace('.', '/');
         logger.debug("class name = {}", className);
 
         JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classContext);

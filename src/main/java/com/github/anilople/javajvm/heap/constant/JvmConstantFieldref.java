@@ -69,6 +69,6 @@ public class JvmConstantFieldref extends JvmConstant {
         // may throw some error here ?
         // but class have been verifying
         logger.error("{} not exist in class {}", this, jvmClass);
-        return null;
+        throw new RuntimeException();
     }
 }
