@@ -16,4 +16,9 @@ public class JvmConstantFloat extends JvmConstant {
         super(jvmClass);
         this.constantFloatInfo = constantFloatInfo;
     }
+
+    public float getFloatValue() {
+        return Float.intBitsToFloat(constantFloatInfo.getBytes());
+    }
+
 }

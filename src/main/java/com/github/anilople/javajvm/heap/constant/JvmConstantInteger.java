@@ -15,4 +15,13 @@ public class JvmConstantInteger extends JvmConstant {
         super(jvmClass);
         this.constantIntegerInfo = constantIntegerInfo;
     }
+
+    /**
+     * int value of this constant
+     * @return
+     */
+    public int getIntValue() {
+        return constantIntegerInfo.getBytes();
+    }
+
 }

@@ -12,6 +12,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,32 +83,136 @@ public class PUTFIELD implements Instruction {
 
         String descriptor = jvmConstantFieldref.getFieldDescriptor();
         logger.debug("descriptor: {}", descriptor);
+        if(DescriptorUtils.isBaseType(descriptor)) {
+            // BaseType
+            executePutBaseType(frame, jvmField);
+        } else if(DescriptorUtils.isObjectType(descriptor)) {
+            // ObjectType
+            executePutObjectType(frame, jvmField);
+        } else if(DescriptorUtils.isArrayType(descriptor)){
+            // ArrayType
+            executePutArrayType(frame, jvmField);
+        } else {
+            throw new IllegalStateException("Unexpected descriptor: " + descriptor);
+        }
 
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
+        return frame.getJvmThread().getPc() + this.size();
+    }
+
+    private void executePutBaseType(Frame frame, JvmField jvmField) {
+        String descriptor = jvmField.getDescriptor();
+        int nonStaticFieldOffset = jvmField.calculateNonStaticFieldOffset();
         switch (descriptor) {
-            case Descriptors.BaseType.BOOLEAN: // boolean
-            case Descriptors.BaseType.BYTE: // byte
-            case Descriptors.BaseType.CHAR: // char
-            case Descriptors.BaseType.SHORT: // short
-            case Descriptors.BaseType.INT:
+            case Descriptors.BaseType.BOOLEAN: {
+                boolean booleanValue = frame.getOperandStacks().popBooleanValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setBooleanValue(nonStaticFieldOffset, booleanValue);
+                break;
+            }
+            case Descriptors.BaseType.BYTE: {
+                byte byteValue = frame.getOperandStacks().popByteValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setByteValue(nonStaticFieldOffset, byteValue);
+                break;
+            }
+            case Descriptors.BaseType.CHAR: {
+                char charValue = frame.getOperandStacks().popCharValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setCharValue(nonStaticFieldOffset, charValue);
+                break;
+            }
+            case Descriptors.BaseType.SHORT: {
+                short shortValue = frame.getOperandStacks().popShortValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setShortValue(nonStaticFieldOffset, shortValue);
+                break;
+            }
+            case Descriptors.BaseType.INT: {
                 int intValue = frame.getOperandStacks().popIntValue();
                 Reference reference = frame.getOperandStacks().popReference();
                 if(Reference.NULL.equals(reference)) {
                     throw new NullPointerException();
                 }
                 ObjectReference objectReference = (ObjectReference) reference;
-                objectReference.setIntValue(jvmField.calculateNonStaticFieldOffset(), intValue);
+                objectReference.setIntValue(nonStaticFieldOffset, intValue);
                 break;
-            case Descriptors.BaseType.FLOAT:
-            case Descriptors.BaseType.LONG:
-            case Descriptors.BaseType.DOUBLE:
+            }
+            case Descriptors.BaseType.FLOAT: {
+                float floatValue = frame.getOperandStacks().popFloatValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setFloatValue(nonStaticFieldOffset, floatValue);
                 break;
+            }
+            case Descriptors.BaseType.LONG: {
+                long longValue = frame.getOperandStacks().popLongValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setLongValue(nonStaticFieldOffset, longValue);
+                break;
+            }
+            case Descriptors.BaseType.DOUBLE: {
+                double doubleValue = frame.getOperandStacks().popDoubleValue();
+                Reference reference = frame.getOperandStacks().popReference();
+                if(Reference.NULL.equals(reference)) {
+                    throw new NullPointerException();
+                }
+                ObjectReference objectReference = (ObjectReference) reference;
+                objectReference.setDoubleValue(nonStaticFieldOffset, doubleValue);
+                break;
+            }
             default:
                 throw new IllegalStateException("Unexpected descriptor: " + descriptor);
         }
+    }
 
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
+    /**
+     *  If
+     * the field descriptor type is a reference type, then the value must
+     * be of a type that is assignment compatible (JLS §5.2) with the
+     * field descriptor type.
+     * @param frame
+     * @param jvmField
+     */
+    private void executePutObjectType(Frame frame, JvmField jvmField) {
+        int nonStaticFieldOffset = jvmField.calculateNonStaticFieldOffset();
+        Reference referenceValue = frame.getOperandStacks().popReference();
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException();
+        }
+        // type conform check, to do
+        logger.warn("without type conform check with {} and {}", reference, referenceValue);
+        ObjectReference objectReference = (ObjectReference) reference;
+        objectReference.setReference(nonStaticFieldOffset, referenceValue);
+    }
+
+    private void executePutArrayType(Frame frame, JvmField jvmField) {
+        throw new RuntimeException("cannot support array type");
     }
 
     @Override

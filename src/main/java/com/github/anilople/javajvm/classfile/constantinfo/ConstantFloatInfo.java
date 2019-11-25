@@ -25,4 +25,8 @@ public class ConstantFloatInfo extends ConstantPoolInfo {
                 "bytes=" + bytes +
                 '}';
     }
+
+    public int getBytes() {
+        return bytes;
+    }
 }
