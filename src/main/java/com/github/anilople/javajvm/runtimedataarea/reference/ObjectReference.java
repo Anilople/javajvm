@@ -17,7 +17,8 @@ public class ObjectReference extends LocalVariables implements Reference {
     @Override
     public String toString() {
         return "ObjectReference{" +
-                super.toString() +
+                "jvmClass=" + jvmClass +
+                ", super=" + super.toString() +
                 '}';
     }
 }
