@@ -1,9 +1,5 @@
 package com.github.anilople.javajvm.config;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
-
 /**
  * Every time when we need run a jvm,
  * there are some options, class name or jar file name we need to input.
@@ -24,7 +20,7 @@ public class CommandConfig {
     public static String[] getArgs(String className) {
         return new String[]{
                 "-Xjre",
-                "C:\\Program Files\\Java\\jre1.8.0_231",
+                System.getProperty("java.home"),
                 // without class name, default is
                 className
         };
