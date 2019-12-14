@@ -49,7 +49,7 @@ public class ZipClassContextImpl implements ClassContext {
                 throw new RuntimeException(e);
             }
         } else {
-            logger.trace("class {} is not in zipfile {}", className, zipFile.getName());
+//            logger.trace("class {} is not in zipfile {}", className, zipFile.getName());
             return null;
         }
     }
