@@ -2,7 +2,7 @@ package com.github.anilople.javajvm.classpath;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.IOUtils;
+import com.github.anilople.javajvm.utils.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +42,7 @@ public class ZipClassContextImpl implements ClassContext {
             logger.debug("class {} is in zipfile {}", className, zipFile.getName());
             try {
                 InputStream inputStream = zipFile.getInputStream(zipEntry);
+                // read all bytes(not consider large memory)
                 return IOUtils.readNBytes(inputStream, Integer.MAX_VALUE);
             } catch (IOException e) {
                 logger.debug("cannot read {} from {}", className, zipFile.getName());
