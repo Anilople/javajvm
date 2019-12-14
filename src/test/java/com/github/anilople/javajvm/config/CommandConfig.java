@@ -1,5 +1,8 @@
 package com.github.anilople.javajvm.config;
 
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Every time when we need run a jvm,
  * there are some options, class name or jar file name we need to input.
@@ -26,4 +29,20 @@ public class CommandConfig {
         };
     }
 
+    public static void main(String[] args) {
+        System.out.println("System's environment:");
+        Map<String, String> envs = System.getenv();
+        for(Map.Entry<String, String> entry : envs.entrySet()) {
+            System.out.printf("%s = %s\n", entry.getKey(), entry.getValue());
+        }
+
+        System.out.println();
+        System.out.println("####################");
+        System.out.println();
+        System.out.println("System's properties");
+        Properties properties = System.getProperties();
+        properties.forEach(
+                (key, value) -> System.out.println(key + " = " + value)
+        );
+    }
 }
