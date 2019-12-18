@@ -17,15 +17,27 @@ public class IOUtils {
      * @return
      */
     public static byte[] readNBytes(InputStream inputStream, int n) throws IOException {
-        byte[] buffer = new byte[1024 * 1024 * 1024];
-        int firstReadLen = inputStream.read(buffer);
+        byte[] target = new byte[128 * 1024 * 1024];
+        int len = 0;
 
-        if(inputStream.read() >= 0) {
-            // some data left in the input stream
-            throw new RuntimeException("buffer is too small");
+        byte[] buffer = new byte[1024 * 1024];
+        for(int nowLen = inputStream.read(buffer);
+            -1 != nowLen;
+            nowLen = inputStream.read(buffer)
+        ) {
+            while(len + nowLen >= target.length) {
+                // grow target bytes
+                byte[] newTarget = new byte[target.length << 1];
+                System.arraycopy(target, 0, newTarget, 0, len);
+                target = newTarget;
+            }
+            // copy buffer's bytes to target
+            System.arraycopy(buffer, 0, target, len, nowLen);
+            // add nowLen to len
+            len += nowLen;
         }
 
-        return Arrays.copyOf(buffer, firstReadLen);
+        return Arrays.copyOf(target, len);
     }
 
 }
