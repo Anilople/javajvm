@@ -76,7 +76,7 @@ public abstract class ConstantPoolInfo {
             } else if(constantPool[i].getClass().equals(ConstantLongInfo.class)) {
                 i += 1;
             }
-            logger.debug("read one constant pool: {}", constantPool[i]);
+            logger.debug("read {}-th constant pool: {}", i, constantPool[i]);
         }
         return constantPool;
     }
