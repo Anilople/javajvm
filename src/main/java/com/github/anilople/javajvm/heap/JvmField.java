@@ -3,6 +3,7 @@ package com.github.anilople.javajvm.heap;
 import com.github.anilople.javajvm.classfile.FieldInfo;
 import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.utils.ConstantPoolUtils;
+import com.github.anilople.javajvm.utils.JvmClassUtils;
 
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class JvmField extends JvmClassMember {
      */
     public static int calculateNonStaticFieldOffset(JvmClass jvmClass, JvmField jvmField) {
         int offset = 0;
-        for(JvmClass tempClass : JvmClass.getInheritedClassesChain(jvmClass)) {
+        for(JvmClass tempClass : JvmClassUtils.getInheritedClassesChain(jvmClass)) {
             offset += tempClass.getNonStaticFieldsSize();
         }
 
@@ -107,7 +108,7 @@ public class JvmField extends JvmClassMember {
      */
     public static int calculateStaticFieldOffset(JvmClass jvmClass, JvmField jvmField) {
         int offset = 0;
-        for(JvmClass tempClass : JvmClass.getInheritedClassesChain(jvmClass)) {
+        for(JvmClass tempClass : JvmClassUtils.getInheritedClassesChain(jvmClass)) {
             offset += tempClass.getStaticFieldsSize();
         }
 
