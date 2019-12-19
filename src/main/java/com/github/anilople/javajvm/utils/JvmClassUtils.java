@@ -176,4 +176,87 @@ public class JvmClassUtils {
 
         return allFields;
     }
+
+    /**
+     * get some fields in now class which
+     * satisfies that 0 != (field's accessFlags & accessFlag),
+     * like making a filter (x -> 0 != (x & accessFlag)), x is field's access flag
+     * @param nowClass
+     * @param accessFlag
+     * @return
+     */
+    public static List<JvmField> getFieldsWithAccessFlag(JvmClass nowClass, short accessFlag) {
+        List<JvmField> jvmFields = new ArrayList<>();
+        for(JvmField jvmField : nowClass.getJvmFields()) {
+            if(0 != (jvmField.getAccessFlags() & accessFlag)) {
+                jvmFields.add(jvmField);
+            }
+        }
+        return jvmFields;
+    }
+
+    /**
+     *
+     * @param nowClass
+     * @return static fields in now class by order
+     */
+    public static List<JvmField> getStaticFields(JvmClass nowClass) {
+        // get static fields
+        return JvmClassUtils.getFieldsWithAccessFlag(nowClass, AccessFlags.ACC_STATIC);
+    }
+
+    /**
+     * now class exists this field or not.
+     * Whatever field is static or not, it doesn't matter.
+     * This method just make a simple check
+     * @param nowClass
+     * @param jvmField
+     * @return
+     */
+    public static boolean exists(JvmClass nowClass, JvmField jvmField) {
+        for(JvmField jvmFieldInNowClass : nowClass.getJvmFields()) {
+            if(jvmFieldInNowClass.equals(jvmField)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Whatever now class exist this field,
+     * or its ancestor exist this field,
+     * a true will return;
+     * else return a false.
+     * @param nowClass
+     * @param jvmField
+     * @return
+     */
+    public static boolean existsWithAncestor(JvmClass nowClass, JvmField jvmField) {
+        if(nowClass.exists(jvmField)) {
+            return true;
+        } else {
+            // find in super class
+            return nowClass.existsSuperClass() && existsWithAncestor(nowClass.getSuperClass(), jvmField);
+        }
+    }
+
+    /**
+     * find that which jvm class this static field belong to.
+     * Because some times there is inheritance with static field between classes
+     * @param nowClass
+     * @param jvmField must be a static field
+     * @return
+     */
+    public static JvmClass getJvmClassStaticFieldBelongTo(JvmClass nowClass, JvmField jvmField) {
+        if(!jvmField.isStatic()) {
+            throw new RuntimeException("Please pass a static field. " + jvmField + " is not static");
+        }
+
+        if(nowClass.exists(jvmField)) {
+            return nowClass;
+        } else {
+            // find in super class(if field also not exists in ancestor, an Exception will occur)
+            return getJvmClassStaticFieldBelongTo(nowClass.getSuperClass(), jvmField);
+        }
+    }
 }

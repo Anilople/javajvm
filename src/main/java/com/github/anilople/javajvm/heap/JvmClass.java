@@ -141,6 +141,23 @@ public class JvmClass {
         return number;
     }
 
+    /**
+     * if this class exists field, return true;
+     * else return false.
+     * @param jvmField
+     * @return
+     */
+    public boolean exists(JvmField jvmField) {
+        return JvmClassUtils.exists(this, jvmField);
+    }
+
+    /**
+     * @return true if this class exist super class
+     */
+    public boolean existsSuperClass() {
+        return null != this.superClass;
+    }
+
     public boolean isPublic() {
         return 0 != (this.accessFlags & AccessFlags.ClassFlags.ACC_PUBLIC);
     }
