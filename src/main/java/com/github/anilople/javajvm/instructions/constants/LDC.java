@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.instructions.constants;
 
 import com.github.anilople.javajvm.heap.JvmClass;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.constant.JvmConstant;
 import com.github.anilople.javajvm.heap.constant.JvmConstantFloat;
 import com.github.anilople.javajvm.heap.constant.JvmConstantInteger;
@@ -8,6 +9,8 @@ import com.github.anilople.javajvm.heap.constant.JvmConstantString;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +69,19 @@ public class LDC implements Instruction {
             float floatValue = ((JvmConstantFloat) jvmConstant).getFloatValue();
             frame.getOperandStacks().pushFloatValue(floatValue);
         } else if(jvmConstant instanceof JvmConstantString) {
-            throw new RuntimeException("LDC now cannot support JvmConstantString " + jvmConstant);
+            // a reference to a string literal
+//            throw new RuntimeException("LDC now cannot support JvmConstantString " + jvmConstant);
+            JvmConstantString jvmConstantString = (JvmConstantString) jvmConstant;
+            String utf8 = jvmConstantString.getJvmClass().getJvmConstantPool().getUtf8String(
+                    jvmConstantString.getConstantStringInfo().getStringIndex()
+            );
+            logger.info("String content = {}", utf8);
+            // load java.lang.String
+            JvmClass stringClass = jvmConstantString.getJvmClass().getLoader().loadClass(
+                    String.class.getTypeName().replace('.', '/')
+            );
+            ObjectReference objectReference = new ObjectReference(stringClass);
+            throw new RuntimeException("LDC now cannot support " + jvmConstant);
         } else {
             throw new RuntimeException("LDC now cannot support " + jvmConstant);
         }

@@ -15,4 +15,8 @@ public class JvmConstantString extends JvmConstant {
         super(jvmClass);
         this.constantStringInfo = constantStringInfo;
     }
+
+    public ConstantStringInfo getConstantStringInfo() {
+        return constantStringInfo;
+    }
 }
