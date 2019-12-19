@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.classfile.FieldInfo;
 import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
+import com.github.anilople.javajvm.utils.JvmFieldUtils;
 
 import java.util.List;
 
@@ -69,74 +70,12 @@ public class JvmField extends JvmClassMember {
     }
 
     /**
-     * calculate that the offset of a non static field in a class
-     * just remember that long and double occupy 2 location
-     * @param jvmClass
-     * @param jvmField a non static field
-     * @return
-     */
-    public static int calculateNonStaticFieldOffset(JvmClass jvmClass, JvmField jvmField) {
-        int offset = 0;
-        for(JvmClass tempClass : JvmClassUtils.getInheritedClassesChain(jvmClass)) {
-            offset += tempClass.getNonStaticFieldsSize();
-        }
-
-        // subtract now class fields's size
-        offset -= jvmClass.getNonStaticFieldsSize();
-
-        // add offset
-        for(JvmField tempField : jvmClass.getJvmFields()) {
-            if(tempField.equals(jvmField)) {
-                // meet same
-                break;
-            }
-
-            if(!tempField.isStatic()) {
-                offset += tempField.getSize();
-            }
-        }
-
-        return offset;
-    }
-
-    /**
-     * calculate that the offset of a static field in a class
-     * just remember that long and double occupy 2 location
-     * @param jvmClass
-     * @param jvmField
-     * @return
-     */
-    public static int calculateStaticFieldOffset(JvmClass jvmClass, JvmField jvmField) {
-        int offset = 0;
-        for(JvmClass tempClass : JvmClassUtils.getInheritedClassesChain(jvmClass)) {
-            offset += tempClass.getStaticFieldsSize();
-        }
-
-        // subtract now class static fields's size
-        offset -= jvmClass.getStaticFieldsSize();
-
-        // add offset
-        for(JvmField tempField : jvmClass.getJvmFields()) {
-            if(tempField.equals(jvmField)) {
-                // meet same
-                break;
-            }
-
-            if(tempField.isStatic()) {
-                offset += tempField.getSize();
-            }
-        }
-
-        return offset;
-    }
-
-    /**
      * suppose this field is not static field
      * now calculate its offset in all fields (current class and super classes)
      * @return
      */
     public int calculateNonStaticFieldOffset() {
-        return JvmField.calculateNonStaticFieldOffset(this.getJvmClass(), this);
+        return JvmFieldUtils.calculateNonStaticFieldOffset(this.getJvmClass(), this);
     }
 
     /**
@@ -145,7 +84,7 @@ public class JvmField extends JvmClassMember {
      * @return
      */
     public int calculateStaticFieldOffset() {
-        return JvmField.calculateStaticFieldOffset(this.getJvmClass(), this);
+        return JvmFieldUtils.calculateStaticFieldOffset(this.getJvmClass(), this);
     }
 
 }
