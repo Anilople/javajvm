@@ -47,6 +47,19 @@ public class JvmClassLoader {
     }
 
     /**
+     * load java's class with type
+     * @param clazz
+     * @return
+     */
+    public JvmClass loadClass(Class<?> clazz) {
+        // name like java.lang.Object
+        String className = clazz.getName();
+        // change to java/lang/Object
+        String standardFormatInRuntimeClassName = className.replace('.', '/');
+        return loadClass(standardFormatInRuntimeClassName);
+    }
+
+    /**
      * load a non array class
      * @param className
      * @return
