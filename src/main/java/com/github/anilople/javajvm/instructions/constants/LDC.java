@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.instructions.constants;
 
+import com.github.anilople.javajvm.cachepool.StringPool;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.constant.JvmConstant;
@@ -9,6 +10,7 @@ import com.github.anilople.javajvm.heap.constant.JvmConstantString;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
@@ -76,10 +78,19 @@ public class LDC implements Instruction {
                     jvmConstantString.getConstantStringInfo().getStringIndex()
             );
             logger.trace("String content = {}", utf8);
-            // load java.lang.String
-            JvmClass stringClass = jvmConstantString.getJvmClass().getLoader().loadClass(String.class);
-            ObjectReference objectReference = new ObjectReference(stringClass);
-            throw new RuntimeException("LDC now cannot support " + jvmConstant);
+            if(!StringPool.exists(utf8)) {
+                // load java.lang.String
+                JvmClass stringClass = jvmConstantString.getJvmClass().getLoader().loadClass(String.class);
+                ObjectReference objectReference = new ObjectReference(stringClass);
+                BaseTypeArrayReference charArrayReference = new BaseTypeArrayReference(utf8.toCharArray());
+                // use hack skill to generate string
+                objectReference.setReference(0, charArrayReference);
+                StringPool.add(utf8, objectReference);
+            }
+            // get string object from string pool
+            ObjectReference objectReference = StringPool.get(utf8);
+            frame.getOperandStacks().pushReference(objectReference);
+//            throw new RuntimeException("LDC now cannot support " + jvmConstant);
         } else {
             throw new RuntimeException("LDC now cannot support " + jvmConstant);
         }

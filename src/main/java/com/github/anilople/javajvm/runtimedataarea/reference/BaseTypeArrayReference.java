@@ -67,6 +67,16 @@ public class BaseTypeArrayReference extends ArrayReference {
         }
     }
 
+    /**
+     * construct from char array
+     * @param chars
+     */
+    public BaseTypeArrayReference(char[] chars) {
+        super(chars.length);
+        this.typeCode = ArrayTypeCodes.T_CHAR;
+        this.chars = chars;
+    }
+
     @Override
     public String toString() {
         String value = null;
