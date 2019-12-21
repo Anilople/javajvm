@@ -2,15 +2,18 @@ package com.github.anilople.javajvm.instructions.references;
 
 import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.constants.SpecialMethods;
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.heap.constant.JvmConstantFieldref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
+import com.github.anilople.javajvm.utils.JvmClassUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,40 +123,41 @@ public class PUTSTATIC implements Instruction {
     }
 
     public static void executePutBaseType(Frame frame, JvmField jvmField) {
-        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        JvmClass fieldBelongClass = JvmClassUtils.getJvmClassStaticFieldBelongTo(jvmField.getJvmClass(), jvmField);
+        int staticFieldOffset = JvmClassUtils.calculateStaticFieldOffsetInNowClass(fieldBelongClass, jvmField);
         String descriptor = jvmField.getDescriptor();
         switch (descriptor) {
             case Descriptors.BaseType.BOOLEAN: // boolean
                 boolean booleanValue = frame.getOperandStacks().popBooleanValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setBooleanValue(staticFieldOffset, booleanValue);
+                fieldBelongClass.getStaticFieldsValue().setBooleanValue(staticFieldOffset, booleanValue);
                 break;
             case Descriptors.BaseType.BYTE: // byte
                 byte byteValue = frame.getOperandStacks().popByteValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setByteValue(staticFieldOffset, byteValue);
+                fieldBelongClass.getStaticFieldsValue().setByteValue(staticFieldOffset, byteValue);
                 break;
             case Descriptors.BaseType.CHAR: // char
                 char charValue = frame.getOperandStacks().popCharValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setCharValue(staticFieldOffset, charValue);
+                fieldBelongClass.getStaticFieldsValue().setCharValue(staticFieldOffset, charValue);
                 break;
             case Descriptors.BaseType.SHORT: // short
                 short shortValue = frame.getOperandStacks().popShortValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setShortValue(staticFieldOffset, shortValue);
+                fieldBelongClass.getStaticFieldsValue().setShortValue(staticFieldOffset, shortValue);
                 break;
             case Descriptors.BaseType.INT:
                 int intValue = frame.getOperandStacks().popIntValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setIntValue(staticFieldOffset, intValue);
+                fieldBelongClass.getStaticFieldsValue().setIntValue(staticFieldOffset, intValue);
                 break;
             case Descriptors.BaseType.FLOAT:
                 float floatValue = frame.getOperandStacks().popFloatValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setFloatValue(staticFieldOffset, floatValue);
+                fieldBelongClass.getStaticFieldsValue().setFloatValue(staticFieldOffset, floatValue);
                 break;
             case Descriptors.BaseType.LONG:
                 long longValue = frame.getOperandStacks().popLongValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setLongValue(staticFieldOffset, longValue);
+                fieldBelongClass.getStaticFieldsValue().setLongValue(staticFieldOffset, longValue);
                 break;
             case Descriptors.BaseType.DOUBLE:
                 double doubleValue = frame.getOperandStacks().popDoubleValue();
-                jvmField.getJvmClass().getStaticFieldsValue().setDoubleValue(staticFieldOffset, doubleValue);
+                fieldBelongClass.getStaticFieldsValue().setDoubleValue(staticFieldOffset, doubleValue);
                 break;
             default:
                 throw new IllegalStateException("Unexpected descriptor: " + descriptor);
@@ -161,13 +165,17 @@ public class PUTSTATIC implements Instruction {
     }
 
     public static void executePutObjectType(Frame frame, JvmField jvmField) {
-        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        JvmClass fieldBelongClass = JvmClassUtils.getJvmClassStaticFieldBelongTo(jvmField.getJvmClass(), jvmField);
+        int staticFieldOffset = JvmClassUtils.calculateStaticFieldOffsetInNowClass(fieldBelongClass, jvmField);
         Reference reference = frame.getOperandStacks().popReference();
-        jvmField.getJvmClass().getStaticFieldsValue().setReference(staticFieldOffset, reference);
+        fieldBelongClass.getStaticFieldsValue().setReference(staticFieldOffset, reference);
     }
 
     public static void executePutArrayType(Frame frame, JvmField jvmField) {
-        throw new RuntimeException("cannot support array type");
+        JvmClass fieldBelongClass = JvmClassUtils.getJvmClassStaticFieldBelongTo(jvmField.getJvmClass(), jvmField);
+        int staticFieldOffset = JvmClassUtils.calculateStaticFieldOffsetInNowClass(fieldBelongClass, jvmField);
+        ArrayReference arrayReference = (ArrayReference) frame.getOperandStacks().popReference();
+        fieldBelongClass.getStaticFieldsValue().setReference(staticFieldOffset, arrayReference);
     }
 
     @Override

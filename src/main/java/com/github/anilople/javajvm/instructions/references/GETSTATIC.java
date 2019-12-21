@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.instructions.references;
 
 import com.github.anilople.javajvm.constants.Descriptors;
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.heap.constant.JvmConstantFieldref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
@@ -9,6 +10,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
+import com.github.anilople.javajvm.utils.JvmClassUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,39 +91,40 @@ public class GETSTATIC implements Instruction {
 
     public static void executeGetBaseType(Frame frame, JvmField jvmField) {
         logger.trace("base type get: {} {}", jvmField.getDescriptor(), jvmField.getName());
-        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
+        JvmClass fieldBelongClass = JvmClassUtils.getJvmClassStaticFieldBelongTo(jvmField.getJvmClass(), jvmField);
+        int staticFieldOffset = JvmClassUtils.calculateStaticFieldOffsetInNowClass(fieldBelongClass, jvmField);
         String descriptor = jvmField.getDescriptor();
         switch (descriptor) {
             case Descriptors.BaseType.BOOLEAN:
-                boolean booleanValue = jvmField.getJvmClass().getStaticFieldsValue().getBooleanValue(staticFieldOffset);
+                boolean booleanValue = fieldBelongClass.getStaticFieldsValue().getBooleanValue(staticFieldOffset);
                 frame.getOperandStacks().pushBooleanValue(booleanValue);
                 break;
             case Descriptors.BaseType.BYTE:
-                byte byteValue = jvmField.getJvmClass().getStaticFieldsValue().getByteValue(staticFieldOffset);
+                byte byteValue = fieldBelongClass.getStaticFieldsValue().getByteValue(staticFieldOffset);
                 frame.getOperandStacks().pushByteValue(byteValue);
                 break;
             case Descriptors.BaseType.CHAR:
-                char charValue = jvmField.getJvmClass().getStaticFieldsValue().getCharValue(staticFieldOffset);
+                char charValue = fieldBelongClass.getStaticFieldsValue().getCharValue(staticFieldOffset);
                 frame.getOperandStacks().pushCharValue(charValue);
                 break;
             case Descriptors.BaseType.SHORT:
-                short shortValue = jvmField.getJvmClass().getStaticFieldsValue().getShortValue(staticFieldOffset);
+                short shortValue = fieldBelongClass.getStaticFieldsValue().getShortValue(staticFieldOffset);
                 frame.getOperandStacks().pushShortValue(shortValue);
                 break;
             case Descriptors.BaseType.INT:
-                int intValue = jvmField.getJvmClass().getStaticFieldsValue().getIntValue(staticFieldOffset);
+                int intValue = fieldBelongClass.getStaticFieldsValue().getIntValue(staticFieldOffset);
                 frame.getOperandStacks().pushIntValue(intValue);
                 break;
             case Descriptors.BaseType.FLOAT:
-                float floatValue = jvmField.getJvmClass().getStaticFieldsValue().getFloatValue(staticFieldOffset);
+                float floatValue = fieldBelongClass.getStaticFieldsValue().getFloatValue(staticFieldOffset);
                 frame.getOperandStacks().pushFloatValue(floatValue);
                 break;
             case Descriptors.BaseType.LONG:
-                long longValue = jvmField.getJvmClass().getStaticFieldsValue().getLongValue(staticFieldOffset);
+                long longValue = fieldBelongClass.getStaticFieldsValue().getLongValue(staticFieldOffset);
                 frame.getOperandStacks().pushLongValue(longValue);
                 break;
             case Descriptors.BaseType.DOUBLE:
-                double doubleValue = jvmField.getJvmClass().getStaticFieldsValue().getDoubleValue(staticFieldOffset);
+                double doubleValue = fieldBelongClass.getStaticFieldsValue().getDoubleValue(staticFieldOffset);
                 frame.getOperandStacks().pushDoubleValue(doubleValue);
                 break;
             default:
@@ -131,8 +134,9 @@ public class GETSTATIC implements Instruction {
 
     public static void executeGetObjectType(Frame frame, JvmField jvmField) {
         logger.trace("object type get: {} {}", jvmField.getDescriptor(), jvmField.getName());
-        int staticFieldOffset = jvmField.calculateStaticFieldOffset();
-        Reference reference = jvmField.getJvmClass().getStaticFieldsValue().getReference(staticFieldOffset);
+        JvmClass fieldBelongClass = JvmClassUtils.getJvmClassStaticFieldBelongTo(jvmField.getJvmClass(), jvmField);
+        int staticFieldOffset = JvmClassUtils.calculateStaticFieldOffsetInNowClass(fieldBelongClass, jvmField);
+        Reference reference = fieldBelongClass.getStaticFieldsValue().getReference(staticFieldOffset);
         frame.getOperandStacks().pushReference(reference);
     }
 

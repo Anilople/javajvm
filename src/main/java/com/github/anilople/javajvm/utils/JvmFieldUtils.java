@@ -39,35 +39,4 @@ public class JvmFieldUtils {
         return offset;
     }
 
-    /**
-     * calculate that the offset of a static field in a class
-     * just remember that long and double occupy 2 location
-     * @param jvmClass
-     * @param jvmField
-     * @return
-     */
-    public static int calculateStaticFieldOffset(JvmClass jvmClass, JvmField jvmField) {
-        int offset = 0;
-        for(JvmClass tempClass : JvmClassUtils.getInheritedClassesChain(jvmClass)) {
-            offset += tempClass.getStaticFieldsSize();
-        }
-
-        // subtract now class static fields's size
-        offset -= jvmClass.getStaticFieldsSize();
-
-        // add offset
-        for(JvmField tempField : jvmClass.getJvmFields()) {
-            if(tempField.equals(jvmField)) {
-                // meet same
-                break;
-            }
-
-            if(tempField.isStatic()) {
-                offset += tempField.getSize();
-            }
-        }
-
-        return offset;
-    }
-
 }

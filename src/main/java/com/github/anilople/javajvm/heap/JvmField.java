@@ -78,13 +78,5 @@ public class JvmField extends JvmClassMember {
         return JvmFieldUtils.calculateNonStaticFieldOffset(this.getJvmClass(), this);
     }
 
-    /**
-     * suppose this field is a static field
-     * now calculate its offset in all fields (current class and super classes)
-     * @return
-     */
-    public int calculateStaticFieldOffset() {
-        return JvmFieldUtils.calculateStaticFieldOffset(this.getJvmClass(), this);
-    }
 
 }

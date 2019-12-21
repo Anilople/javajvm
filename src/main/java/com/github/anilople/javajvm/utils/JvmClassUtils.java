@@ -259,4 +259,37 @@ public class JvmClassUtils {
             return getJvmClassStaticFieldBelongTo(nowClass.getSuperClass(), jvmField);
         }
     }
+
+    /**
+     * suppose that field in now class
+     * and field is static
+     * calculate the offset in static field
+     * Only static field!!!
+     * @param nowClass
+     * @param jvmField
+     * @return
+     */
+    public static int calculateStaticFieldOffsetInNowClass(JvmClass nowClass, JvmField jvmField) {
+        // check field is static or not
+        if(!jvmField.isStatic()) {
+            throw new RuntimeException(jvmField.getName() + " is not static.");
+        }
+        // check field in now class or not
+        if(!exists(nowClass, jvmField)) {
+            throw new RuntimeException(nowClass.getName() + " doesn't exists field " + jvmField.getName());
+        }
+        // get static fields declared in now class
+        List<JvmField> staticFields = JvmClassUtils.getStaticFields(nowClass);
+        // start calculate offset
+        int offset = 0;
+        for(JvmField staticField : staticFields) {
+            if(staticField.equals(jvmField)) {
+                return offset;
+            } else {
+                offset += staticField.getSize();
+            }
+        }
+        // for the logic, the code cannot reach here
+        throw new RuntimeException(jvmField.getName() + " not in " + nowClass.getName());
+    }
 }
