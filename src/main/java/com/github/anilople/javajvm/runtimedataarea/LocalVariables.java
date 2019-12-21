@@ -69,7 +69,7 @@ public class LocalVariables {
 
     @Override
     public String toString() {
-        return "LocalVariables{" +
+        return this.getClass().getName() + "{" +
                 "maxLocals=" + maxLocals +
                 ", localVariables=" + localVariables +
                 '}';

@@ -56,7 +56,8 @@ public abstract class JvmClassMember {
     @Override
     public String toString() {
         return this.getClass().getName() + "{" +
-                "name='" + name + '\'' +
+                "class='" + jvmClass.getName() + '\'' +
+                ", name='" + name + '\'' +
                 ", descriptor='" + descriptor + '\'' +
                 '}';
     }

@@ -16,7 +16,7 @@ public class LocalVariable {
 
     @Override
     public String toString() {
-        return "LocalVariable{" +
+        return this.getClass().getName() + "{" +
                 "intValue=" + intValue +
                 ", reference=" + reference +
                 '}';
