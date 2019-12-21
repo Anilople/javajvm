@@ -2,6 +2,7 @@ package com.github.anilople.javajvm.heap;
 
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.AccessFlags;
+import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
 import org.slf4j.Logger;
@@ -156,6 +157,32 @@ public class JvmClass {
      */
     public boolean existsSuperClass() {
         return null != this.superClass;
+    }
+
+    /**
+     * check this class exist "<clinit>" method or not
+     * @return
+     */
+    public boolean existsStaticInitialMethod() {
+        for(JvmMethod jvmMethod : this.getJvmMethods()) {
+            if(SpecialMethods.CLINIT.equals(jvmMethod.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @throws RuntimeException if there is no "<clinit>" method
+     * @return "<clinit>" method
+     */
+    public JvmMethod getStaticInitialMethod() {
+        for(JvmMethod jvmMethod : this.getJvmMethods()) {
+            if(SpecialMethods.CLINIT.equals(jvmMethod.getName())) {
+                return jvmMethod;
+            }
+        }
+        throw new RuntimeException(SpecialMethods.CLINIT + " doesn't exists in class " + this.getName());
     }
 
     public boolean isPublic() {
