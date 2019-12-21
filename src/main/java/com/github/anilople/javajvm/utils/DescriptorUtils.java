@@ -1,10 +1,15 @@
 package com.github.anilople.javajvm.utils;
 
 import com.github.anilople.javajvm.constants.Descriptors;
+import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
+import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -243,5 +248,132 @@ public class DescriptorUtils {
     public static String getReturnDescriptor(String methodDescriptor) {
         int rightParenthesesIndex = methodDescriptor.indexOf(")");
         return methodDescriptor.substring(rightParenthesesIndex + 1, methodDescriptor.length());
+    }
+
+    /**
+     * @param fieldDescriptor must be FieldDescriptor
+     * @throws RuntimeException
+     * @return
+     */
+    public static int getFieldDescriptorSize(String fieldDescriptor) {
+        if(!DescriptorUtils.isFieldDescriptor(fieldDescriptor)) {
+            throw new RuntimeException(fieldDescriptor + " is not FieldDescriptor");
+        }
+
+        switch (fieldDescriptor) {
+            case Descriptors.BaseType.LONG:
+            case Descriptors.BaseType.DOUBLE:
+                return 2;
+            default:
+                return 1;
+        }
+    }
+
+    /**
+     * for the max local in local variables
+     * @param parameterDescriptors must be ParameterDescriptor
+     * @throws RuntimeException
+     * @return
+     */
+    public static int getParameterDescriptorsSize(List<String> parameterDescriptors) {
+        int sum = 0;
+        for(String parameterDescriptor : parameterDescriptors) {
+            sum += DescriptorUtils.getFieldDescriptorSize(parameterDescriptor);
+        }
+        return sum;
+    }
+
+    /**
+     * Operand ..., objectref, [arg1, [arg2 ...]] →
+     * Stack
+     *
+     * objectref in local variable 0, arg1 in local variable 1 (or, if arg1 is of
+     * type long or double , in local variables 1 and 2), and so on.
+     *
+     * pop value in stack according to parameter descriptor
+     * the values pop from stack will save in LocalVariables reversed
+     *
+     *
+     * Example:
+     *      static invoke(without object reference)
+     *          (ILjava/lang/Object;) :
+     *              pop Reference, pop int,
+     *              but in local variables,
+     *              the values are [I, Ljava/lang/Object;]
+     *      non static invoke:
+     *          (J[I):
+     *              pop int array, pop long, pop object reference
+     *              but in local variables
+     *              the values are [objectref, long, int array]
+     *
+     * @param existsObjectReference distinguish that there an Object Reference or not(max locals in local variables)
+     * @param operandStacks
+     * @param parameterDescriptors
+     * @throws RuntimeException
+     * @return
+     */
+    public static LocalVariables popArgsByParameterDescriptor(boolean existsObjectReference, OperandStacks operandStacks, List<String> parameterDescriptors) {
+        int parameterDescriptorsSize = DescriptorUtils.getParameterDescriptorsSize(parameterDescriptors);
+        LocalVariables localVariables
+                = existsObjectReference ?
+                new LocalVariables(parameterDescriptorsSize + 1)
+                :
+                new LocalVariables(parameterDescriptorsSize)
+                ;
+
+        // reverse parameter descriptors list for pop value
+        Collections.reverse(parameterDescriptors);
+
+        // start index
+        int localVariableIndex = 0;
+        for(String parameterDescriptor : parameterDescriptors) {
+            logger.trace("one parameterDescriptor: {}", parameterDescriptor);
+            if(DescriptorUtils.isBaseType(parameterDescriptor)) {
+                switch (parameterDescriptor) {
+                    case Descriptors.BaseType.BOOLEAN:
+                    case Descriptors.BaseType.BYTE:
+                    case Descriptors.BaseType.CHAR:
+                    case Descriptors.BaseType.SHORT:
+                    case Descriptors.BaseType.INT:
+                        int intValue = operandStacks.popIntValue();
+                        localVariables.setIntValue(localVariableIndex, intValue);
+                        break;
+                    case Descriptors.BaseType.FLOAT:
+                        float floatValue = operandStacks.popFloatValue();
+                        localVariables.setFloatValue(localVariableIndex, floatValue);
+                        break;
+                    case Descriptors.BaseType.LONG:
+                        long longValue = operandStacks.popLongValue();
+                        localVariables.setLongValue(localVariableIndex, longValue);
+                        localVariableIndex += 1;
+                        break;
+                    case Descriptors.BaseType.DOUBLE:
+                        double doubleValue = operandStacks.popDoubleValue();
+                        localVariables.setDoubleValue(localVariableIndex, doubleValue);
+                        localVariableIndex += 1;
+                }
+                localVariableIndex += 1;
+            } else if(DescriptorUtils.isObjectType(parameterDescriptor)) {
+                Reference reference = operandStacks.popReference();
+                localVariables.setReference(localVariableIndex, reference);
+                localVariableIndex += 1;
+            } else if(DescriptorUtils.isArrayType(parameterDescriptor)) {
+                throw new RuntimeException(parameterDescriptor + " array type not support now.");
+            } else {
+                throw new RuntimeException("What descriptor is " + parameterDescriptor);
+            }
+        }
+
+        // maybe pop object reference
+        if(existsObjectReference) {
+            Reference reference = operandStacks.popReference();
+            localVariables.setReference(localVariableIndex, reference);
+            localVariableIndex += 1;
+        }
+
+        // now in local variables, [..., arg2, arg1, {objectref}]
+        // so we need to reverse it
+        localVariables.reverse();
+        return localVariables;
     }
 }

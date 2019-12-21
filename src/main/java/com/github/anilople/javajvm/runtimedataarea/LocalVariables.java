@@ -3,6 +3,7 @@ package com.github.anilople.javajvm.runtimedataarea;
 import com.github.anilople.javajvm.utils.ByteUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,12 +33,25 @@ public class LocalVariables {
         this.localVariables = Arrays.asList(new LocalVariable[maxLocals]);
     }
 
+    /**
+     * reverse local variables
+     * for the parameter's order when invoke method
+     * Side effect!!!
+     */
+    public void reverse() {
+        Collections.reverse(localVariables);
+    }
+
     @Override
     public String toString() {
         return "LocalVariables{" +
                 "maxLocals=" + maxLocals +
                 ", localVariables=" + localVariables +
                 '}';
+    }
+
+    public int getMaxLocals() {
+        return maxLocals;
     }
 
     public boolean getBooleanValue(int index) {

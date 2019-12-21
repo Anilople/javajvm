@@ -21,4 +21,8 @@ public class ObjectReference extends LocalVariables implements Reference {
                 ", super=" + super.toString() +
                 '}';
     }
+
+    public JvmClass getJvmClass() {
+        return jvmClass;
+    }
 }
