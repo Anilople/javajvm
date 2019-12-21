@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -215,6 +216,15 @@ public class JvmClass {
 
     public boolean isEnum() {
         return 0 != (this.accessFlags & AccessFlags.ClassFlags.ACC_ENUM);
+    }
+
+    @Override
+    public String toString() {
+        return "JvmClass{" +
+                "name='" + name + '\'' +
+                ", superClassName='" + superClassName + '\'' +
+                ", interfaceNames=" + Arrays.toString(interfaceNames) +
+                '}';
     }
 
     public String getName() {
