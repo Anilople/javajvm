@@ -9,6 +9,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,9 +71,34 @@ public class GETFIELD implements Instruction {
             throw new IncompatibleClassChangeError("static field cannot use " + GETFIELD.class);
         }
 
-        String descriptor = jvmField.getDescriptor();
-        logger.debug("descriptor: {}", descriptor);
-        switch (descriptor) {
+        String fieldDescriptor = jvmField.getDescriptor();
+        logger.debug("field descriptor: {}", fieldDescriptor);
+        if(DescriptorUtils.isBaseType(fieldDescriptor)) {
+            // BaseType
+            executeGetBaseType(frame, jvmField);
+        } else if(DescriptorUtils.isObjectType(fieldDescriptor)) {
+            // ObjectType
+            executeGetObjectType(frame, jvmField);
+        } else if(DescriptorUtils.isArrayType(fieldDescriptor)){
+            // ArrayType
+            executeGetArrayType(frame, jvmField);
+        } else {
+            throw new IllegalStateException("Unexpected fieldDescriptor: " + fieldDescriptor);
+        }
+
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
+        return frame.getJvmThread().getPc() + this.size();
+    }
+
+    private void executeGetBaseType(Frame frame, JvmField jvmField) {
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException();
+        }
+        ObjectReference objectReference = (ObjectReference) reference;
+        String fieldDescriptor = jvmField.getDescriptor();
+        switch (fieldDescriptor) {
             case Descriptors.BaseType.BOOLEAN: // boolean
                 boolean booleanValue = objectReference.getBooleanValue(jvmField.calculateNonStaticFieldOffset());
                 frame.getOperandStacks().pushBooleanValue(booleanValue);
@@ -106,12 +132,30 @@ public class GETFIELD implements Instruction {
                 frame.getOperandStacks().pushDoubleValue(doubleValue);
                 break;
             default:
-                throw new IllegalStateException("Unexpected descriptor: " + descriptor);
+                throw new IllegalStateException("Unexpected fieldDescriptor: " + fieldDescriptor);
         }
+    }
 
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
+    private void executeGetObjectType(Frame frame, JvmField jvmField) {
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException();
+        }
+        ObjectReference objectReference = (ObjectReference) reference;
+        int nonStaticFieldOffset = jvmField.calculateNonStaticFieldOffset();
+        Reference fieldReference = objectReference.getReference(nonStaticFieldOffset);
+        frame.getOperandStacks().pushReference(fieldReference);
+    }
+
+    private void executeGetArrayType(Frame frame, JvmField jvmField) {
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException();
+        }
+        ObjectReference objectReference = (ObjectReference) reference;
+        int nonStaticFieldOffset = jvmField.calculateNonStaticFieldOffset();
+        Reference fieldReference = objectReference.getReference(nonStaticFieldOffset);
+        frame.getOperandStacks().pushReference(fieldReference);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
@@ -81,19 +82,19 @@ public class PUTFIELD implements Instruction {
             }
         }
 
-        String descriptor = jvmConstantFieldref.getFieldDescriptor();
-        logger.debug("descriptor: {}", descriptor);
-        if(DescriptorUtils.isBaseType(descriptor)) {
+        String fieldDescriptor = jvmField.getDescriptor();
+        logger.debug("field descriptor: {}", fieldDescriptor);
+        if(DescriptorUtils.isBaseType(fieldDescriptor)) {
             // BaseType
             executePutBaseType(frame, jvmField);
-        } else if(DescriptorUtils.isObjectType(descriptor)) {
+        } else if(DescriptorUtils.isObjectType(fieldDescriptor)) {
             // ObjectType
             executePutObjectType(frame, jvmField);
-        } else if(DescriptorUtils.isArrayType(descriptor)){
+        } else if(DescriptorUtils.isArrayType(fieldDescriptor)){
             // ArrayType
             executePutArrayType(frame, jvmField);
         } else {
-            throw new IllegalStateException("Unexpected descriptor: " + descriptor);
+            throw new IllegalStateException("Unexpected fieldDescriptor: " + fieldDescriptor);
         }
 
         int nextPc = frame.getNextPc() + this.size();
@@ -212,7 +213,16 @@ public class PUTFIELD implements Instruction {
     }
 
     private void executePutArrayType(Frame frame, JvmField jvmField) {
-        throw new RuntimeException("cannot support array type");
+        int nonStaticFieldOffset = jvmField.calculateNonStaticFieldOffset();
+        ArrayReference arrayReference = (ArrayReference) frame.getOperandStacks().popReference();
+        Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.NULL.equals(reference)) {
+            throw new NullPointerException();
+        }
+        // type conform check, to do
+        logger.warn("without type conform check with {} and {}", reference, arrayReference);
+        ObjectReference objectReference = (ObjectReference) reference;
+        objectReference.setReference(nonStaticFieldOffset, arrayReference);
     }
 
     @Override
