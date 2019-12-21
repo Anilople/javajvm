@@ -98,7 +98,7 @@ public class ClassFile {
         classFile.constantPool = ConstantPoolInfo.parseConstantPool(classFile, classReader);
         logger.debug("constant pool length : {}", classFile.constantPool.length);
         for (int i = 0; i < classFile.constantPool.length; i++) {
-            logger.debug("{} : {}", i, classFile.constantPool[i]);
+            logger.trace("{} : {}", i, classFile.constantPool[i]);
         }
         logger.debug("parse constant pool finished.");
 

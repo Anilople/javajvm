@@ -29,13 +29,13 @@ public class JvmConstantPool {
 
         // remember that from index 1
         for(int i = 1; i < jvmConstants.length; i++) {
-            logger.debug("constant pool {} info : {}", i, constantPool[i]);
+            logger.trace("constant pool {} info : {}", i, constantPool[i]);
             jvmConstants[i] = JvmConstant.generateJvmConstant(jvmClass, constantPool[i]);
             if(constantPool[i] instanceof ConstantDoubleInfo) {
-                logger.debug("inc i, double constant pool info {}", constantPool[i]);
+                logger.trace("inc i, double constant pool info {}", constantPool[i]);
                 i += 1;
             } else if(constantPool[i] instanceof ConstantLongInfo) {
-                logger.debug("inc i, long constant pool info {}", constantPool[i]);
+                logger.trace("inc i, long constant pool info {}", constantPool[i]);
                 i += 1;
             }
         }
