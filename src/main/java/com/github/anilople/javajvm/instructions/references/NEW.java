@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.instructions.references;
 
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.constant.JvmConstantClass;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
@@ -64,8 +65,9 @@ public class NEW implements Instruction {
         }
 
         // allocate an object without initial
-        logger.debug("try to allocate an object: {}", jvmConstantClass);
-        ObjectReference objectReference = new ObjectReference(jvmConstantClass.getJvmClass());
+        JvmClass targetJvmClass = jvmConstantClass.resolveJvmClass();
+        logger.debug("try to allocate an object: {}", targetJvmClass);
+        ObjectReference objectReference = new ObjectReference(targetJvmClass);
         frame.getOperandStacks().pushReference(objectReference);
 
         int nextPc = frame.getNextPc() + this.size();

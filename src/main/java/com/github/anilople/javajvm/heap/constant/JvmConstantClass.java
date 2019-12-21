@@ -17,10 +17,26 @@ public class JvmConstantClass extends JvmConstant {
         this.constantClassInfo = constantClassInfo;
     }
 
+    /**
+     *
+     * @return jvm class name represent of this constant
+     */
     public String getName() {
         return ConstantPoolUtils.getUtf8(
                 constantClassInfo.getClassFile().getConstantPool(),
                 constantClassInfo.getNameIndex()
         );
+    }
+
+    /**
+     * the jvm class which this constant belong to,
+     * may not be the real jvm class this constant represent!!!
+     * so we need to get the class name of this constant,
+     * then get real class by class loader through class name.
+     * @return What jvm class this constant represent
+     */
+    public JvmClass resolveJvmClass() {
+        String jvmClassName = this.getName();
+        return this.getJvmClass().getLoader().loadClass(jvmClassName);
     }
 }
