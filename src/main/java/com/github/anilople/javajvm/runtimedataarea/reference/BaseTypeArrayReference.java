@@ -69,17 +69,36 @@ public class BaseTypeArrayReference extends ArrayReference {
 
     @Override
     public String toString() {
-        return "BaseTypeArrayReference{" +
-                "typeCode=" + typeCode +
-                ", booleans=" + Arrays.toString(booleans) +
-                ", bytes=" + Arrays.toString(bytes) +
-                ", chars=" + Arrays.toString(chars) +
-                ", shorts=" + Arrays.toString(shorts) +
-                ", ints=" + Arrays.toString(ints) +
-                ", longs=" + Arrays.toString(longs) +
-                ", floats=" + Arrays.toString(floats) +
-                ", doubles=" + Arrays.toString(doubles) +
-                '}';
+        String value = null;
+        switch (typeCode) {
+            case ArrayTypeCodes.T_BOOLEAN:
+                value = "booleans=" + Arrays.toString(booleans);
+                break;
+            case ArrayTypeCodes.T_BYTE:
+                value = "bytes=" + Arrays.toString(bytes);
+                break;
+            case ArrayTypeCodes.T_CHAR:
+                value = "chars=" + Arrays.toString(chars);
+                break;
+            case ArrayTypeCodes.T_SHORT:
+                value = "shorts=" + Arrays.toString(shorts);
+                break;
+            case ArrayTypeCodes.T_INT:
+                value = "ints=" + Arrays.toString(ints);
+                break;
+            case ArrayTypeCodes.T_LONG:
+                value = "longs=" + Arrays.toString(longs);
+                break;
+            case ArrayTypeCodes.T_FLOAT:
+                value = "floats=" + Arrays.toString(floats);
+                break;
+            case ArrayTypeCodes.T_DOUBLE:
+                value = "doubles=" + Arrays.toString(doubles);
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeCode);
+        }
+        return "BaseTypeArrayReference{" + value + "}";
     }
 
     public boolean getBooleanValue(int index) {
