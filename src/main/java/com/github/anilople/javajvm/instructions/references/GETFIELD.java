@@ -54,13 +54,6 @@ public class GETFIELD implements Instruction {
 
     @Override
     public int execute(Frame frame) {
-
-        Reference reference = frame.getOperandStacks().popReference();
-        if(Reference.NULL.equals(reference)) {
-            throw new NullPointerException();
-        }
-        ObjectReference objectReference = (ObjectReference) reference;
-
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantFieldref jvmConstantFieldref = (JvmConstantFieldref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmField jvmField = jvmConstantFieldref.resolveJvmField();
