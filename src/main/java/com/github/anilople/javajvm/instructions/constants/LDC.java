@@ -75,11 +75,9 @@ public class LDC implements Instruction {
             String utf8 = jvmConstantString.getJvmClass().getJvmConstantPool().getUtf8String(
                     jvmConstantString.getConstantStringInfo().getStringIndex()
             );
-            logger.info("String content = {}", utf8);
+            logger.trace("String content = {}", utf8);
             // load java.lang.String
-            JvmClass stringClass = jvmConstantString.getJvmClass().getLoader().loadClass(
-                    String.class.getTypeName().replace('.', '/')
-            );
+            JvmClass stringClass = jvmConstantString.getJvmClass().getLoader().loadClass(String.class);
             ObjectReference objectReference = new ObjectReference(stringClass);
             throw new RuntimeException("LDC now cannot support " + jvmConstant);
         } else {

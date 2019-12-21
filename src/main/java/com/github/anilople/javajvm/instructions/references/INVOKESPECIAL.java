@@ -5,11 +5,16 @@ import com.github.anilople.javajvm.heap.constant.JvmConstantMethodref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Operation
@@ -53,7 +58,7 @@ public class INVOKESPECIAL implements Instruction {
         JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         logger.trace("jvm method: {}", jvmMethod);
         if(jvmMethod.isNative()) {
-            logger.debug("native method: {}", jvmMethod);
+            logger.warn("native method: {} not support now.", jvmMethod);
         }
 
         // exception
@@ -69,19 +74,36 @@ public class INVOKESPECIAL implements Instruction {
         }
 
 
-        String descriptor = jvmMethod.getDescriptor();
-        logger.trace("descriptor: {}", descriptor);
-        // pop args
+        String methodDescriptor = jvmMethod.getDescriptor();
+        logger.trace("method descriptor: {}", methodDescriptor);
+        List<String> parameterDescriptors = DescriptorUtils.getParameterDescriptor(methodDescriptor);
+        // pop args and object reference
+        LocalVariables localVariables = DescriptorUtils.popArgsByParameterDescriptor(
+                true,
+                frame.getOperandStacks(),
+                parameterDescriptors
+        );
 
-
-        // pop object reference
-        Reference reference = frame.getOperandStacks().popReference();
+        // get object reference which has pop already
+        Reference reference = localVariables.getReference(0);
         if(Reference.NULL.equals(reference)) {
             throw new NullPointerException(INVOKESPECIAL.class.toString());
         }
+        ObjectReference objectReference = (ObjectReference) reference;
+        // check object reference, to do
 
+        // make a new frame of this method
+        Frame methodFrame = new Frame(
+                frame.getJvmThread(),
+                jvmMethod,
+                localVariables
+        );
+        // before invoke new method, we need to save pc in current method
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
+        // now push the new frame
+        frame.getJvmThread().pushFrame(methodFrame);
+
         return frame.getJvmThread().getPc() + this.size();
     }
 

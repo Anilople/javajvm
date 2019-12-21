@@ -6,7 +6,9 @@ import com.github.anilople.javajvm.heap.constant.JvmConstantMethodref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
@@ -52,65 +54,27 @@ public class INVOKESTATIC implements Instruction {
             throw new IncompatibleClassChangeError("method is not static");
         }
 
+
         String methodDescriptor = jvmMethod.getDescriptor();
         logger.trace("method descriptor: {}", methodDescriptor);
-        if(!DescriptorUtils.isMethodDescriptor(methodDescriptor)) {
-            throw new RuntimeException(methodDescriptor + " is not a method descriptor");
-        }
-        List<String> descriptorParameters = DescriptorUtils.getParameterDescriptor(methodDescriptor);
-        logger.trace("method descriptor parameters: {}", descriptorParameters);
+        List<String> parameterDescriptors = DescriptorUtils.getParameterDescriptor(methodDescriptor);
+        // pop args and object reference
+        LocalVariables localVariables = DescriptorUtils.popArgsByParameterDescriptor(
+                false,
+                frame.getOperandStacks(),
+                parameterDescriptors
+        );
 
-        // reverse list
-        Collections.reverse(descriptorParameters);
-        // new method frame, save local variable in this frame
+        // make a new frame of this method
         Frame staticMethodFrame = new Frame(
                 frame.getJvmThread(),
-                jvmMethod
+                jvmMethod,
+                localVariables
         );
-        int localVariableIndex = 0;
-        for(String descriptorOne : descriptorParameters) {
-            logger.trace("one parameter: {}", descriptorOne);
-            if(DescriptorUtils.isBaseType(descriptorOne)) {
-                switch (descriptorOne) {
-                    case Descriptors.BaseType.BOOLEAN:
-                    case Descriptors.BaseType.BYTE:
-                    case Descriptors.BaseType.CHAR:
-                    case Descriptors.BaseType.SHORT:
-                    case Descriptors.BaseType.INT:
-                        int intValue = frame.getOperandStacks().popIntValue();
-                        staticMethodFrame.getLocalVariables().setIntValue(localVariableIndex, intValue);
-                        break;
-                    case Descriptors.BaseType.FLOAT:
-                        float floatValue = frame.getOperandStacks().popFloatValue();
-                        staticMethodFrame.getLocalVariables().setFloatValue(localVariableIndex, floatValue);
-                        break;
-                    case Descriptors.BaseType.LONG:
-                        long longValue = frame.getOperandStacks().popLongValue();
-                        staticMethodFrame.getLocalVariables().setLongValue(localVariableIndex, longValue);
-                        localVariableIndex += 1;
-                        break;
-                    case Descriptors.BaseType.DOUBLE:
-                        double doubleValue = frame.getOperandStacks().popDoubleValue();
-                        staticMethodFrame.getLocalVariables().setDoubleValue(localVariableIndex, doubleValue);
-                        localVariableIndex += 1;
-                }
-                localVariableIndex += 1;
-            } else if(DescriptorUtils.isObjectType(descriptorOne)) {
-                Reference reference = frame.getOperandStacks().popReference();
-                staticMethodFrame.getLocalVariables().setReference(localVariableIndex, reference);
-                localVariableIndex += 1;
-            } else if(DescriptorUtils.isArrayType(descriptorOne)) {
-                throw new RuntimeException(descriptorOne + " array type not support now.");
-            } else {
-                throw new RuntimeException("What descriptor is " + descriptorOne);
-            }
-        }
-
-        // add parameter finished
-        // invoke static method, but we need to save now frame's nextPc first
+        // before invoke new method, we need to save pc in current method
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        // now push a new frame
+        // now push the new frame
         frame.getJvmThread().pushFrame(staticMethodFrame);
 
         return frame.getJvmThread().getPc() + this.size();
