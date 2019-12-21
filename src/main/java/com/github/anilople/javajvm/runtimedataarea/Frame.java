@@ -33,16 +33,27 @@ public class Frame {
     }
 
     /**
-     * max locals in jvm method and local variables must be same
+     * max locals in jvm method must >= max locals in local variables
      * @param jvmThread
      * @param jvmMethod
      * @param localVariables
      * @throws RuntimeException
      */
     public Frame(JvmThread jvmThread, JvmMethod jvmMethod, LocalVariables localVariables) {
-        if(jvmMethod.getMaxLocals() != localVariables.getMaxLocals()) {
-            throw new RuntimeException("max local not same!!");
+        if(jvmMethod.getMaxLocals() < localVariables.getMaxLocals()) {
+            String message = String.format(
+                "max locals in jvm method must >= max locals in local variables!! method = %d, local variables = %d",
+                jvmMethod.getMaxLocals(),
+                localVariables.getMaxLocals()
+            );
+            throw new RuntimeException(message);
         }
+
+        // maybe we need to grow local variables
+        if(localVariables.getMaxLocals() < jvmMethod.getMaxLocals()) {
+            localVariables.growMaxLocals(jvmMethod.getMaxLocals());
+        }
+
         this.jvmThread = jvmThread;
         this.localVariables = localVariables;
         this.operandStacks = new OperandStacks(jvmMethod.getMaxStack());

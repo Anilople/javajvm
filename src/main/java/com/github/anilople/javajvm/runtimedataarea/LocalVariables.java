@@ -34,6 +34,31 @@ public class LocalVariables {
     }
 
     /**
+     * sometimes local variables not big enough
+     * so we need to grow its size
+     * @param newMaxLocals
+     * @throws RuntimeException
+     */
+    public void growMaxLocals(int newMaxLocals) {
+        if(this.getMaxLocals() > newMaxLocals) {
+            String message = String.format(
+                    "new max locals must >= origin max locals. newMaxLocals = %d, origin max locals = %d",
+                    newMaxLocals,
+                    this.getMaxLocals()
+            );
+            throw new RuntimeException(message);
+        }
+        // malloc new local variables
+        this.maxLocals = newMaxLocals;
+        List<LocalVariable> newLocalVariables = Arrays.asList(new LocalVariable[newMaxLocals]);
+        // copy old values to new local variables
+        Collections.copy(newLocalVariables, this.localVariables);
+
+        // pointer to new local variables
+        this.localVariables = newLocalVariables;
+    }
+
+    /**
      * reverse local variables
      * for the parameter's order when invoke method
      * Side effect!!!
