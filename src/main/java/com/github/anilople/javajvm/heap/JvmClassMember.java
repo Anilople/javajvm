@@ -3,6 +3,8 @@ package com.github.anilople.javajvm.heap;
 import com.github.anilople.javajvm.classfile.attributes.AttributeInfo;
 import com.github.anilople.javajvm.constants.AccessFlags;
 
+import java.util.Arrays;
+
 /**
  * abstract field and method in this class
  * there are same things between field and method
@@ -49,6 +51,14 @@ public abstract class JvmClassMember {
 
     public boolean isFinal() {
         return 0 != (this.accessFlags & AccessFlags.ACC_FINAL);
+    }
+
+    @Override
+    public String toString() {
+        return this.getClass().getName() + "{" +
+                "name='" + name + '\'' +
+                ", descriptor='" + descriptor + '\'' +
+                '}';
     }
 
     public short getAccessFlags() {
