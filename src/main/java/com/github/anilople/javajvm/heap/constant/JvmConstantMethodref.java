@@ -42,13 +42,22 @@ public class JvmConstantMethodref extends JvmConstant {
     /**
      * @return a jvm method
      */
-    public JvmMethod resolveJvmField() {
+    public JvmMethod resolveJvmMethod() {
+        // get which class this method belong to
+        short classIndex = constantMethodrefInfo.getClassIndex();
+        JvmConstantClass jvmConstantClass = (JvmConstantClass) this.getJvmClass().getJvmConstantPool().getJvmConstant(classIndex);
+        final String jvmClassName = jvmConstantClass.getName();
+        JvmClass jvmClass = this.getJvmClass().getLoader().loadClass(jvmClassName);
+
+        // get method's name and type
         short nameAndTypeIndex = constantMethodrefInfo.getNameAndTypeIndex();
         JvmConstantNameAndType jvmConstantNameAndType =
                 (JvmConstantNameAndType) this.getJvmClass().getJvmConstantPool().getJvmConstant(nameAndTypeIndex);
         String name = jvmConstantNameAndType.getName();
         String descriptor = jvmConstantNameAndType.getDescriptor();
-        return this.getJvmClass().getMethod(name, descriptor);
+
+        // from jvmClass to find method
+        return jvmClass.getMethod(name, descriptor);
     }
 
 }

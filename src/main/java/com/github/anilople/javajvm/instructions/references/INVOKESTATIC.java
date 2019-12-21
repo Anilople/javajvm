@@ -36,7 +36,7 @@ public class INVOKESTATIC implements Instruction {
 
         // ignore interface method
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
-        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmField();
+        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         logger.trace("jvm class: {}, method: {}", jvmMethod.getJvmClass().getName(), jvmMethod);
         if(jvmMethod.isNative()) {
             logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());

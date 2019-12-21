@@ -50,7 +50,7 @@ public class INVOKESPECIAL implements Instruction {
     public int execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
-        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmField();
+        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         logger.trace("jvm method: {}", jvmMethod);
         if(jvmMethod.isNative()) {
             logger.debug("native method: {}", jvmMethod);
