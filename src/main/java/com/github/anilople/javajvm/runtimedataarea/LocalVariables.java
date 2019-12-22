@@ -63,7 +63,7 @@ public class LocalVariables {
      * for the parameter's order when invoke method
      * Side effect!!!
      */
-    public void reverse() {
+    protected void reverse() {
         Collections.reverse(localVariables);
     }
 
