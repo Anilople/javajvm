@@ -24,8 +24,8 @@ public class ISTORE_1 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return ISTORE.execute(this, frame, 1);
+    public void execute(Frame frame) {
+        ISTORE.execute(this, frame, 1);
     }
 
     @Override

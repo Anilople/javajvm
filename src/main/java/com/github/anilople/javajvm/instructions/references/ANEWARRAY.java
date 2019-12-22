@@ -57,7 +57,7 @@ public class ANEWARRAY implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int count = frame.getOperandStacks().popIntValue();
         // Run-time Exceptions
         // Otherwise, if count is less than zero, the anewarray instruction
@@ -85,7 +85,6 @@ public class ANEWARRAY implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

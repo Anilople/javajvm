@@ -28,13 +28,12 @@ public class SIPUSH implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         frame.getOperandStacks().pushShortValue(
                 ByteUtils.bytes2short(new byte[]{byte1, byte2})
         );
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

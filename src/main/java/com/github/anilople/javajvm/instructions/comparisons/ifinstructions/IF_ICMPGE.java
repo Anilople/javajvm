@@ -6,9 +6,8 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 public class IF_ICMPGE extends IF implements Instruction {
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         this.execute(frame, (value1, value2) -> value1 >= value2);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
 }

@@ -27,7 +27,7 @@ public class ARRAYLENGTH implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         Reference reference = frame.getOperandStacks().popReference();
         // Run-time Exceptions
         // If the arrayref is null , the arraylength instruction throws a
@@ -43,7 +43,6 @@ public class ARRAYLENGTH implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

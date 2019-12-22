@@ -13,7 +13,7 @@ public class IF_ACMPEQ extends IF implements Instruction {
     private static final Logger logger = LoggerFactory.getLogger(IF_ACMPEQ.class);
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         Reference value2 = frame.getOperandStacks().popReference();
         Reference value1 = frame.getOperandStacks().popReference();
         logger.trace("value1: {}, value2: {}", value1, value2);
@@ -26,6 +26,5 @@ public class IF_ACMPEQ extends IF implements Instruction {
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);
         }
-        return frame.getJvmThread().getPc() + this.size();
     }
 }

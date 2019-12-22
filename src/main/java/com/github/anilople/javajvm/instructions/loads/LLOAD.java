@@ -33,9 +33,9 @@ public class LLOAD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
-        return LLOAD.execute(this, frame, index);
+        LLOAD.execute(this, frame, index);
     }
 
     @Override
@@ -51,12 +51,11 @@ public class LLOAD implements Instruction {
      * @param index
      * @return
      */
-    public static int execute(Instruction instruction, Frame frame, int index) {
+    public static void execute(Instruction instruction, Frame frame, int index) {
         long longValue = frame.getLocalVariables().getLongValue(index);
         frame.getOperandStacks().pushLongValue(longValue);
         int nextPc = frame.getNextPc() + instruction.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + instruction.size();
     }
 
 }

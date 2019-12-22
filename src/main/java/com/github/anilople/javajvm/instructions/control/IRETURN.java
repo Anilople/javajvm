@@ -38,7 +38,7 @@ public class IRETURN implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         String returnDescriptor = DescriptorUtils.getReturnDescriptor(frame.getJvmMethod().getDescriptor());
         logger.trace("returnDescriptor: {}", returnDescriptor);
         // check exception, to do...
@@ -52,7 +52,6 @@ public class IRETURN implements Instruction {
         // save int value to frame's stack
         jvmThread.currentFrame().getOperandStacks().pushIntValue(intValue);
 
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

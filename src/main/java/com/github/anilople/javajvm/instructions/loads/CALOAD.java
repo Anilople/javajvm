@@ -32,7 +32,7 @@ public class CALOAD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = frame.getOperandStacks().popIntValue();
         Reference reference = frame.getOperandStacks().popReference();
         Reference.assertIsNotNull(reference);
@@ -44,7 +44,6 @@ public class CALOAD implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

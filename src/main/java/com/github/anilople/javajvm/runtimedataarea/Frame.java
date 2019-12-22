@@ -20,6 +20,10 @@ public class Frame {
 
     private JvmMethod jvmMethod;
 
+    /**
+     * every frame keep own pc register,
+     * memory thread's pc
+     */
     private int nextPc;
 
     private Frame() {

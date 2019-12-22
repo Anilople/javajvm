@@ -19,11 +19,10 @@ public class ICONST_M1 implements Instruction {
      * @param i
      * @return
      */
-    public static int execute(Instruction instruction, Frame frame, int i) {
+    public static void execute(Instruction instruction, Frame frame, int i) {
         frame.getOperandStacks().pushIntValue(i);
         int nextPc = frame.getNextPc() + instruction.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + instruction.size();
     }
 
     @Override
@@ -32,8 +31,8 @@ public class ICONST_M1 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return ICONST_M1.execute(this, frame, -1);
+    public void execute(Frame frame) {
+        ICONST_M1.execute(this, frame, -1);
     }
 
     @Override

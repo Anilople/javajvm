@@ -17,8 +17,8 @@ public class ICONST_5 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return ICONST_M1.execute(this, frame, 5);
+    public void execute(Frame frame) {
+        ICONST_M1.execute(this, frame, 5);
     }
 
     @Override

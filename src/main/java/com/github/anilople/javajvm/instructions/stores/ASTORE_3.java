@@ -12,9 +12,8 @@ public class ASTORE_3 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         ASTORE.execute(this, frame, 3);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

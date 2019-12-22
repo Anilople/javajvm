@@ -27,7 +27,7 @@ public class ISUB implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int value2 = frame.getOperandStacks().popIntValue();
         int value1 = frame.getOperandStacks().popIntValue();
         int result = value1 - value2;
@@ -35,7 +35,6 @@ public class ISUB implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

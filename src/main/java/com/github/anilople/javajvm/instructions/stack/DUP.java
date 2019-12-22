@@ -22,7 +22,7 @@ public class DUP implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         OperandStacks operandStacks = frame.getOperandStacks();
 
         // pop once
@@ -34,7 +34,6 @@ public class DUP implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

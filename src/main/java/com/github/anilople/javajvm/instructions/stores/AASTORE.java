@@ -43,7 +43,7 @@ public class AASTORE implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         Reference value = frame.getOperandStacks().popReference();
         int index = frame.getOperandStacks().popIntValue();
 
@@ -74,7 +74,6 @@ public class AASTORE implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

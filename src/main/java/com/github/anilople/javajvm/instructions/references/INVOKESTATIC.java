@@ -33,7 +33,7 @@ public class INVOKESTATIC implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
 
         // ignore interface method
@@ -46,7 +46,6 @@ public class INVOKESTATIC implements Instruction {
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);
-            return frame.getJvmThread().getPc() + this.size();
         }
 
         //
@@ -77,7 +76,6 @@ public class INVOKESTATIC implements Instruction {
         // now push the new frame
         frame.getJvmThread().pushFrame(staticMethodFrame);
 
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

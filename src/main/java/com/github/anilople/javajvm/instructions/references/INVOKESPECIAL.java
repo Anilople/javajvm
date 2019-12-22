@@ -52,7 +52,7 @@ public class INVOKESPECIAL implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
@@ -104,7 +104,6 @@ public class INVOKESPECIAL implements Instruction {
         // now push the new frame
         frame.getJvmThread().pushFrame(methodFrame);
 
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override
