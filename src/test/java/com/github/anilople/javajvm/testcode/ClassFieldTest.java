@@ -1,7 +1,7 @@
 package com.github.anilople.javajvm.testcode;
 
 import com.github.anilople.javajvm.JavaJvmApplication;
-import com.github.anilople.javajvm.config.CommandConfig;
+import com.github.anilople.javajvm.helper.CommandConfig;
 import org.junit.jupiter.api.Test;
 
 public class ClassFieldTest {

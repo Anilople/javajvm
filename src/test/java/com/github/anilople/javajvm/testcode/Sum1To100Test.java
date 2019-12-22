@@ -1,10 +1,8 @@
 package com.github.anilople.javajvm.testcode;
 
 import com.github.anilople.javajvm.JavaJvmApplication;
-import com.github.anilople.javajvm.config.CommandConfig;
+import com.github.anilople.javajvm.helper.CommandConfig;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class Sum1To100Test {
 
