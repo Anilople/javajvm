@@ -46,6 +46,7 @@ public class INVOKESTATIC implements Instruction {
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);
+            return;
         }
 
         //

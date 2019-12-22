@@ -59,6 +59,11 @@ public class INVOKESPECIAL implements Instruction {
         logger.trace("jvm method: {}", jvmMethod);
         if(jvmMethod.isNative()) {
             logger.warn("native method: {} not support now.", jvmMethod);
+            // check register or not, to do
+            // early return here
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+            return;
         }
 
         // exception
