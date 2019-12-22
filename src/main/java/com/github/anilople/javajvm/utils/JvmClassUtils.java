@@ -15,6 +15,23 @@ import java.util.List;
 public class JvmClassUtils {
 
     /**
+     * In runtime jvm, a class name specification like
+     * com/github/anilople/javajvm/instructions/references/NEWTest,
+     * But in java code, a class name specification is with '.'
+     * com.github.anilople.javajvm.instructions.references.NEWTest
+     * so we need to change it
+     * @param classIdentifyByDot
+     * @return
+     */
+    public static String getStandardRuntimeClassName(String classIdentifyByDot) {
+        return classIdentifyByDot.replace('.', '/');
+    }
+
+    public static String getStandardRuntimeClassName(Class<?> clazz) {
+        return getStandardRuntimeClassName(clazz.getName());
+    }
+
+    /**
      * there is a path from Object class to now class
      *
      * @return the path in order (from ancestor to now)

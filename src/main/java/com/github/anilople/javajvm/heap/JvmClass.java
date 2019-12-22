@@ -186,6 +186,22 @@ public class JvmClass {
         throw new RuntimeException(SpecialMethods.CLINIT + " doesn't exists in class " + this.getName());
     }
 
+    /**
+     * When evaluate jvmClass.getName(), get string like
+     * com/github/anilople/javajvm/instructions/references/NEWTest
+     * but
+     * When evaluate NEWTest.class.getName(), get string like
+     * com.github.anilople.javajvm.instructions.references.NEWTest
+     *
+     * But they are same class, so we need a method to
+     * judge that
+     * @param clazz
+     * @return
+     */
+    public boolean isSameName(Class<?> clazz) {
+        return this.getName().equals(JvmClassUtils.getStandardRuntimeClassName(clazz));
+    }
+
     public boolean isPublic() {
         return 0 != (this.accessFlags & AccessFlags.ClassFlags.ACC_PUBLIC);
     }
