@@ -78,22 +78,10 @@ public class JavaJvmApplication {
 
         while (jvmThread.existFrame()) {
             jvmThread.currentFrame().traceStatus();
-
-            // frame -> method -> method's code
-            byte[] bytecode = jvmThread.currentFrame().getJvmMethod().getCode();
-
-            int pc = jvmThread.currentFrame().getNextPc();
-            BytecodeReader bytecodeReader = new BytecodeReader(Arrays.copyOfRange(bytecode, pc, bytecode.length));
-
-            Instruction instruction = Instruction.readInstruction(bytecodeReader);
-            logger.debug("read instruction: {}", instruction);
-            instruction.fetchOperands(bytecodeReader);
-
+            // get next instruction from frame (there is a pc register in frame)
+            Instruction instruction = jvmThread.currentFrame().readNextInstruction();
             // change nextPc in top frame
             instruction.execute(jvmThread.currentFrame());
-
-//            jvmThread.setPc(nextPc);
-
         }
 
         logger.trace("loop finished: {}", jvmThread);

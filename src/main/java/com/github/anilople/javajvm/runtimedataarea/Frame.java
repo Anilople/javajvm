@@ -1,8 +1,12 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
 import com.github.anilople.javajvm.heap.JvmMethod;
+import com.github.anilople.javajvm.instructions.BytecodeReader;
+import com.github.anilople.javajvm.instructions.Instruction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 /**
  * A frame is used to store data and partial results, as well as to perform dynamic
@@ -72,6 +76,26 @@ public class Frame {
         logger.trace("jvmThread: {}, jvmMethod: {}", jvmThread, jvmMethod);
         logger.trace("localVariables: {}", localVariables);
         logger.trace("operandStacks: {}", operandStacks);
+    }
+
+    /**
+     * read next instruction started by pc register
+     * @return
+     */
+    public Instruction readNextInstruction() {
+        // method -> method's code
+        byte[] bytecode = this.getJvmMethod().getCode();
+
+        int pc = this.getNextPc();
+        BytecodeReader bytecodeReader = new BytecodeReader(Arrays.copyOfRange(bytecode, pc, bytecode.length));
+
+        Instruction instruction = Instruction.readInstruction(bytecodeReader);
+        logger.debug("read instruction: {}", instruction);
+
+        // fetch operands (may fetch nothing)
+        instruction.fetchOperands(bytecodeReader);
+
+        return instruction;
     }
 
     public JvmThread getJvmThread() {
