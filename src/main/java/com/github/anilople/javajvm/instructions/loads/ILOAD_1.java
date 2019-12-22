@@ -24,8 +24,8 @@ public class ILOAD_1 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return ILOAD.execute(this, frame, 1);
+    public void execute(Frame frame) {
+        ILOAD.execute(this, frame, 1);
     }
 
     @Override

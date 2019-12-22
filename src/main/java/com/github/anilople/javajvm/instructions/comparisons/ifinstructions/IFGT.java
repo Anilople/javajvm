@@ -6,9 +6,8 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 public class IFGT extends IF implements Instruction {
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         this.execute(frame, value -> value > 0);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
 }

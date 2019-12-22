@@ -1,6 +1,6 @@
 package com.github.anilople.javajvm.utils;
 
-import com.github.anilople.javajvm.config.JvmClassLoaderFactory;
+import com.github.anilople.javajvm.helper.JvmClassLoaderFactory;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmField;
@@ -10,10 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class JvmClassUtilsTest {
 

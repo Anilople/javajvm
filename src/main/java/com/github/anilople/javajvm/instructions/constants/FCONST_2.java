@@ -15,11 +15,10 @@ public class FCONST_2 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         frame.getOperandStacks().pushFloatValue(2.0F);
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

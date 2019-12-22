@@ -47,7 +47,7 @@ public class NEWARRAY implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int count = frame.getOperandStacks().popIntValue();
         // Run-time Exception
         // If count is less than zero, newarray throws a
@@ -60,7 +60,6 @@ public class NEWARRAY implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

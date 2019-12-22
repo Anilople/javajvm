@@ -33,12 +33,11 @@ public class GOTO implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int branchOffset = PrimitiveTypeUtils.intFormSignedShort(ByteUtils.bytes2short(branchbyte1, branchbyte2));
 
         int nextPc = frame.getNextPc() + branchOffset;
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

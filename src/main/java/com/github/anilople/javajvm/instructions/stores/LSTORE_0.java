@@ -12,8 +12,8 @@ public class LSTORE_0 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return LSTORE.execute(this, frame, 0);
+    public void execute(Frame frame) {
+        LSTORE.execute(this, frame, 0);
     }
 
     @Override

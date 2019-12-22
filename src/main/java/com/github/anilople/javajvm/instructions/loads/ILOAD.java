@@ -31,13 +31,12 @@ public class ILOAD implements Instruction {
      * @param index
      * @return how many bytes this instruction occupies
      */
-    public static int execute(Instruction instruction, Frame frame, int index) {
+    public static void execute(Instruction instruction, Frame frame, int index) {
         LocalVariables localVariables = frame.getLocalVariables();
         int value = localVariables.getIntValue(index);
         frame.getOperandStacks().pushIntValue(value);
         int nextPc = frame.getNextPc() + instruction.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + instruction.size();
     }
 
     @Override
@@ -46,9 +45,9 @@ public class ILOAD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
-        return execute(this, frame, index);
+        execute(this, frame, index);
     }
 
     @Override

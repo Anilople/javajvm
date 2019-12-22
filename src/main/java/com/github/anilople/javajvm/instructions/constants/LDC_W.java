@@ -19,11 +19,9 @@ public class LDC_W implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
-
     }
 
     @Override

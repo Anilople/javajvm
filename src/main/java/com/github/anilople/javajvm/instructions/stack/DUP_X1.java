@@ -26,7 +26,7 @@ public class DUP_X1 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         OperandStacks operandStacks = frame.getOperandStacks();
 
         LocalVariable value1 = operandStacks.pop();
@@ -38,7 +38,6 @@ public class DUP_X1 implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

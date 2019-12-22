@@ -12,9 +12,8 @@ public class LLOAD_3 implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return LLOAD.execute(this, frame, 3);
-
+    public void execute(Frame frame) {
+        LLOAD.execute(this, frame, 3);
     }
 
     @Override

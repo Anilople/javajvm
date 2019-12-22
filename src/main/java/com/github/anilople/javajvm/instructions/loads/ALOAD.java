@@ -37,12 +37,11 @@ public class ALOAD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
         ALOAD.execute(frame, index);
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

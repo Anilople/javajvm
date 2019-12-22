@@ -1,4 +1,4 @@
-package com.github.anilople.javajvm.config;
+package com.github.anilople.javajvm.helper;
 
 import java.util.Map;
 import java.util.Properties;

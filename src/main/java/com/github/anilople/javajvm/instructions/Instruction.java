@@ -483,11 +483,10 @@ public interface Instruction {
     /**
      * the execution of byte code dependencies the environment
      * i.e a stack frame
-     *
-     * @param frame
-     * @return next pc
+     * After one Instruction execute, the pc register in the frame will change
+     * @param frame the frame on the top of thread
      */
-    int execute(Frame frame);
+    void execute(Frame frame);
 
     /**
      * @return how many bytes this instruction occupies

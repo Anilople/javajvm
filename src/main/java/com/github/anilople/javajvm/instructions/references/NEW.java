@@ -53,7 +53,7 @@ public class NEW implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
 
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantClass jvmConstantClass = (JvmConstantClass) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
@@ -72,7 +72,6 @@ public class NEW implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class PUTFIELD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         JvmClass jvmClass = frame.getJvmMethod().getJvmClass();
         JvmConstantPool jvmConstantPool = jvmClass.getJvmConstantPool();
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
@@ -99,7 +99,6 @@ public class PUTFIELD implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     private void executePutBaseType(Frame frame, JvmField jvmField) {

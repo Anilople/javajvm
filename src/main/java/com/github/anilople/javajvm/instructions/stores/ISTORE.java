@@ -28,12 +28,11 @@ public class ISTORE implements Instruction {
 
     private int index;
 
-    public static int execute(Instruction instruction, Frame frame, int index) {
+    public static void execute(Instruction instruction, Frame frame, int index) {
         int value = frame.getOperandStacks().popIntValue();
         frame.getLocalVariables().setIntValue(index, value);
         int nextPc = frame.getNextPc() + instruction.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + instruction.size();
     }
 
     @Override
@@ -43,8 +42,8 @@ public class ISTORE implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
-        return ISTORE.execute(this, frame, this.index);
+    public void execute(Frame frame) {
+        ISTORE.execute(this, frame, this.index);
     }
 
     @Override

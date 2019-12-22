@@ -53,7 +53,7 @@ public class GETFIELD implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedShort(ByteUtils.bytes2short(indexByte1, indexByte2));
         JvmConstantFieldref jvmConstantFieldref = (JvmConstantFieldref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmField jvmField = jvmConstantFieldref.resolveJvmField();
@@ -81,7 +81,6 @@ public class GETFIELD implements Instruction {
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     private void executeGetBaseType(Frame frame, JvmField jvmField) {

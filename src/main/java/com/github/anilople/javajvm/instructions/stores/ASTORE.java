@@ -42,11 +42,10 @@ public class ASTORE implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         int index = PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
         ASTORE.execute(this, frame, index);
 
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

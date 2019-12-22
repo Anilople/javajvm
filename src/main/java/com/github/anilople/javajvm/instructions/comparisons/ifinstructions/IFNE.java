@@ -7,9 +7,8 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 public class IFNE extends IF implements Instruction {
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         this.execute(frame, value -> 0 != value);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
 }

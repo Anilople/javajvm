@@ -59,7 +59,7 @@ public class LDC implements Instruction {
     }
 
     @Override
-    public int execute(Frame frame) {
+    public void execute(Frame frame) {
         JvmClass currentClass = frame.getJvmMethod().getJvmClass();
         int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
         JvmConstant jvmConstant = currentClass.getJvmConstantPool().getJvmConstant(index);
@@ -96,7 +96,6 @@ public class LDC implements Instruction {
         }
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
-        return frame.getJvmThread().getPc() + this.size();
     }
 
     @Override

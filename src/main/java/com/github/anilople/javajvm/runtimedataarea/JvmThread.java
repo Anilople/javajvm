@@ -20,7 +20,8 @@ public class JvmThread {
      * Virtual Machine's pc register is wide enough to hold a returnAddress or a native
      * pointer on the specific platform.
      */
-    @Deprecated // save it to frame
+    @Deprecated
+    // save it to frame, every frame keep a pc of its method
     private int pc;
 
     /**
@@ -36,7 +37,6 @@ public class JvmThread {
     private Stack<Frame> stack;
 
     public JvmThread() {
-        this.pc = 0;
         this.maxStackSize = 1024;
         this.stack = new Stack<>();
     }
@@ -60,16 +60,6 @@ public class JvmThread {
             throw new RuntimeException("jvm stack is empty!");
         }
         return stack.peek();
-    }
-
-    @Deprecated
-    public int getPc() {
-        return pc;
-    }
-
-    @Deprecated
-    public void setPc(int pc) {
-        this.pc = pc;
     }
 
     public boolean existFrame() {
