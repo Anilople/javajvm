@@ -4,10 +4,11 @@ import com.github.anilople.javajvm.helper.HighOrderFunctions;
 import com.github.anilople.javajvm.helper.JvmThreadFactory;
 import com.github.anilople.javajvm.helper.JvmThreadRunner;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class DADDTest {
 
@@ -20,7 +21,7 @@ class DADDTest {
     private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
         // in the DADDTest's "main" method, so after Instruction "DADD",
         double value = jvmThread.currentFrame().getOperandStacks().popDoubleValue();
-        Assertions.assertEquals(value, 0.5555);
+        assertEquals(value, 0.5555);
         // remember that push it back
         jvmThread.currentFrame().getOperandStacks().pushDoubleValue(value);
     };

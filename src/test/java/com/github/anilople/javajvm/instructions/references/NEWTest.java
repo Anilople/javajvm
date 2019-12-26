@@ -5,10 +5,11 @@ import com.github.anilople.javajvm.helper.JvmThreadFactory;
 import com.github.anilople.javajvm.helper.JvmThreadRunner;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class NEWTest {
 
@@ -20,7 +21,7 @@ class NEWTest {
         // in the NEWTest's "main" method, so after Instruction "NEW",
         ObjectReference objectReference = (ObjectReference) jvmThread.currentFrame().getOperandStacks().popReference();
         // the top Object on the operand stack must be class "NEWTest"
-        Assertions.assertTrue(objectReference.getJvmClass().isSameName(NEWTest.class));
+        assertTrue(objectReference.getJvmClass().isSameName(NEWTest.class));
         // remember that push it back
         jvmThread.currentFrame().getOperandStacks().pushReference(objectReference);
     };

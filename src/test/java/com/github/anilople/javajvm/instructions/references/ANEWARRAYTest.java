@@ -6,10 +6,11 @@ import com.github.anilople.javajvm.helper.JvmThreadRunner;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Consumer;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ANEWARRAYTest {
 
@@ -22,7 +23,7 @@ class ANEWARRAYTest {
         ObjectArrayReference objectArrayReference = (ObjectArrayReference) jvmThread.currentFrame().getOperandStacks().popReference();
         // the top Object on the operand stack must be the array of "ANEWARRAYTest"
         ObjectReference typeReference = (ObjectReference) objectArrayReference.getTypeReference();
-        Assertions.assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
+        assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
         // remember that push it back
         jvmThread.currentFrame().getOperandStacks().pushReference(objectArrayReference);
     };
