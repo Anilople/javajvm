@@ -19,7 +19,7 @@ public class INVOKEDYNAMIC implements Instruction {
 
     @Override
     public int size() {
-        return 1;
+        return 5;
     }
 
 }
