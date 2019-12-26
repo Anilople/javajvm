@@ -2,13 +2,14 @@ package com.github.anilople.javajvm.instructions.math.add;
 
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
+import com.github.anilople.javajvm.helper.HighOrderFunctions;
 import com.github.anilople.javajvm.helper.JvmThreadFactory;
 import com.github.anilople.javajvm.helper.JvmThreadRunner;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
-import com.github.anilople.javajvm.utils.JvmMethodUtils;
+import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Consumer;
 
 class FADDTest {
 
@@ -17,24 +18,22 @@ class FADDTest {
         float b = 3.4F;
         float c = a + b;
     }
-    
+
+    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+        // in the FADDTest's "main" method, so after Instruction "FADD",
+        float value = jvmThread.currentFrame().getOperandStacks().popFloatValue();
+        Assertions.assertEquals(value, 3.7F);
+        // remember that push it back
+        jvmThread.currentFrame().getOperandStacks().pushFloatValue(value);
+    };
+
     @Test
     void execute() {
-        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(FADDTest.class));
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
 
         jvmThreadRunner.addAfterInstructionExecutionListener(
                 FADD.class,
-                jvmThread -> {
-                    JvmClassLoader jvmClassLoader = jvmThread.currentFrame().getJvmMethod().getJvmClass().getLoader();
-                    JvmMethod mainMethod = JvmMethodUtils.getMainMethod(jvmClassLoader, FADDTest.class);
-                    if(jvmThread.currentFrame().getJvmMethod().equals(mainMethod)) {
-                        // in the FADDTest's "main" method, so after Instruction "FADD",
-                        float value = jvmThread.currentFrame().getOperandStacks().popFloatValue();
-                        Assertions.assertEquals(value, 3.7F);
-                        // remember that push it back
-                        jvmThread.currentFrame().getOperandStacks().pushFloatValue(value);
-                    }
-                }
+                HighOrderFunctions.toInMainTrigger(this.getClass(), afterInstructionExecutionListener)
         );
 
         jvmThreadRunner.run();
