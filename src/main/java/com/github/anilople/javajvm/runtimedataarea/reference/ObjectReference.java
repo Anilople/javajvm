@@ -18,7 +18,8 @@ public class ObjectReference extends LocalVariables implements Reference {
     public String toString() {
         return "ObjectReference{" +
                 "jvmClass=" + jvmClass +
-                ", super=" + super.toString() +
+                // circle reference due to stack over flow
+//                ", super=" + super.toString() +
                 '}';
     }
 
