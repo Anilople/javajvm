@@ -13,8 +13,7 @@ public class DLOAD_3 implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        DLOAD.execute(this, frame, 3);
     }
 
     @Override

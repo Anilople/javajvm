@@ -13,8 +13,7 @@ public class DSTORE_1 implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        DSTORE.execute(this, frame, 1);
     }
 
     @Override

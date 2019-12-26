@@ -63,7 +63,10 @@ public class LDC2_W implements Instruction {
             frame.getOperandStacks().pushLongValue(value);
         } else if(jvmConstant instanceof JvmConstantDouble) {
             JvmConstantDouble jvmConstantDouble = (JvmConstantDouble) jvmConstant;
-            throw new RuntimeException(LDC2_W.class + " now cannot support " + jvmConstantDouble);
+            // get the value
+            double value = jvmConstantDouble.resolveValue();
+            // push it to the operand stack
+            frame.getOperandStacks().pushDoubleValue(value);
         } else {
             throw new RuntimeException(LDC2_W.class + " cannot support " + jvmConstant);
         }
