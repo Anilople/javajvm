@@ -29,4 +29,12 @@ public class ConstantLongInfo extends ConstantPoolInfo {
                 ", lowBytes=" + lowBytes +
                 '}';
     }
+
+    public int getHighBytes() {
+        return highBytes;
+    }
+
+    public int getLowBytes() {
+        return lowBytes;
+    }
 }
