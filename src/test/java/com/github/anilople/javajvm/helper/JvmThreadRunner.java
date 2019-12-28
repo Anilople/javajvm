@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -48,7 +49,7 @@ public class JvmThreadRunner {
      * value is a list of listener (so the listeners exist order)
      */
     private final Map<
-            Class<? extends Instruction>, List<Consumer<JvmThread>>
+            Class<? extends Instruction>, List<BiConsumer<Instruction, JvmThread>>
             > beforeInstructionExecutionListeners = new HashMap<>();
 
     /**
@@ -57,7 +58,7 @@ public class JvmThreadRunner {
      * value is a list of listener (so the listeners exist order)
      */
     private final Map<
-            Class<? extends Instruction>, List<Consumer<JvmThread>>
+            Class<? extends Instruction>, List<BiConsumer<Instruction, JvmThread>>
             > afterInstructionExecutionListeners = new HashMap<>();
 
     /**
@@ -81,7 +82,7 @@ public class JvmThreadRunner {
     /**
      * add a listener only before specific Instruction's execution
      * @param instructionClass
-     * @param consumer
+     * @param consumer accept jvm thread
      */
     public void  addBeforeInstructionExecutionListener(
             Class<? extends Instruction> instructionClass, Consumer<JvmThread> consumer
@@ -89,13 +90,53 @@ public class JvmThreadRunner {
         if(!beforeInstructionExecutionListeners.containsKey(instructionClass)) {
             beforeInstructionExecutionListeners.put(instructionClass, new ArrayList<>());
         }
-        beforeInstructionExecutionListeners.get(instructionClass).add(consumer);
+        beforeInstructionExecutionListeners
+                .get(instructionClass)
+                .add(
+                        (instruction, jvmThread) -> consumer.accept(jvmThread)
+                );
+    }
+
+    /**
+     * add a listener only before specific Instruction's execution
+     * @param instructionClass
+     * @param biConsumer accept instruction and jvm thread
+     */
+    public void  addBeforeInstructionExecutionListener(
+            Class<? extends Instruction> instructionClass, BiConsumer<Instruction, JvmThread> biConsumer
+    ) {
+        if(!beforeInstructionExecutionListeners.containsKey(instructionClass)) {
+            beforeInstructionExecutionListeners.put(instructionClass, new ArrayList<>());
+        }
+        beforeInstructionExecutionListeners
+                .get(instructionClass)
+                .add(
+                        biConsumer
+                );
     }
 
     /**
      * add a listener only after specific Instruction's execution
      * @param instructionClass
-     * @param consumer
+     * @param biConsumer accept instruction and jvm thread
+     */
+    public void addAfterInstructionExecutionListener(
+            Class<? extends Instruction> instructionClass, BiConsumer<Instruction, JvmThread> biConsumer
+    ) {
+        if(!afterInstructionExecutionListeners.containsKey(instructionClass)) {
+            afterInstructionExecutionListeners.put(instructionClass, new ArrayList<>());
+        }
+        afterInstructionExecutionListeners
+                .get(instructionClass)
+                .add(
+                        biConsumer
+                );
+    }
+
+    /**
+     * add a listener only after specific Instruction's execution
+     * @param instructionClass
+     * @param consumer accept jvm thread
      */
     public void addAfterInstructionExecutionListener(
             Class<? extends Instruction> instructionClass, Consumer<JvmThread> consumer
@@ -103,7 +144,11 @@ public class JvmThreadRunner {
         if(!afterInstructionExecutionListeners.containsKey(instructionClass)) {
             afterInstructionExecutionListeners.put(instructionClass, new ArrayList<>());
         }
-        afterInstructionExecutionListeners.get(instructionClass).add(consumer);
+        afterInstructionExecutionListeners
+                .get(instructionClass)
+                .add(
+                        (instruction, jvmThread) -> consumer.accept(jvmThread)
+                );
     }
 
     /**
@@ -130,8 +175,8 @@ public class JvmThreadRunner {
 
             // before this instruction's execution, trigger the listeners
             if(beforeInstructionExecutionListeners.containsKey(instruction.getClass())) {
-                for(Consumer<JvmThread> consumer : beforeInstructionExecutionListeners.get(instruction.getClass())) {
-                    consumer.accept(jvmThread);
+                for(BiConsumer<Instruction, JvmThread> biConsumer : beforeInstructionExecutionListeners.get(instruction.getClass())) {
+                    biConsumer.accept(instruction, jvmThread);
                 }
             }
 
@@ -140,8 +185,8 @@ public class JvmThreadRunner {
 
             // after this instruction's execution, trigger the listeners
             if(afterInstructionExecutionListeners.containsKey(instruction.getClass())) {
-                for(Consumer<JvmThread> consumer : afterInstructionExecutionListeners.get(instruction.getClass())) {
-                    consumer.accept(jvmThread);
+                for(BiConsumer<Instruction, JvmThread> biConsumer : afterInstructionExecutionListeners.get(instruction.getClass())) {
+                    biConsumer.accept(instruction, jvmThread);
                 }
             }
         }
