@@ -43,7 +43,7 @@ public class ASTORE implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int index = PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
+        int index = resolveIndex();
         ASTORE.execute(this, frame, index);
 
     }
@@ -67,4 +67,11 @@ public class ASTORE implements Instruction {
         frame.setNextPc(nextPc);
     }
 
+    /**
+     *
+     * @return the int form index
+     */
+    public int resolveIndex() {
+        return PrimitiveTypeUtils.intFormUnsignedByte(this.unsignedByteIndex);
+    }
 }

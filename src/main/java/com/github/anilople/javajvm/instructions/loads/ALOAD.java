@@ -38,7 +38,7 @@ public class ALOAD implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
+        int index = resolveIndex();
         ALOAD.execute(frame, index);
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
@@ -60,4 +60,11 @@ public class ALOAD implements Instruction {
         frame.getOperandStacks().pushReference(reference);
     }
 
+    /**
+     *
+     * @return the int form index
+     */
+    public int resolveIndex() {
+        return PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
+    }
 }
