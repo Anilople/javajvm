@@ -3,7 +3,19 @@ package com.github.anilople.javajvm.instructions.loads;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
+import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
 
+/**
+ * Operation
+ * Load long from array
+ *
+ * Operand ..., arrayref, index →
+ * Stack ..., value
+ *
+ *
+ */
 public class LALOAD implements Instruction {
 
     @Override
@@ -13,6 +25,14 @@ public class LALOAD implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        int index = frame.getOperandStacks().popIntValue();
+        Reference reference = frame.getOperandStacks().popReference();
+        Reference.assertIsNotNull(reference);
+        BaseTypeArrayReference baseTypeArrayReference = (BaseTypeArrayReference) reference;
+        baseTypeArrayReference.assertIndexIsNotOutOfBounds(index);
+        long longValue = baseTypeArrayReference.getLongValue(index);
+        frame.getOperandStacks().pushLongValue(longValue);
+
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }
