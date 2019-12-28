@@ -43,7 +43,7 @@ class BASTORETest {
 
         final BiConsumer<Instruction, JvmThread> afterListener = (instruction, jvmThread) -> {
             assertNotNull(baseTypeArrayReference);
-            assertEquals(3, baseTypeArrayReference.getBooleanValue(22));
+            assertEquals(3, baseTypeArrayReference.getByteValue(23));
         };
 
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
