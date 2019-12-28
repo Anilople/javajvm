@@ -60,6 +60,8 @@ class ALOADTest {
                 afterALOADExecuteListener
         );
 
+        jvmThreadRunner.addEndListener(jvmThread -> assertNotNull(this.reference));
+
         jvmThreadRunner.run();
     }
 }

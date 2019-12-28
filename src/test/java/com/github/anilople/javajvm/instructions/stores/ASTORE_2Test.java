@@ -58,6 +58,8 @@ class ASTORE_2Test {
                 afterASTORE_2ExecuteListener
         );
 
+        jvmThreadRunner.addEndListener(jvmThread -> assertNotNull(this.reference));
+
         jvmThreadRunner.run();
     }
 }
