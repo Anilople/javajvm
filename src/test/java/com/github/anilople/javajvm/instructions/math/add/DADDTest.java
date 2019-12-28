@@ -17,17 +17,17 @@ class DADDTest {
         double b = 0.3333;
         double c = a + b;
     }
-
-    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
-        // in the DADDTest's "main" method, so after Instruction "DADD",
-        double value = jvmThread.currentFrame().getOperandStacks().popDoubleValue();
-        assertEquals(value, 0.5555);
-        // remember that push it back
-        jvmThread.currentFrame().getOperandStacks().pushDoubleValue(value);
-    };
     
     @Test
     void execute() {
+
+        final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+            // in the DADDTest's "main" method, so after Instruction "DADD",
+            double value = jvmThread.currentFrame().getOperandStacks().popDoubleValue();
+            assertEquals(value, 0.5555);
+            // remember that push it back
+            jvmThread.currentFrame().getOperandStacks().pushDoubleValue(value);
+        };
 
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
 

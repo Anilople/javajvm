@@ -18,16 +18,17 @@ class FADDTest {
         float c = a + b;
     }
 
-    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
-        // in the FADDTest's "main" method, so after Instruction "FADD",
-        float value = jvmThread.currentFrame().getOperandStacks().popFloatValue();
-        assertEquals(value, 3.7F);
-        // remember that push it back
-        jvmThread.currentFrame().getOperandStacks().pushFloatValue(value);
-    };
-
     @Test
     void execute() {
+
+        final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+            // in the FADDTest's "main" method, so after Instruction "FADD",
+            float value = jvmThread.currentFrame().getOperandStacks().popFloatValue();
+            assertEquals(value, 3.7F);
+            // remember that push it back
+            jvmThread.currentFrame().getOperandStacks().pushFloatValue(value);
+        };
+
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
 
         jvmThreadRunner.addAfterInstructionExecutionListener(

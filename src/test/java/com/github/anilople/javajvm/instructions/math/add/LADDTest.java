@@ -18,16 +18,16 @@ class LADDTest {
         long c = a + b;
     }
 
-    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
-        // in the LADDTest's "main" method, so after Instruction "LADD",
-        long value = jvmThread.currentFrame().getOperandStacks().popLongValue();
-        assertEquals(value, 0xFFFFFFFFFFFFL + 0x1);
-        // remember that push it back
-        jvmThread.currentFrame().getOperandStacks().pushLongValue(value);
-    };
-
     @Test
     void execute() {
+
+        final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+            // in the LADDTest's "main" method, so after Instruction "LADD",
+            long value = jvmThread.currentFrame().getOperandStacks().popLongValue();
+            assertEquals(value, 0xFFFFFFFFFFFFL + 0x1);
+            // remember that push it back
+            jvmThread.currentFrame().getOperandStacks().pushLongValue(value);
+        };
 
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
 

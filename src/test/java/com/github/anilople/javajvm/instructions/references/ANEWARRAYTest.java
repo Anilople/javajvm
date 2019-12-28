@@ -18,18 +18,19 @@ class ANEWARRAYTest {
         ANEWARRAYTest[] anewarrayTests = new ANEWARRAYTest[6];
     }
 
-    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
-        // in the ANEWARRAYTest's "main" method, so after Instruction "ANEWARRAY",
-        ObjectArrayReference objectArrayReference = (ObjectArrayReference) jvmThread.currentFrame().getOperandStacks().popReference();
-        // the top Object on the operand stack must be the array of "ANEWARRAYTest"
-        ObjectReference typeReference = (ObjectReference) objectArrayReference.getTypeReference();
-        assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
-        // remember that push it back
-        jvmThread.currentFrame().getOperandStacks().pushReference(objectArrayReference);
-    };
-
     @Test
     void execute() {
+
+        final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+            // in the ANEWARRAYTest's "main" method, so after Instruction "ANEWARRAY",
+            ObjectArrayReference objectArrayReference = (ObjectArrayReference) jvmThread.currentFrame().getOperandStacks().popReference();
+            // the top Object on the operand stack must be the array of "ANEWARRAYTest"
+            ObjectReference typeReference = (ObjectReference) objectArrayReference.getTypeReference();
+            assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
+            // remember that push it back
+            jvmThread.currentFrame().getOperandStacks().pushReference(objectArrayReference);
+        };
+
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
         
         jvmThreadRunner.addAfterInstructionExecutionListener(

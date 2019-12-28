@@ -18,16 +18,17 @@ class IADDTest {
         int c = i + j;
     }
 
-    private final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
-        // there must a int number on the top of operand stack now
-        int number = jvmThread.currentFrame().getOperandStacks().popIntValue();
-        assertEquals(8, number);
-        // remember that push it back
-        jvmThread.currentFrame().getOperandStacks().pushIntValue(number);
-    };
-
     @Test
     void execute() {
+
+        final Consumer<JvmThread> afterInstructionExecutionListener = jvmThread -> {
+            // there must a int number on the top of operand stack now
+            int number = jvmThread.currentFrame().getOperandStacks().popIntValue();
+            assertEquals(8, number);
+            // remember that push it back
+            jvmThread.currentFrame().getOperandStacks().pushIntValue(number);
+        };
+
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
 
         jvmThreadRunner.addAfterInstructionExecutionListener(
