@@ -23,4 +23,32 @@ public class ArrayTypeCodes {
     public static final byte T_INT = 10;
     public static final byte T_LONG = 11;
 
+    /**
+     *
+     * @param descriptor base type descriptor
+     * @return type code of base type array
+     */
+    public static byte fromDescriptor(String descriptor) {
+        switch (descriptor) {
+            case Descriptors.BaseType.BOOLEAN:
+                return T_BOOLEAN;
+            case Descriptors.BaseType.CHAR:
+                return T_CHAR;
+            case Descriptors.BaseType.FLOAT:
+                return T_FLOAT;
+            case Descriptors.BaseType.DOUBLE:
+                return T_DOUBLE;
+            case Descriptors.BaseType.BYTE:
+                return T_BYTE;
+            case Descriptors.BaseType.SHORT:
+                return T_SHORT;
+            case Descriptors.BaseType.INT:
+                return T_INT;
+            case Descriptors.BaseType.LONG:
+                return T_LONG;
+            default:
+                throw new IllegalStateException("Unexpected value: " + descriptor);
+        }
+    }
+
 }

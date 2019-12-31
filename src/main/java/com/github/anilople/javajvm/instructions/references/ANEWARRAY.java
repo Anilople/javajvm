@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.instructions.references;
 
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.constant.JvmConstant;
 import com.github.anilople.javajvm.heap.constant.JvmConstantClass;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
@@ -75,9 +76,9 @@ public class ANEWARRAY implements Instruction {
         if(jvmConstant instanceof JvmConstantClass) {
             JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstant;
             logger.trace("className = {}", jvmConstantClass.getName());
-            ObjectReference objectReference = new ObjectReference(jvmConstantClass.getJvmClass());
-            ObjectArrayReference objectArrayReference = new ObjectArrayReference(objectReference, count);
-            frame.getOperandStacks().pushReference(objectArrayReference);
+            frame.getOperandStacks().pushReference(
+                    ANEWARRAY.allocate(jvmConstantClass.resolveJvmClass(), count)
+            );
         } else {
             throw new IllegalStateException();
         }
@@ -92,4 +93,16 @@ public class ANEWARRAY implements Instruction {
         return 3;
     }
 
+    /**
+     * allocate object array
+     * 1 dimension
+     * @param jvmClass object's class
+     * @param count array's length
+     * @return
+     */
+    public static ObjectArrayReference allocate(JvmClass jvmClass, int count) {
+        ObjectReference objectReference = new ObjectReference(jvmClass);
+        ObjectArrayReference objectArrayReference = new ObjectArrayReference(objectReference, count);
+        return objectArrayReference;
+    }
 }

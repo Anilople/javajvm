@@ -189,6 +189,9 @@ public class DescriptorUtils {
 
     /**
      * suppose that descriptor is ObjectType
+     * ObjectType:
+     *      L ClassName ;
+     * get the ClassName between 'L' and ';'
      * @param descriptor
      * @return class name
      */
@@ -375,5 +378,35 @@ public class DescriptorUtils {
         // so we need to reverse it
         localVariables.reverse();
         return localVariables;
+    }
+
+    /**
+     * ArrayType:
+     *      [ ComponentType
+     * @param arrayClassDescriptor
+     * @return ComponentType
+     */
+    public static String getComponentType(String arrayClassDescriptor) {
+        return arrayClassDescriptor.substring(1);
+    }
+
+    /**
+     * I -> 0
+     * [I -> 1
+     * [[I -> 2
+     * ...
+     * @param arrayClassDescriptor
+     * @return the dimensions of array
+     */
+    public static int getDimensions(String arrayClassDescriptor) {
+        int dimensions = 0;
+        for(char c : arrayClassDescriptor.toCharArray()) {
+            if('[' == c) {
+                dimensions += 1;
+            } else {
+                break;
+            }
+        }
+        return dimensions;
     }
 }

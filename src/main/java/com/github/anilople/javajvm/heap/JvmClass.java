@@ -92,6 +92,23 @@ public class JvmClass {
         this.staticFieldsValue = new LocalVariables(JvmClassUtils.getStaticFieldsSize(this));
     }
 
+    /**
+     * for the array class, base type's class
+     * @param jvmClassLoader
+     */
+    public JvmClass(JvmClassLoader jvmClassLoader, String className) {
+        this.accessFlags = -1;
+        this.name = className;
+        this.superClassName = null;
+        this.interfaceNames = new String[0];
+        this.jvmConstantPool = null;
+        this.jvmFields = new JvmField[0];
+        this.jvmMethods = new JvmMethod[0];
+        this.loader = jvmClassLoader;
+        this.superClass = null;
+        this.interfaces = new JvmClass[0];
+        this.staticFieldsValue = null;
+    }
 
     /**
      * judge method exist in this class or not

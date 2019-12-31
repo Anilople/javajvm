@@ -55,8 +55,9 @@ public class NEWARRAY implements Instruction {
         if(count < 0) {
             throw new NegativeArraySizeException(count + " is less than 0");
         }
-        BaseTypeArrayReference baseTypeArrayReference = new BaseTypeArrayReference(atype, count);
-        frame.getOperandStacks().pushReference(baseTypeArrayReference);
+        frame.getOperandStacks().pushReference(
+                NEWARRAY.allocate(atype, count)
+        );
 
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
@@ -67,4 +68,28 @@ public class NEWARRAY implements Instruction {
         return 2;
     }
 
+    /**
+     * allocate base type array
+     * 1 dimensions
+     * @param typeCode type
+     * @see ArrayTypeCodes
+     * @param count array's length
+     * @return
+     */
+    public static BaseTypeArrayReference allocate(byte typeCode, int count) {
+        return new BaseTypeArrayReference(typeCode, count);
+    }
+
+    /**
+     * allocate base type array
+     * 1 dimensions
+     * @param typeDescriptor descriptor of base type
+     * @see com.github.anilople.javajvm.constants.Descriptors.BaseType
+     * @param count
+     * @return
+     */
+    public static BaseTypeArrayReference allocate(String typeDescriptor, int count) {
+        byte typeCode = ArrayTypeCodes.fromDescriptor(typeDescriptor);
+        return allocate(typeCode, count);
+    }
 }

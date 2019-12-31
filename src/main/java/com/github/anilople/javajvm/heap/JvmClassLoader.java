@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.JavaJvmApplication;
 import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.constants.SpecialMethods;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,9 +41,20 @@ public class JvmClassLoader {
      * @return
      */
     public JvmClass loadClass(String className) {
-        if(!classConcurrentMap.containsKey(className)) {
+        // if exists already, return it
+        if(classConcurrentMap.containsKey(className)) {
+            return classConcurrentMap.get(className);
+        }
+
+        // load a new class
+        if(DescriptorUtils.isArrayType(className)) {
+            // array class
+            this.loadArrayClass(className);
+        } else {
+            // non-array class
             this.loadNonArrayClass(className);
         }
+
         return classConcurrentMap.get(className);
     }
 
@@ -64,7 +76,7 @@ public class JvmClassLoader {
      * @param className
      * @return
      */
-    public JvmClass loadNonArrayClass(String className) {
+    private JvmClass loadNonArrayClass(String className) {
         // loading
         byte[] bytes = classContext.readClass(className);
         // define
@@ -88,11 +100,25 @@ public class JvmClassLoader {
         return jvmClass;
     }
 
-    public void verify(JvmClass jvmClass) {
+    private void verify(JvmClass jvmClass) {
         // to do
     }
 
-    public void prepare(JvmClass jvmClass) {
+    private void prepare(JvmClass jvmClass) {
         // to do
+    }
+
+    /**
+     * jvms8
+     * 3.9 Arrays
+     * Java Virtual Machine arrays are also objects. Arrays are created and manipulated
+     * using a distinct set of instructions.
+     * @param className
+     * @return
+     */
+    private JvmClass loadArrayClass(String className) {
+        JvmClass jvmClass = new JvmClass(this, className);
+        classConcurrentMap.put(className, jvmClass);
+        return jvmClass;
     }
 }
