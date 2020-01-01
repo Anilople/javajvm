@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.AccessFlags;
 import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
+import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,6 +218,107 @@ public class JvmClass {
      */
     public boolean isSameName(Class<?> clazz) {
         return this.getName().equals(JvmClassUtils.getStandardRuntimeClassName(clazz));
+    }
+
+    /**
+     * we know int.class void.class boolean.class ...
+     * return true if this class is primitive class
+     * @return
+     */
+    public boolean isPrimitiveType() {
+        switch (this.getName()) {
+            case "boolean":
+            case "byte":
+            case "short":
+            case "char":
+            case "int":
+            case "long":
+            case "float":
+            case "double":
+                return true;
+            default:
+                throw new IllegalStateException("Unexpected value: " + this.getName());
+        }
+    }
+
+    /**
+     * if class is an ordinary (nonarray) class,
+     * return true
+     * @return
+     */
+    public boolean isOrdinary() {
+        return !DescriptorUtils.isArrayType(this.getName());
+    }
+
+    /**
+     * primitive data, like int, void,
+     * have their own class name,
+     * the the class type like {@code java.lang.Object}
+     * have their own class name too.
+     * But the class name between them are different
+     * @return true if this class is a class type
+     */
+    public boolean isClassType() {
+        if(this.isArrayType()) {
+            return false;
+        }
+        // non array type and first char of name is
+        if(this.existsSuperClass()) {
+            // exists super class mean it is inherits from other class type
+            // so it is class type too
+            return true;
+        } else {
+            // note that java/lang/Object has no super class,
+            // but it is class type too
+            return this.isSameName(Object.class);
+        }
+    }
+
+    /**
+     * array type mean name start with '['
+     * @return
+     */
+    public boolean isArrayType() {
+        return DescriptorUtils.isArrayType(this.getName());
+    }
+
+    /**
+     * the jvm class given is the ancestor of this class or not
+     * When the given class is equal with this class, return false !!!
+     * this method also can use between interface's inheritance
+     * @param jvmClass
+     * @return
+     */
+    public boolean isInheritFrom(JvmClass jvmClass) {
+        JvmClass now = this;
+        while(now.existsSuperClass()) {
+            JvmClass superClass = now.getSuperClass();
+            if(superClass.equals(jvmClass)) {
+                return true;
+            } else {
+                now = superClass;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * this class is implement then interface class given or not
+     * @param interfaceClass
+     * @return
+     */
+    public boolean isImplementInterface(JvmClass interfaceClass) {
+        // traversal to all ancestors
+        for(JvmClass now = this; null != now; now = now.getSuperClass()) {
+            JvmClass[] nowInterfaces = now.getInterfaces();
+            // traversal all interfaces of now class
+            for(JvmClass nowInterface : nowInterfaces) {
+                if(nowInterface.equals(interfaceClass)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public boolean isPublic() {

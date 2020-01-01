@@ -4,7 +4,11 @@ import com.github.anilople.javajvm.constants.AccessFlags;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.heap.JvmMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sun.security.krb5.internal.crypto.Des;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +17,8 @@ import java.util.List;
  * handle some functions about JvmClass JvmField JvmMethod
  */
 public class JvmClassUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(JvmClassUtils.class);
 
     /**
      * In runtime jvm, a class name specification like
@@ -308,5 +314,52 @@ public class JvmClassUtils {
         }
         // for the logic, the code cannot reach here
         throw new RuntimeException(jvmField.getName() + " not in " + nowClass.getName());
+    }
+
+    /**
+     * Check type conform
+     * whether object is of given type
+     * checkcast determines whether objectref can be cast to type T
+     * i.e T t = (T) s is ok or not
+     * jvms8 Page 385
+     * @param S the class of the object referred to by objectref
+     * @param T  the resolved class, array, or interface type
+     * @return
+     */
+    public static boolean typeCast(JvmClass S, JvmClass T) {
+
+        logger.trace("{} type cast to {} ?", S.getName(), T.getName());
+
+        if(S.isOrdinary()) {
+            if(T.isClassType()) {
+                // S <= T
+                return S.equals(T) || S.isInheritFrom(T);
+            }
+            if(T.isInterface()) {
+                // S must implement interface T
+                return S.isImplementInterface(T);
+            }
+        } else if(S.isInterface()) {
+            if(T.isClassType()) {
+                return T.isSameName(Object.class);
+            }
+            if(T.isInterface()) {
+                return S.equals(T) || S.isInheritFrom(T);
+            }
+        } else if(S.isArrayType()) {
+            if(T.isClassType()) {
+                return T.isSameName(Object.class);
+            }
+            if(T.isInterface()) {
+                return T.isSameName(Cloneable.class) || T.isSameName(Serializable.class);
+            }
+            if(T.isArrayType()) {
+                JvmClass subS = S.getLoader().loadClass(DescriptorUtils.getComponentType(S.getName()));
+                JvmClass subT = T.getLoader().loadClass(DescriptorUtils.getComponentType(T.getName()));
+                return JvmClassUtils.typeCast(subS, subT);
+            }
+        }
+
+        return false;
     }
 }
