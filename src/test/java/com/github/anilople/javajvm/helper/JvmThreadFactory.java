@@ -33,4 +33,25 @@ public class JvmThreadFactory {
         return jvmThread;
     }
 
+    /**
+     * Traditional, we start a thread from "main" method,
+     * but for testing, one can start a thread from any static method.
+     * @param clazz
+     * @param staticMethodName
+     * @return
+     */
+    public static JvmThread createFromStaticMethod(Class<?> clazz, String staticMethodName, String staticMethodDescriptor) {
+        // get a simple class loader
+        JvmClassLoader jvmClassLoader = JvmClassLoaderFactory.getInstance();
+
+        // get the method given
+        JvmMethod jvmMethod = JvmMethodUtils.getJvmMethod(jvmClassLoader, clazz, staticMethodName, staticMethodDescriptor);
+
+        JvmThread jvmThread = new JvmThread();
+
+        // push frame
+        jvmThread.pushFrame(new Frame(jvmThread, jvmMethod));
+
+        return jvmThread;
+    }
 }
