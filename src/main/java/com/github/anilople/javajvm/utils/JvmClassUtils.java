@@ -6,7 +6,6 @@ import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.heap.JvmMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.io.Serializable;
 import java.util.ArrayList;

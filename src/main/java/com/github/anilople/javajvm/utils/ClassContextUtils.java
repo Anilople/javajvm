@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +93,7 @@ public class ClassContextUtils {
             } catch (IOException e) {
                 logger.error("file list fail", e);
             }
-            return Collections.EMPTY_SET;
+            return new HashSet<>();
         } else {
             // is a file
             return Collections.singleton(path);
