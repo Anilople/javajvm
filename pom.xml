@@ -16,6 +16,7 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+                <version>3.5.1</version>
             </plugin>
 
             <!-- for mvn test -->
