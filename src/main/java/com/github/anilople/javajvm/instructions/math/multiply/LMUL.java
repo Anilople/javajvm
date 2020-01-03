@@ -13,6 +13,12 @@ public class LMUL implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        long value2 = frame.getOperandStacks().popLongValue();
+        long value1 = frame.getOperandStacks().popLongValue();
+
+        long result = value1 * value2;
+        frame.getOperandStacks().pushLongValue(result);
+
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }

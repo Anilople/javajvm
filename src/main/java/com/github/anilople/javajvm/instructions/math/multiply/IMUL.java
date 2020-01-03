@@ -13,6 +13,12 @@ public class IMUL implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        int value2 = frame.getOperandStacks().popIntValue();
+        int value1 = frame.getOperandStacks().popIntValue();
+
+        int result = value1 * value2;
+        frame.getOperandStacks().pushIntValue(result);
+
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }

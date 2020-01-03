@@ -13,6 +13,12 @@ public class FMUL implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        float value2 = frame.getOperandStacks().popFloatValue();
+        float value1 = frame.getOperandStacks().popFloatValue();
+
+        float result = value1 * value2;
+        frame.getOperandStacks().pushFloatValue(result);
+
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }

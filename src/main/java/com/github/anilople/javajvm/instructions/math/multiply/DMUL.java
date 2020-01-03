@@ -13,6 +13,12 @@ public class DMUL implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        double value2 = frame.getOperandStacks().popDoubleValue();
+        double value1 = frame.getOperandStacks().popDoubleValue();
+
+        double result = value1 * value2;
+        frame.getOperandStacks().pushDoubleValue(result);
+
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }
