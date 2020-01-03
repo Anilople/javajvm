@@ -37,7 +37,7 @@ public class DSTORE implements Instruction {
     @Override
     public void execute(Frame frame) {
         int intIndex = PrimitiveTypeUtils.intFormUnsignedByte(index);
-        ISTORE.execute(this, frame, intIndex);
+        DSTORE.execute(this, frame, intIndex);
     }
 
     @Override
