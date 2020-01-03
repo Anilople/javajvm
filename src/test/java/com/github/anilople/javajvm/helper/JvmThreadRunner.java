@@ -44,6 +44,12 @@ public class JvmThreadRunner {
     private final List<Consumer<JvmThread>> endListeners = new ArrayList<>();
 
     /**
+     * Instructions executed by this thread.
+     * Keep the order of execution.
+     */
+    private final List<Instruction> instructionsExecuted = new ArrayList<>();
+
+    /**
      * key is Class inherits from Instruction
      * @see com.github.anilople.javajvm.instructions.Instruction
      * value is a list of listener (so the listeners exist order)
@@ -173,6 +179,9 @@ public class JvmThreadRunner {
             // read instruction
             Instruction instruction = jvmThread.currentFrame().readNextInstruction();
 
+            // keep the track of instructions
+            instructionsExecuted.add(instruction);
+
             // before this instruction's execution, trigger the listeners
             if(beforeInstructionExecutionListeners.containsKey(instruction.getClass())) {
                 for(BiConsumer<Instruction, JvmThread> biConsumer : beforeInstructionExecutionListeners.get(instruction.getClass())) {
@@ -197,4 +206,27 @@ public class JvmThreadRunner {
         }
     }
 
+    /**
+     * A thread will execute many instructions.
+     * This method will tell you after thread was completed,
+     * the instruction passed was executed as least 1 time or not
+     * @param instructionClass
+     * @return true if instruction has been executed
+     */
+    public boolean isExecuted(Class<? extends Instruction> instructionClass) {
+        for(Instruction instruction : instructionsExecuted) {
+            if(instruction.getClass().equals(instructionClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return a new list to forbid code change
+     */
+    public List<Instruction> getInstructionsExecuted() {
+        return new ArrayList<>(instructionsExecuted);
+    }
 }
