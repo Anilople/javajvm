@@ -13,8 +13,7 @@ public class FSTORE_3 implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        FSTORE.execute(this, frame, 3);
     }
 
     @Override

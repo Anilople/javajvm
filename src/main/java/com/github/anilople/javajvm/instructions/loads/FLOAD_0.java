@@ -13,8 +13,7 @@ public class FLOAD_0 implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        FLOAD.execute(this, frame, 0);
     }
 
     @Override
