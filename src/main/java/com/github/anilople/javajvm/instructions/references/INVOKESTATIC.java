@@ -59,7 +59,6 @@ public class INVOKESTATIC implements Instruction {
 
         // native method check
         if(jvmMethod.isNative()) {
-            System.out.println(jvmMethod.getName() + " " + jvmMethod.getDescriptor());
             logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());
             // check register or not, to do
             // early return here
