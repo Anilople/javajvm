@@ -11,6 +11,7 @@ import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
+import com.github.anilople.javajvm.utils.HackUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +57,14 @@ public class INVOKESTATIC implements Instruction {
                 frame.getOperandStacks(),
                 parameterDescriptors
         );
+
+        // use hack skill
+        if(HackUtils.isInHackMethods(jvmMethod)) {
+            // early return here
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+            return;
+        }
 
         // native method check
         if(jvmMethod.isNative()) {

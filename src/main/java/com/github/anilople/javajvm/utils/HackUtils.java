@@ -6,6 +6,8 @@ import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -18,7 +20,16 @@ import static com.github.anilople.javajvm.constants.Descriptors.BaseType.*;
  */
 public class HackUtils {
 
+    private static final Logger logger = LoggerFactory.getLogger(HackUtils.class);
+
     public static boolean isInHackMethods(JvmMethod jvmMethod) {
+        if(jvmMethod.isNative()) {
+            logger.warn("Hack judgement for class {} 's native method: {} {}",
+                    jvmMethod.getJvmClass().getName(),
+                    jvmMethod.getName(),
+                    jvmMethod.getDescriptor()
+            );
+        }
         return jvmMethod.getJvmClass().isSameName(PrintStream.class);
     }
 
