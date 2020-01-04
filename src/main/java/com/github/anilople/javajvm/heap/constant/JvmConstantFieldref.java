@@ -3,6 +3,7 @@ package com.github.anilople.javajvm.heap.constant;
 import com.github.anilople.javajvm.classfile.constantinfo.ConstantFieldrefInfo;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmField;
+import com.github.anilople.javajvm.utils.JvmFieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,15 +61,6 @@ public class JvmConstantFieldref extends JvmConstant {
     public JvmField resolveJvmField() {
         String className = this.getClassName();
         JvmClass jvmClass = this.getJvmClass().getLoader().loadClass(className);
-        for(JvmField jvmField : jvmClass.getJvmFields()) {
-            if(this.getFieldName().equals(jvmField.getName())
-            && this.getFieldDescriptor().equals(jvmField.getDescriptor())) {
-                return jvmField;
-            }
-        }
-        // may throw some error here ?
-        // but class have been verifying
-        logger.error("{} not exist in class {}", this, jvmClass);
-        throw new RuntimeException();
+        return JvmFieldUtils.resolveJvmField(jvmClass, this.getFieldName(), this.getFieldDescriptor());
     }
 }
