@@ -3,10 +3,7 @@ package com.github.anilople.javajvm.instructions.constants;
 import com.github.anilople.javajvm.cachepool.StringPool;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
-import com.github.anilople.javajvm.heap.constant.JvmConstant;
-import com.github.anilople.javajvm.heap.constant.JvmConstantFloat;
-import com.github.anilople.javajvm.heap.constant.JvmConstantInteger;
-import com.github.anilople.javajvm.heap.constant.JvmConstantString;
+import com.github.anilople.javajvm.heap.constant.*;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
@@ -91,8 +88,17 @@ public class LDC implements Instruction {
             ObjectReference objectReference = StringPool.get(utf8);
             frame.getOperandStacks().pushReference(objectReference);
 //            throw new RuntimeException("LDC now cannot support " + jvmConstant);
+        } else if(jvmConstant instanceof JvmConstantClass) {
+            JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstant;
+            throw new RuntimeException("LDC now cannot support " + jvmConstantClass.getName());
+        } else if(jvmConstant instanceof JvmConstantMethodType) {
+            JvmConstantMethodType jvmConstantMethodType = (JvmConstantMethodType) jvmConstant;
+            throw new RuntimeException("LDC now cannot support " + jvmConstantMethodType);
+        } else if(jvmConstant instanceof JvmConstantMethodHandle) {
+            JvmConstantMethodHandle jvmConstantMethodHandle = (JvmConstantMethodHandle) jvmConstant;
+            throw new RuntimeException("LDC now cannot support " + jvmConstantMethodHandle);
         } else {
-            throw new RuntimeException("LDC now cannot support " + jvmConstant);
+            throw new IllegalArgumentException("LDC cannot support " + jvmConstant.toString());
         }
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
