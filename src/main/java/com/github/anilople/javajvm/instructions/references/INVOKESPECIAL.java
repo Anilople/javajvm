@@ -57,14 +57,6 @@ public class INVOKESPECIAL implements Instruction {
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         logger.trace("jvm method: {}", jvmMethod);
-        if(jvmMethod.isNative()) {
-            logger.warn("native method: {} not support now.", jvmMethod);
-            // check register or not, to do
-            // early return here
-            int nextPc = frame.getNextPc() + this.size();
-            frame.setNextPc(nextPc);
-            return;
-        }
 
         // exception
         if(null == jvmMethod) {
@@ -77,7 +69,6 @@ public class INVOKESPECIAL implements Instruction {
         if(jvmMethod.isAbstract()) {
             throw new AbstractMethodError();
         }
-
 
         String methodDescriptor = jvmMethod.getDescriptor();
         logger.trace("method descriptor: {}", methodDescriptor);
@@ -96,6 +87,16 @@ public class INVOKESPECIAL implements Instruction {
         }
         ObjectReference objectReference = (ObjectReference) reference;
         // check object reference, to do
+
+        // native method check
+        if(jvmMethod.isNative()) {
+            logger.warn("native method: {} not support now.", jvmMethod);
+            // check register or not, to do
+            // early return here
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+            return;
+        }
 
         // make a new frame of this method
         Frame methodFrame = new Frame(

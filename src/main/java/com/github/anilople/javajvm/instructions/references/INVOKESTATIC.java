@@ -40,14 +40,6 @@ public class INVOKESTATIC implements Instruction {
         JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
         JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         logger.trace("jvm class: {}, method: {}", jvmMethod.getJvmClass().getName(), jvmMethod);
-        if(jvmMethod.isNative()) {
-            logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());
-            // check register or not, to do
-            // early return here
-            int nextPc = frame.getNextPc() + this.size();
-            frame.setNextPc(nextPc);
-            return;
-        }
 
         //
         if(!jvmMethod.isStatic()) {
@@ -64,6 +56,17 @@ public class INVOKESTATIC implements Instruction {
                 frame.getOperandStacks(),
                 parameterDescriptors
         );
+
+        // native method check
+        if(jvmMethod.isNative()) {
+            System.out.println(jvmMethod.getName() + " " + jvmMethod.getDescriptor());
+            logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());
+            // check register or not, to do
+            // early return here
+            int nextPc = frame.getNextPc() + this.size();
+            frame.setNextPc(nextPc);
+            return;
+        }
 
         // make a new frame of this method
         Frame staticMethodFrame = new Frame(
