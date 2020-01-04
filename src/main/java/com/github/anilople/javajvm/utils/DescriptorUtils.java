@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,6 +201,60 @@ public class DescriptorUtils {
     }
 
     /**
+     * ObjectType:
+     *      L ClassName ;
+     *
+     * The object reference descriptor is
+     * start with 'L', end with ';'
+     * @param parameterDescriptor all parameters descriptors
+     * @param start the start index of object reference descriptor
+     * @throws RuntimeException if the format not legal
+     * @return the end of this descriptor (right closed range)
+     */
+    public static int scanObjectReferenceDescriptor(final String parameterDescriptor, final int start) {
+        // find character ';', dangerous! for loop
+        int semicolonIndex = -1;
+        for(semicolonIndex = start + 1;
+            semicolonIndex < parameterDescriptor.length() && ';' != parameterDescriptor.charAt(semicolonIndex);
+            semicolonIndex++) {
+        }
+        if(';' != parameterDescriptor.charAt(semicolonIndex)) {
+            throw new RuntimeException(parameterDescriptor + " doesn't exist ';'");
+        }
+        return semicolonIndex;
+    }
+
+    /**
+     * The array reference descriptor may be:
+     * [C
+     * [I
+     * [[I
+     * [Ljava/lang/String;
+     * [[java/lang/String;
+     * So we need to scan it carefully
+     * @param parameterDescriptor all parameters descriptors
+     * @param start the start index of array reference descriptor
+     * @return the end of this descriptor (right closed range)
+     */
+    public static int scanArrayReferenceDescriptor(final String parameterDescriptor, final int start) {
+        int endOfArrayReference = start;
+        // all '['
+        while(endOfArrayReference < parameterDescriptor.length()
+                && '[' == parameterDescriptor.charAt(endOfArrayReference)) {
+            endOfArrayReference += 1;
+        }
+        // scan '[' finished
+        if('L' == parameterDescriptor.charAt(endOfArrayReference)) {
+            // it is a array of object
+            endOfArrayReference = scanObjectReferenceDescriptor(parameterDescriptor, endOfArrayReference);
+        } else {
+            // it is a array of base type,
+            // char at nextIndex is base type now
+        }
+        return endOfArrayReference;
+    }
+
+    /**
      * MethodDescriptor:
      *      ( {ParameterDescriptor} ) ReturnDescriptor
      * @param methodDescriptor
@@ -215,23 +270,21 @@ public class DescriptorUtils {
             if('L' == parameterDescriptor.charAt(i)) {
                 // object reference
                 logger.trace("object reference i = {}", i);
-                // find character ';', dangerous! for loop
-                int semicolonIndex = -1;
-                for(semicolonIndex = i + 1;
-                    semicolonIndex < parameterDescriptor.length() && ';' != parameterDescriptor.charAt(semicolonIndex);
-                    semicolonIndex++) {
-
-                }
-                logger.trace("; semicolonIndex = {}", semicolonIndex);
-                String objectReferenceDescriptor = parameterDescriptor.substring(i, semicolonIndex + 1);
+                int semicolonIndex = scanObjectReferenceDescriptor(parameterDescriptor, i);
+                String objectReferenceDescriptor = parameterDescriptor.substring(i, 1 + semicolonIndex);
                 logger.trace("objectReferenceDescriptor: {}", objectReferenceDescriptor);
                 parameterDescriptors.add(objectReferenceDescriptor);
                 // update i
-                i = semicolonIndex + 1;
+                i = semicolonIndex;
             } else if('[' == parameterDescriptor.charAt(i)) {
                 // array reference
                 logger.trace("array reference i = {}", i);
-                throw new RuntimeException("no support array reference now");
+                int endOfArrayReference = scanArrayReferenceDescriptor(parameterDescriptor, i);
+                String arrayReferenceDescriptor = parameterDescriptor.substring(i, 1 + endOfArrayReference);
+                logger.trace("arrayReferenceDescriptor: {}", arrayReferenceDescriptor);
+                parameterDescriptors.add(arrayReferenceDescriptor);
+                // update i
+                i = endOfArrayReference;
             } else {
                 // base type
                 logger.trace("base type i = {}, char = {}", i, parameterDescriptor.charAt(i));
@@ -361,7 +414,10 @@ public class DescriptorUtils {
                 localVariables.setReference(localVariableIndex, reference);
                 localVariableIndex += 1;
             } else if(DescriptorUtils.isArrayType(parameterDescriptor)) {
-                throw new RuntimeException(parameterDescriptor + " array type not support now.");
+                ArrayReference arrayReference = (ArrayReference) operandStacks.popReference();
+                localVariables.setReference(localVariableIndex, arrayReference);
+                localVariableIndex += 1;
+//                throw new RuntimeException(parameterDescriptor + " array type not support now.");
             } else {
                 throw new RuntimeException("What descriptor is " + parameterDescriptor);
             }

@@ -133,6 +133,18 @@ public class JvmClass {
 
     /**
      *
+     * @return all field from ancestor to this class in order
+     */
+    public List<JvmField> getNonStaticJvmFieldsFromAncestorsInOrder() {
+        List<JvmField> nonStaticJvmFieldsFromAncestors = new ArrayList<>();
+        for(JvmClass jvmClass : JvmClassUtils.getInheritedClassesChain(this)) {
+            nonStaticJvmFieldsFromAncestors.addAll(jvmClass.getNonStaticFields());
+        }
+        return nonStaticJvmFieldsFromAncestors;
+    }
+
+    /**
+     *
      * @return now static fields occupy size in this class and its super classes
      */
     public int getNonStaticFieldsSize() {
@@ -144,6 +156,20 @@ public class JvmClass {
         }
 
         return number;
+    }
+
+    /**
+     *
+     * @return the non static fields of this class
+     */
+    public List<JvmField> getNonStaticFields() {
+        List<JvmField> nonStaticFields = new ArrayList<>();
+        for(JvmField jvmField : this.getJvmFields()) {
+            if(!jvmField.isStatic()) {
+                nonStaticFields.add(jvmField);
+            }
+        }
+        return nonStaticFields;
     }
 
     /**
