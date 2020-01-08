@@ -60,6 +60,7 @@ public class INVOKESTATIC implements Instruction {
 
         // use hack skill
         if(HackUtils.isInHackMethods(jvmMethod)) {
+            HackUtils.hackStaticNativeMethod(jvmMethod, localVariables);
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);

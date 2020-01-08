@@ -34,6 +34,30 @@ public class HackUtils {
     }
 
     /**
+     * hack a non-static native method
+     * @param jvmMethod must be native method
+     * @param localVariables args pop from operand stack
+     * @return
+     */
+    public static Reference hackNativeMethod(JvmMethod jvmMethod, LocalVariables localVariables) {
+        if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
+            // System.out
+            hackSystemOut(jvmMethod, localVariables);
+        }
+        return null;
+    }
+
+    /**
+     * hack a static native method
+     * @param jvmMethod must be native method
+     * @param localVariables args pop from operand stack
+     * @return
+     */
+    public static Reference hackStaticNativeMethod(JvmMethod jvmMethod, LocalVariables localVariables) {
+        return null;
+    }
+
+    /**
      * Hack the method in class System.out, i.e PrintStream
      * @see java.io.PrintStream;
      * @param jvmMethod method in runtime

@@ -83,7 +83,7 @@ public class INVOKEVIRTUAL implements Instruction {
         // use hack skill
         if(HackUtils.isInHackMethods(jvmMethod)) {
             // hack with System.out
-            HackUtils.hackSystemOut(jvmMethod, localVariables);
+            HackUtils.hackNativeMethod(jvmMethod, localVariables);
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);
