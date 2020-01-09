@@ -67,6 +67,24 @@ public class BaseTypeArrayReference extends ArrayReference {
         }
     }
 
+    public BaseTypeArrayReference(boolean[] booleans) {
+        super(booleans.length);
+        this.typeCode = ArrayTypeCodes.T_BOOLEAN;
+        this.booleans = booleans;
+    }
+
+    public BaseTypeArrayReference(byte[] bytes) {
+        super(bytes.length);
+        this.typeCode = ArrayTypeCodes.T_BYTE;
+        this.bytes = bytes;
+    }
+
+    public BaseTypeArrayReference(short[] shorts) {
+        super(shorts.length);
+        this.typeCode = ArrayTypeCodes.T_SHORT;
+        this.shorts = shorts;
+    }
+
     /**
      * construct from char array
      * @param chars
@@ -76,6 +94,31 @@ public class BaseTypeArrayReference extends ArrayReference {
         this.typeCode = ArrayTypeCodes.T_CHAR;
         this.chars = chars;
     }
+
+    public BaseTypeArrayReference(int[] ints) {
+        super(ints.length);
+        this.typeCode = ArrayTypeCodes.T_INT;
+        this.ints = ints;
+    }
+
+    public BaseTypeArrayReference(float[] floats) {
+        super(floats.length);
+        this.typeCode = ArrayTypeCodes.T_FLOAT;
+        this.floats = floats;
+    }
+
+    public BaseTypeArrayReference(long[] longs) {
+        super(longs.length);
+        this.typeCode = ArrayTypeCodes.T_LONG;
+        this.longs = longs;
+    }
+
+    public BaseTypeArrayReference(double[] doubles) {
+        super(doubles.length);
+        this.typeCode = ArrayTypeCodes.T_DOUBLE;
+        this.doubles = doubles;
+    }
+
 
     @Override
     public String toString() {
