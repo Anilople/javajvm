@@ -25,7 +25,7 @@ class ANEWARRAYTest {
             // in the ANEWARRAYTest's "main" method, so after Instruction "ANEWARRAY",
             ObjectArrayReference objectArrayReference = (ObjectArrayReference) jvmThread.currentFrame().getOperandStacks().popReference();
             // the top Object on the operand stack must be the array of "ANEWARRAYTest"
-            ObjectReference typeReference = (ObjectReference) objectArrayReference.getTypeReference();
+            ObjectReference typeReference = (ObjectReference) objectArrayReference.getComponentTypeReference();
             assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
             // remember that push it back
             jvmThread.currentFrame().getOperandStacks().pushReference(objectArrayReference);

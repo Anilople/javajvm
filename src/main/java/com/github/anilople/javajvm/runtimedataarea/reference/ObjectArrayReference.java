@@ -6,7 +6,11 @@ import java.util.Arrays;
 
 public class ObjectArrayReference extends ArrayReference {
 
-    private Reference typeReference;
+    /**
+     * array exists component,
+     * this field represents the type of component
+     */
+    private Reference componentTypeReference;
 
     /**
      * reference
@@ -14,21 +18,21 @@ public class ObjectArrayReference extends ArrayReference {
     private Reference[] references;
 
 
-    public ObjectArrayReference(Reference typeReference, int count) {
+    public ObjectArrayReference(Reference componentTypeReference, int count) {
         super(count);
-        this.typeReference = typeReference;
+        this.componentTypeReference = componentTypeReference;
         references = new Reference[count];
         Arrays.fill(references, Reference.NULL);
     }
 
-    public Reference getTypeReference() {
-        return typeReference;
+    public Reference getComponentTypeReference() {
+        return componentTypeReference;
     }
 
     @Override
     public String toString() {
         return "ObjectArrayReference{" +
-                "typeReference=" + typeReference +
+                "typeReference=" + componentTypeReference +
                 ", references=" + Arrays.toString(references) +
                 '}';
     }
