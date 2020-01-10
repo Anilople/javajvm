@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.instructions.references;
 
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.helper.HighOrderFunctions;
 import com.github.anilople.javajvm.helper.JvmThreadFactory;
 import com.github.anilople.javajvm.helper.JvmThreadRunner;
@@ -25,8 +26,8 @@ class ANEWARRAYTest {
             // in the ANEWARRAYTest's "main" method, so after Instruction "ANEWARRAY",
             ObjectArrayReference objectArrayReference = (ObjectArrayReference) jvmThread.currentFrame().getOperandStacks().popReference();
             // the top Object on the operand stack must be the array of "ANEWARRAYTest"
-            ObjectReference typeReference = (ObjectReference) objectArrayReference.getComponentTypeReference();
-            assertTrue(typeReference.getJvmClass().isSameName(ANEWARRAYTest.class));
+            JvmClass componentType = objectArrayReference.getComponentType();
+            assertTrue(componentType.isSameName(ANEWARRAYTest.class));
             // remember that push it back
             jvmThread.currentFrame().getOperandStacks().pushReference(objectArrayReference);
         };

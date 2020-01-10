@@ -101,8 +101,7 @@ public class ANEWARRAY implements Instruction {
      * @return
      */
     public static ObjectArrayReference allocate(JvmClass jvmClass, int count) {
-        ObjectReference objectReference = new ObjectReference(jvmClass);
-        ObjectArrayReference objectArrayReference = new ObjectArrayReference(objectReference, count);
+        ObjectArrayReference objectArrayReference = new ObjectArrayReference(jvmClass, count);
         return objectArrayReference;
     }
 }
