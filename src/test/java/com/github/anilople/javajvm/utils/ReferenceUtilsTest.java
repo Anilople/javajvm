@@ -88,4 +88,26 @@ class ReferenceUtilsTest {
             assertEquals(s.charAt(i), charArray.getCharValue(i));
         }
     }
+
+    @Test
+    void baseTypeArrayReference2Object_Char() {
+        char[] chars = new char[]{'a', '1', '+'};
+        BaseTypeArrayReference baseTypeArrayReference = ReferenceUtils.singleDimensionPrimitiveArray2ArrayReference(chars);
+        char[] charsImage = (char[]) ReferenceUtils.baseTypeArrayReference2Object(baseTypeArrayReference);
+        assertEquals(chars.length, charsImage.length);
+        for(int i = 0; i < chars.length; i++) {
+            assertEquals(chars[i], charsImage[i]);
+        }
+    }
+
+    @Test
+    void baseTypeArrayReference2Object_Double() {
+        double[] doubles = new double[]{1.0D, 2.999999D, 6.666666D};
+        BaseTypeArrayReference baseTypeArrayReference = ReferenceUtils.singleDimensionPrimitiveArray2ArrayReference(doubles);
+        double[] doublesImage = (double[]) ReferenceUtils.baseTypeArrayReference2Object(baseTypeArrayReference);
+        assertEquals(doubles.length, doublesImage.length);
+        for(int i = 0; i < doubles.length; i++) {
+            assertEquals(doubles[i], doublesImage[i]);
+        }
+    }
 }

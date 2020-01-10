@@ -154,6 +154,10 @@ public class BaseTypeArrayReference extends ArrayReference {
         return "BaseTypeArrayReference{" + value + "}";
     }
 
+    public byte getTypeCode() {
+        return typeCode;
+    }
+
     public boolean isBooleanType() {
         return typeCode == ArrayTypeCodes.T_BOOLEAN;
     }

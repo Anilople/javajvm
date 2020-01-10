@@ -1,14 +1,12 @@
 package com.github.anilople.javajvm.utils;
 
 import com.github.anilople.javajvm.cachepool.StringPool;
+import com.github.anilople.javajvm.constants.ArrayTypeCodes;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import com.github.anilople.javajvm.runtimedataarea.reference.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -328,5 +326,97 @@ public class ReferenceUtils {
         Reference reference = object2Reference(jvmClassLoader, fieldObject);
         // set the reference
         localVariables.setReference(fieldCurrentOffset, reference);
+    }
+
+    /**
+     * convert self-define reference to a real object
+     * @param reference
+     * @return
+     */
+    public static Object reference2Object(Reference reference) {
+        if(reference instanceof NullReference) {
+            return null;
+        } else if(reference instanceof ObjectReference) {
+            return objectReference2Object((ObjectReference) reference);
+        } else if(reference instanceof ArrayReference) {
+            return arrayReference2Object((ArrayReference) reference);
+        } else {
+            throw new IllegalStateException("Unexpected value: " + reference.toString());
+        }
+    }
+
+    private static Object objectReference2Object(ObjectReference objectReference) {
+        return null;
+    }
+
+    private static Object arrayReference2Object(ArrayReference arrayReference) {
+        if(arrayReference instanceof BaseTypeArrayReference) {
+            return baseTypeArrayReference2Object((BaseTypeArrayReference) arrayReference);
+        } else if(arrayReference instanceof ObjectArrayReference) {
+            return objectArrayReference2Object((ObjectArrayReference) arrayReference);
+        } else {
+            throw new IllegalStateException("Unexpected value: " + arrayReference.toString());
+        }
+    }
+
+    public static Object baseTypeArrayReference2Object(BaseTypeArrayReference baseTypeArrayReference) {
+        final int length = baseTypeArrayReference.length();
+        final byte typeCode = baseTypeArrayReference.getTypeCode();
+        switch (typeCode) {
+            case ArrayTypeCodes.T_BOOLEAN:
+                boolean[] booleans = new boolean[length];
+                for(int i = 0; i < length; i++) {
+                    booleans[i] = baseTypeArrayReference.getBooleanValue(i);
+                }
+                return booleans;
+            case ArrayTypeCodes.T_BYTE:
+                byte[] bytes = new byte[length];
+                for(int i = 0; i < length; i++) {
+                    bytes[i] = baseTypeArrayReference.getByteValue(i);
+                }
+                return bytes;
+            case ArrayTypeCodes.T_CHAR:
+                char[] chars = new char[length];
+                for(int i = 0; i < length; i++) {
+                    chars[i] = baseTypeArrayReference.getCharValue(i);
+                }
+                return chars;
+            case ArrayTypeCodes.T_DOUBLE:
+                double[] doubles = new double[length];
+                for(int i = 0; i < length; i++) {
+                    doubles[i] = baseTypeArrayReference.getDoubleValue(i);
+                }
+                return doubles;
+            case ArrayTypeCodes.T_FLOAT:
+                float[] floats = new float[length];
+                for(int i = 0; i < length; i++) {
+                    floats[i] = baseTypeArrayReference.getFloatValue(i);
+                }
+                return floats;
+            case ArrayTypeCodes.T_INT:
+                int[] ints = new int[length];
+                for(int i = 0; i < length; i++) {
+                    ints[i] = baseTypeArrayReference.getIntValue(i);
+                }
+                return ints;
+            case ArrayTypeCodes.T_LONG:
+                long[] longs = new long[length];
+                for(int i = 0; i < length; i++) {
+                    longs[i] = baseTypeArrayReference.getLongValue(i);
+                }
+                return longs;
+            case ArrayTypeCodes.T_SHORT:
+                short[] shorts = new short[length];
+                for(int i = 0; i < length; i++) {
+                    shorts[i] = baseTypeArrayReference.getShortValue(i);
+                }
+                return shorts;
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeCode);
+        }
+    }
+
+    private static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) {
+        return null;
     }
 }
