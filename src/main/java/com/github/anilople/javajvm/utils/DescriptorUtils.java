@@ -465,4 +465,108 @@ public class DescriptorUtils {
         }
         return dimensions;
     }
+
+    /**
+     * MethodDescriptor:
+     *      ( {ParameterDescriptor} ) ReturnDescriptor
+     * from ParameterDescriptor, generate the ParameterTypes in Method
+     * @see java.lang.reflect.Method
+     * @param methodDescriptor
+     * @return
+     */
+    public static Class<?>[] methodDescriptor2ParameterTypes(String methodDescriptor) {
+        List<String> parameterDescriptor = getParameterDescriptor(methodDescriptor);
+        // base type, array, or reference
+        Class<?>[] classes = new Class<?>[parameterDescriptor.size()];
+        for(int i = 0; i < parameterDescriptor.size(); i++) {
+            String descriptor = parameterDescriptor.get(i);
+            classes[i] = fieldTypeDescriptor2Class(descriptor);
+        }
+        return classes;
+    }
+
+    /**
+     * FieldType:
+     *      BaseType
+     *      ObjectType
+     *      ArrayType
+     * @param fieldTypeDescriptor
+     * @return
+     */
+    public static Class<?> fieldTypeDescriptor2Class(String fieldTypeDescriptor) {
+        assert isFieldType(fieldTypeDescriptor);
+        if(isBaseType(fieldTypeDescriptor)) {
+            return baseTypeDescriptor2Class(fieldTypeDescriptor);
+        } else if(isArrayType(fieldTypeDescriptor)) {
+            return arrayTypeDescriptor2Class(fieldTypeDescriptor);
+        } else if(isObjectType(fieldTypeDescriptor)) {
+            return objectTypeDescriptor2Class(fieldTypeDescriptor);
+        } else {
+            throw new RuntimeException(fieldTypeDescriptor + " cannot be recognized");
+        }
+    }
+
+    /**
+     * I -> int.class
+     * Z -> boolean.class
+     * etc.
+     * @param baseTypeDescriptor JVM level descriptor
+     * @return
+     */
+    static Class<?> baseTypeDescriptor2Class(String baseTypeDescriptor) {
+        assert isBaseType(baseTypeDescriptor);
+        switch (baseTypeDescriptor) {
+            case Descriptors.BaseType.BOOLEAN:
+                return boolean.class;
+            case Descriptors.BaseType.BYTE:
+                return byte.class;
+            case Descriptors.BaseType.SHORT:
+                return short.class;
+            case Descriptors.BaseType.CHAR:
+                return char.class;
+            case Descriptors.BaseType.INT:
+                return int.class;
+            case Descriptors.BaseType.LONG:
+                return long.class;
+            case Descriptors.BaseType.FLOAT:
+                return float.class;
+            case Descriptors.BaseType.DOUBLE:
+                return double.class;
+            default:
+                throw new IllegalStateException("Unexpected value: " + baseTypeDescriptor);
+        }
+    }
+
+    /**
+     * [[I -> int[][].class
+     * etc.
+     * @param arrayTypeDescriptor JVM level descriptor
+     * @return
+     */
+    static Class<?> arrayTypeDescriptor2Class(String arrayTypeDescriptor) {
+        assert isArrayType(arrayTypeDescriptor);
+        final String javaLevelArrayTypeDescriptor = ClassNameConverterUtils.jvm2java(arrayTypeDescriptor);
+        try {
+            return Class.forName(javaLevelArrayTypeDescriptor);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Ljava/lang/Object; -> Object.class
+     * etc.
+     * @param objectTypeDescriptor JVM level descriptor
+     * @return
+     */
+    static Class<?> objectTypeDescriptor2Class(String objectTypeDescriptor) {
+        assert isObjectType(objectTypeDescriptor);
+        final String jvmLevelClassName = getClassName(objectTypeDescriptor);
+        final String javaLevelClassName = ClassNameConverterUtils.jvm2java(jvmLevelClassName);
+        try {
+            return Class.forName(javaLevelClassName);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
