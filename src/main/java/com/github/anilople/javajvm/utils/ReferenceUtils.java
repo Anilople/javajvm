@@ -71,7 +71,7 @@ public class ReferenceUtils {
      * @return
      * @throws IllegalAccessException
      */
-    public static Reference object2ObjectReference(
+    public static ObjectReference object2ObjectReference(
             JvmClassLoader jvmClassLoader, Object object
     ) throws IllegalAccessException {
         final Class<?> clazz = object.getClass();
@@ -82,7 +82,7 @@ public class ReferenceUtils {
         // converter the static fields, todo
 
         // converter the non-static fields
-        List<Field> nonStaticFields = getNonStaticFieldsFromAncestor(clazz);
+        List<Field> nonStaticFields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
         int nonStaticFieldCurrentOffset = 0;
         for(Field nonStaticField : nonStaticFields) {
             if(nonStaticField.getType().isPrimitive()) {
@@ -90,7 +90,7 @@ public class ReferenceUtils {
             } else {
                 setReferenceType(objectReference, nonStaticFieldCurrentOffset, jvmClassLoader, object, nonStaticField);
             }
-            nonStaticFieldCurrentOffset += getFieldSize(nonStaticField);
+            nonStaticFieldCurrentOffset += ReflectionUtils.getFieldSize(nonStaticField);
         }
 
         return objectReference;
@@ -168,77 +168,6 @@ public class ReferenceUtils {
             objectArrayReference.setReference(i, reference);
         }
         return objectArrayReference;
-    }
-
-    /**
-     * get all field from ancestor to current class
-     * keep the order
-     * @param clazz current class
-     * @return
-     */
-    private static List<Field> getAllFieldsFromAncestor(Class<?> clazz) {
-        List<Field> fields = new ArrayList<>();
-        for(Class<?> now = clazz; null != now; now = now.getSuperclass()) {
-            Field[] nowFields = now.getDeclaredFields();
-            // add from last to head
-            for(int i = nowFields.length - 1; i >= 0; i--) {
-                fields.add(nowFields[i]);
-            }
-        }
-        // remember to reverse the fields got
-        Collections.reverse(fields);
-        return fields;
-    }
-
-    /**
-     * get all non static fields of a class (from ancestor to current)
-     * keep the order
-     * @param clazz
-     * @return
-     */
-    private static List<Field> getNonStaticFieldsFromAncestor(Class<?> clazz) {
-        List<Field> nonStaticFields = new ArrayList<>();
-        List<Field> allFields = getAllFieldsFromAncestor(clazz);
-        for(Field field : allFields) {
-            if(!Modifier.isStatic(field.getModifiers())) {
-                nonStaticFields.add(field);
-            }
-        }
-        return nonStaticFields;
-    }
-
-    /**
-     * get all static fields of a class (from ancestor to current)
-     * keep the order
-     * @param clazz
-     * @return
-     */
-    private static List<Field> getStaticFieldsFromAncestor(Class<?> clazz) {
-        List<Field> nonStaticFields = new ArrayList<>();
-        List<Field> allFields = getAllFieldsFromAncestor(clazz);
-        for(Field field : allFields) {
-            if(Modifier.isStatic(field.getModifiers())) {
-                nonStaticFields.add(field);
-            }
-        }
-        return nonStaticFields;
-    }
-
-    /**
-     * the field's size in local variables and operand stack
-     * long and double will occupy 2 size
-     * other is 1
-     * @param field
-     * @return
-     */
-    private static int getFieldSize(Field field) {
-        Class<?> fieldType = field.getType();
-        if(fieldType.equals(long.class)
-        || fieldType.equals(double.class)) {
-            return 2;
-        } else {
-            return 1;
-        }
     }
 
     /**
@@ -394,7 +323,7 @@ public class ReferenceUtils {
             throw new RuntimeException(e);
         }
         final JvmClassLoader jvmClassLoader = objectReference.getJvmClass().getLoader();
-        List<Field> fields = ReferenceUtils.getNonStaticFieldsFromAncestor(clazz);
+        List<Field> fields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
         int realOffset = 0;
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
@@ -403,7 +332,7 @@ public class ReferenceUtils {
             } else {
                 setReference2ObjectField(object, field, jvmClassLoader, objectReference, realOffset);
             }
-            realOffset += getFieldSize(field);
+            realOffset += ReflectionUtils.getFieldSize(field);
         }
         return object;
     }
