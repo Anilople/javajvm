@@ -61,7 +61,20 @@ public class ReferenceUtils {
         }
 
         // object
+        return object2ObjectReference(jvmClassLoader, object);
+    }
 
+    /**
+     * convert object to self-define object reference
+     * @param jvmClassLoader
+     * @param object
+     * @return
+     * @throws IllegalAccessException
+     */
+    public static Reference object2ObjectReference(
+            JvmClassLoader jvmClassLoader, Object object
+    ) throws IllegalAccessException {
+        final Class<?> clazz = object.getClass();
         // get the JvmClass of object
         JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
         ObjectReference objectReference = new ObjectReference(jvmClass);
@@ -73,7 +86,7 @@ public class ReferenceUtils {
         int nonStaticFieldCurrentOffset = 0;
         for(Field nonStaticField : nonStaticFields) {
             if(nonStaticField.getType().isPrimitive()) {
-                setPrimitiveType(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
+                setPrimitive2Object(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
             } else {
                 setReferenceType(objectReference, nonStaticFieldCurrentOffset, jvmClassLoader, object, nonStaticField);
             }
@@ -235,7 +248,7 @@ public class ReferenceUtils {
      * @param offset position in the object
      * @param field must be primitive type
      */
-    private static void setPrimitiveType(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
+    private static void setPrimitive2Object(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
         field.setAccessible(true);
         final Class<?> fieldType = field.getType();
         final Class<?> type = fieldType;
@@ -278,7 +291,7 @@ public class ReferenceUtils {
      * @param offset
      * @param value primitive type value
      */
-    private static void setPrimitiveType(
+    private static void setPrimitive2Object(
             Class<?> type,
             BaseTypeArrayReference baseTypeArrayReference, int offset,
             Object value) {
@@ -329,11 +342,32 @@ public class ReferenceUtils {
     }
 
     /**
+     * fetch the reference from self-define object reference
+     * and convert the reference fetched to a real object value in JVM,
+     * then set this real object value to object's field
+     * @param object
+     * @param field
+     * @param jvmClassLoader
+     * @param objectReference
+     * @param offset
+     */
+    private static void setReference2ObjectField(
+            Object object, Field field,
+            JvmClassLoader jvmClassLoader,
+            ObjectReference objectReference, int offset
+    ) throws IllegalAccessException {
+       Reference reference = objectReference.getReference(offset);
+       Object value = reference2Object(reference);
+       // set the value
+       field.setAccessible(true);
+       field.set(object, value);
+    }
+    /**
      * convert self-define reference to a real object
      * @param reference
      * @return
      */
-    public static Object reference2Object(Reference reference) {
+    public static Object reference2Object(Reference reference) throws IllegalAccessException {
         if(reference instanceof NullReference) {
             return null;
         } else if(reference instanceof ObjectReference) {
@@ -345,11 +379,85 @@ public class ReferenceUtils {
         }
     }
 
-    private static Object objectReference2Object(ObjectReference objectReference) {
-        return null;
+    /**
+     * convert self-define object reference to real object
+     * @param objectReference
+     * @return
+     * @throws IllegalAccessException
+     */
+    public static Object objectReference2Object(ObjectReference objectReference) throws IllegalAccessException {
+        Class<?> clazz = objectReference.getJvmClass().getRealClassInJvm();
+        Object object = null;
+        try {
+            object = clazz.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        final JvmClassLoader jvmClassLoader = objectReference.getJvmClass().getLoader();
+        List<Field> fields = ReferenceUtils.getNonStaticFieldsFromAncestor(clazz);
+        int realOffset = 0;
+        for(int i = 0; i < fields.size(); i++) {
+            Field field = fields.get(i);
+            if(field.getType().isPrimitive()) {
+                setPrimitive2Object(object, field, objectReference, realOffset);
+            } else {
+                setReference2ObjectField(object, field, jvmClassLoader, objectReference, realOffset);
+            }
+            realOffset += getFieldSize(field);
+        }
+        return object;
     }
 
-    private static Object arrayReference2Object(ArrayReference arrayReference) {
+    /**
+     * set the primitive value
+     * from self-define reference to object's field
+     * @param object
+     * @param field
+     * @param objectReference
+     * @param offset
+     * @throws IllegalAccessException
+     */
+    private static void setPrimitive2Object(
+            Object object, Field field,
+            ObjectReference objectReference, int offset
+    ) throws IllegalAccessException {
+        if(!field.getType().isPrimitive()) {
+            throw new RuntimeException(field + " is not primitive");
+        }
+        field.setAccessible(true);
+        final Class<?> fieldType = field.getType();
+        final Class<?> type = fieldType;
+        if(type.equals(boolean.class)) {
+            boolean value = objectReference.getBooleanValue(offset);
+            field.setBoolean(object, value);
+        } else if(type.equals(byte.class)) {
+            byte value = objectReference.getByteValue(offset);
+            field.setByte(object, value);
+        } else if(type.equals(short.class)) {
+            short value = objectReference.getShortValue(offset);
+            field.setShort(object, value);
+        } else if(type.equals(char.class)) {
+            char value = objectReference.getCharValue(offset);
+            field.setChar(object, value);
+        } else if(type.equals(int.class)) {
+            int value = objectReference.getIntValue(offset);
+            field.setInt(object, value);
+        } else if(type.equals(float.class)) {
+            float value = objectReference.getFloatValue(offset);
+            field.setFloat(object, value);
+        } else if(type.equals(long.class)) {
+            long value = objectReference.getLongValue(offset);
+            field.setLong(object, value);
+        } else if(type.equals(double.class)) {
+            double value = objectReference.getDoubleValue(offset);
+            field.setDouble(object, value);
+        } else {
+            throw new IllegalArgumentException("Cannot set type " + type);
+        }
+    }
+
+
+    private static Object arrayReference2Object(ArrayReference arrayReference) throws IllegalAccessException {
         if(arrayReference instanceof BaseTypeArrayReference) {
             return baseTypeArrayReference2Object((BaseTypeArrayReference) arrayReference);
         } else if(arrayReference instanceof ObjectArrayReference) {
@@ -359,6 +467,11 @@ public class ReferenceUtils {
         }
     }
 
+    /**
+     * convert self-define BaseTypeArrayReference to real primitive type array
+     * @param baseTypeArrayReference
+     * @return
+     */
     public static Object baseTypeArrayReference2Object(BaseTypeArrayReference baseTypeArrayReference) {
         final int length = baseTypeArrayReference.length();
         final byte typeCode = baseTypeArrayReference.getTypeCode();
@@ -416,7 +529,19 @@ public class ReferenceUtils {
         }
     }
 
-    private static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) {
-        return null;
+    /**
+     * convert self-define ObjectArrayReference to real reference type array
+     * @param objectArrayReference
+     * @return
+     * @throws IllegalAccessException
+     */
+    public static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) throws IllegalAccessException {
+        final int length = objectArrayReference.length();
+        Object[] objects = new Object[length];
+        for(int i = 0; i < length; i++) {
+            Object object = reference2Object(objectArrayReference.getReference(i));
+            objects[i] = object;
+        }
+        return objects;
     }
 }

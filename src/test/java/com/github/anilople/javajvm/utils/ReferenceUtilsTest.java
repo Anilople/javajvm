@@ -110,4 +110,54 @@ class ReferenceUtilsTest {
             assertEquals(doubles[i], doublesImage[i]);
         }
     }
+
+    @Test
+    void objectReference2Object() throws IllegalAccessException {
+
+        Values values = new Values();
+
+        ObjectReference objectReference = (ObjectReference) ReferenceUtils.object2ObjectReference(jvmClassLoader, values);
+
+        Values valuesImage = (Values) ReferenceUtils.objectReference2Object(objectReference);
+
+        values.equals(valuesImage);
+
+        assertEquals(values.getIntValue(), valuesImage.getIntValue());
+        assertEquals(values.getLongValue(), valuesImage.getLongValue());
+        assertEquals(values.getDoubleValue(), valuesImage.getDoubleValue());
+        char[] valuesCharArray = values.getChars();
+        char[] valuesImageCharArray = valuesImage.getChars();
+        assertEquals(valuesCharArray.length, valuesImageCharArray.length);
+        for(int i = 0; i < valuesCharArray.length; i++) {
+            assertEquals(valuesCharArray[i], valuesImageCharArray[i]);
+        }
+    }
+}
+
+/**
+ * for the field test
+ * the inner class will exists 'this$0' field
+ * so declare it here
+ */
+class Values {
+    private int intValue = 3;
+    private long longValue = 666L;
+    private char[] chars = new char[]{'1', '+'};
+    private double doubleValue = 8.888D;
+
+    public int getIntValue() {
+        return intValue;
+    }
+
+    public long getLongValue() {
+        return longValue;
+    }
+
+    public char[] getChars() {
+        return chars;
+    }
+
+    public double getDoubleValue() {
+        return doubleValue;
+    }
 }
