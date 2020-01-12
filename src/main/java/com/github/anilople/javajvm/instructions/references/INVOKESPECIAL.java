@@ -83,6 +83,7 @@ public class INVOKESPECIAL implements Instruction {
 
         // use hack skill
         if(HackUtils.isInHackMethods(jvmMethod)) {
+            HackUtils.hackMethod(frame, jvmMethod, localVariables);
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);

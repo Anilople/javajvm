@@ -4,6 +4,7 @@ import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.constants.AccessFlags;
 import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
+import com.github.anilople.javajvm.utils.ClassNameConverterUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
 import org.slf4j.Logger;
@@ -244,6 +245,16 @@ public class JvmClass {
      */
     public boolean isSameName(Class<?> clazz) {
         return this.getName().equals(JvmClassUtils.getStandardRuntimeClassName(clazz));
+    }
+
+    public Class<?> getRealClassInJvm() {
+        final String javaClassName = ClassNameConverterUtils.jvm2java(this.getName());
+        try {
+            Class<?> clazz = Class.forName(javaClassName);
+            return clazz;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

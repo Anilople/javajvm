@@ -1,14 +1,11 @@
 package com.github.anilople.javajvm.instructions.references;
 
-import com.github.anilople.javajvm.constants.Descriptors;
 import com.github.anilople.javajvm.heap.JvmMethod;
 import com.github.anilople.javajvm.heap.constant.JvmConstantMethodref;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
-import com.github.anilople.javajvm.runtimedataarea.Reference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.HackUtils;
@@ -16,7 +13,6 @@ import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.List;
 
 public class INVOKESTATIC implements Instruction {
@@ -60,6 +56,7 @@ public class INVOKESTATIC implements Instruction {
 
         // use hack skill
         if(HackUtils.isInHackMethods(jvmMethod)) {
+            HackUtils.hackMethod(frame, jvmMethod, localVariables);
             // early return here
             int nextPc = frame.getNextPc() + this.size();
             frame.setNextPc(nextPc);

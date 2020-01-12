@@ -205,7 +205,7 @@ public class MULTIANEWARRAY implements Instruction {
         } else {
             // multiple
             int headCount = counts.get(0);
-            ObjectArrayReference objectArrayReference = new ObjectArrayReference(new ObjectReference(jvmClass), headCount);
+            ObjectArrayReference objectArrayReference = new ObjectArrayReference(jvmClass, headCount);
             JvmClass subDimensionsClass = jvmClass.getLoader().loadClass(jvmClass.getName().substring(1));
             // use recursion to allocate the rest of this multiple array
             for(int i = 0; i < headCount; i++) {

@@ -20,8 +20,9 @@ public class LDC_W implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        int nextPc = frame.getNextPc() + this.size();
-        frame.setNextPc(nextPc);
+        throw new RuntimeException("Now cannot support " + this.getClass());
+//        int nextPc = frame.getNextPc() + this.size();
+//        frame.setNextPc(nextPc);
     }
 
     @Override

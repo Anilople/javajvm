@@ -31,7 +31,8 @@ public class OperandStacksHelper {
         consumer.accept(value);
         operandStacks.pushShortValue(value);
     }
-    public static void checkTopInteger(OperandStacks operandStacks, Consumer<Integer> consumer) {
+
+    public static void checkTopInt(OperandStacks operandStacks, Consumer<Integer> consumer) {
         int value = operandStacks.popIntValue();
         consumer.accept(value);
         operandStacks.pushIntValue(value);

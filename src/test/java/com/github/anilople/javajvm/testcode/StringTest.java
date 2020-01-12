@@ -17,5 +17,6 @@ public class StringTest {
         String a = "test34234";
         String b = a;
         String c = a + b;
+        System.out.println(c);
     }
 }

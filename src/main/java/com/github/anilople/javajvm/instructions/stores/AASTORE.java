@@ -55,7 +55,7 @@ public class AASTORE implements Instruction {
 
         // type check here, jvms8: Page 368
         // null do not need to type check
-        logger.trace("value, i.e source = {}, array component of reference type target = {}", value, objectArrayReference.getTypeReference());
+        logger.trace("value, i.e source = {}, array component of reference type target = {}", value, objectArrayReference.getComponentType());
         if(!Reference.NULL.equals(value)) {
             // to do
 

@@ -1,12 +1,17 @@
 package com.github.anilople.javajvm.runtimedataarea.reference;
 
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 
 import java.util.Arrays;
 
 public class ObjectArrayReference extends ArrayReference {
 
-    private Reference typeReference;
+    /**
+     * array exists component,
+     * this field represents the type of component
+     */
+    private JvmClass componentType;
 
     /**
      * reference
@@ -14,21 +19,21 @@ public class ObjectArrayReference extends ArrayReference {
     private Reference[] references;
 
 
-    public ObjectArrayReference(Reference typeReference, int count) {
+    public ObjectArrayReference(JvmClass componentType, int count) {
         super(count);
-        this.typeReference = typeReference;
+        this.componentType = componentType;
         references = new Reference[count];
         Arrays.fill(references, Reference.NULL);
     }
 
-    public Reference getTypeReference() {
-        return typeReference;
+    public JvmClass getComponentType() {
+        return componentType;
     }
 
     @Override
     public String toString() {
         return "ObjectArrayReference{" +
-                "typeReference=" + typeReference +
+                "typeReference=" + componentType +
                 ", references=" + Arrays.toString(references) +
                 '}';
     }
