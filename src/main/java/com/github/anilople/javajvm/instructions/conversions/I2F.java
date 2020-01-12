@@ -4,6 +4,10 @@ import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
+/**
+ * Operation
+ * Convert int to float
+ */
 public class I2F implements Instruction {
 
     @Override
@@ -13,6 +17,9 @@ public class I2F implements Instruction {
 
     @Override
     public void execute(Frame frame) {
+        int intValue = frame.getOperandStacks().popIntValue();
+        float floatValue = (float) intValue;
+        frame.getOperandStacks().pushFloatValue(floatValue);
         int nextPc = frame.getNextPc() + this.size();
         frame.setNextPc(nextPc);
     }
