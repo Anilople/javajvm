@@ -5,6 +5,7 @@ import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
+import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
@@ -224,11 +225,59 @@ public class HackUtils {
             returnObject = method.invoke(thisObject, parameterObjects);
         }
 
-        if(!void.class.equals(method.getReturnType())) {
+        final Class<?> returnType = method.getReturnType();
+        if(!void.class.equals(returnType)) {
             // exists return value
-            Reference returnReference = ReferenceUtils.object2Reference(jvmClassLoader, returnObject);
-            // push the result
-            frame.getOperandStacks().pushReference(returnReference);
+            if(returnType.isPrimitive()) {
+                // int, boolean, double etc..
+                pushPrimitiveValueByType(frame.getOperandStacks(), returnObject, returnType);
+            } else {
+                // String, Object, String[][] etc..
+                Reference returnReference = ReferenceUtils.object2Reference(jvmClassLoader, returnObject);
+                // push the result
+                frame.getOperandStacks().pushReference(returnReference);
+            }
+        }
+    }
+
+    /**
+     * push the return value of method to operand stack
+     * when return value is primitive type
+     * @param operandStacks
+     * @param primitiveValue
+     * @param primitiveType
+     */
+    private static void pushPrimitiveValueByType(OperandStacks operandStacks, Object primitiveValue, Class<?> primitiveType) {
+        if(!primitiveType.isPrimitive()) {
+            throw new RuntimeException(primitiveType + " is not primitive");
+        }
+        final Class<?> type = primitiveType;
+        if(type.equals(boolean.class)) {
+            boolean value = (boolean) primitiveValue;
+            operandStacks.pushBooleanValue(value);
+        } else if(type.equals(byte.class)) {
+            byte value = (byte) primitiveValue;
+            operandStacks.pushByteValue(value);
+        } else if(type.equals(short.class)) {
+            short value = (short) primitiveValue;
+            operandStacks.pushShortValue(value);
+        } else if(type.equals(char.class)) {
+            char value = (char) primitiveValue;
+            operandStacks.pushCharValue(value);
+        } else if(type.equals(int.class)) {
+            int value = (int) primitiveValue;
+            operandStacks.pushIntValue(value);
+        } else if(type.equals(float.class)) {
+            float value = (float) primitiveValue;
+            operandStacks.pushFloatValue(value);
+        } else if(type.equals(long.class)) {
+            long value = (long) primitiveValue;
+            operandStacks.pushLongValue(value);
+        } else if(type.equals(double.class)) {
+            double value = (double) primitiveValue;
+            operandStacks.pushDoubleValue(value);
+        } else {
+            throw new IllegalArgumentException("Cannot set type " + type);
         }
     }
 
