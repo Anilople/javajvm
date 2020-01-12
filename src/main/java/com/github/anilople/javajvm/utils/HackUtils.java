@@ -1,6 +1,9 @@
 package com.github.anilople.javajvm.utils;
 
+import com.github.anilople.javajvm.heap.JvmClass;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
+import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
@@ -10,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import static com.github.anilople.javajvm.constants.Descriptors.BaseType.*;
@@ -30,31 +35,35 @@ public class HackUtils {
                     jvmMethod.getDescriptor()
             );
         }
-        return jvmMethod.getJvmClass().isSameName(PrintStream.class);
+        return jvmMethod.getJvmClass().isSameName(PrintStream.class)
+                || (jvmMethod.getJvmClass().isSameName(Class.class) && jvmMethod.isNative());
     }
 
     /**
-     * hack a non-static native method
-     * @param jvmMethod must be native method
+     * hack a native method
+     * @param frame frame in jvm stack
+     * @param jvmMethod the method be hacked
      * @param localVariables args pop from operand stack
      * @return
      */
-    public static Reference hackNativeMethod(JvmMethod jvmMethod, LocalVariables localVariables) {
+    public static void hackMethod(Frame frame, JvmMethod jvmMethod, LocalVariables localVariables) {
         if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
             // System.out
             hackSystemOut(jvmMethod, localVariables);
         }
-        return null;
-    }
-
-    /**
-     * hack a static native method
-     * @param jvmMethod must be native method
-     * @param localVariables args pop from operand stack
-     * @return
-     */
-    public static Reference hackStaticNativeMethod(JvmMethod jvmMethod, LocalVariables localVariables) {
-        return null;
+        if(jvmMethod.getJvmClass().isSameName(Class.class)) {
+            // java.lang.Class
+            try {
+                hackAllNativeMethod(frame, jvmMethod, localVariables);
+            } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new RuntimeException(
+                        "hack method " +
+                                jvmMethod.getJvmClass().getName() + "." + jvmMethod.getName() +
+                                " fail",
+                        e
+                );
+            }
+        }
     }
 
     /**
@@ -154,6 +163,66 @@ public class HackUtils {
             }
             default:
                 throw new IllegalStateException("Unexpected value: " + parameterDescriptor);
+        }
+    }
+
+    public static void assertNativeMethod(JvmMethod jvmMethod) {
+        if(!jvmMethod.isNative()) {
+            throw new RuntimeException(jvmMethod.getName() + jvmMethod.getDescriptor() + " must be native method");
+        }
+    }
+
+    /**
+     * hack the native method
+     * i.e when our JVM wants to invoke a native method,
+     * we intercept the invocation,
+     * then hack it.
+     * invoke the method by reflection to get the result
+     * @param frame
+     * @param jvmMethod
+     * @param localVariables
+     * @throws NoSuchMethodException
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public static void hackAllNativeMethod(
+            Frame frame, JvmMethod jvmMethod, LocalVariables localVariables
+    ) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        assertNativeMethod(jvmMethod);
+        final JvmClass jvmClass = jvmMethod.getJvmClass();
+        final JvmClassLoader jvmClassLoader = jvmClass.getLoader();
+        final String methodName = jvmMethod.getName();
+        final Class<?> clazz = jvmClass.getRealClassInJvm();
+        // parse type of parameters
+        Class<?>[] parameterTypes = DescriptorUtils.methodDescriptor2ParameterTypes(jvmMethod.getDescriptor());
+        // find the method
+        final Method method = clazz.getDeclaredMethod(methodName, parameterTypes);
+        method.setAccessible(true);
+
+        int parameterOffset = jvmMethod.isStatic() ? 0 : 1;
+        // parameters pass to method when invoke
+        Object[] parameterObjects = new Object[parameterTypes.length];
+        for(int i = 0; i < parameterObjects.length; i++) {
+            parameterObjects[i] = ReferenceUtils.getLocalVariableByClassType(localVariables, parameterOffset, parameterTypes[i]);
+            parameterOffset += ReflectionUtils.getClassSize(parameterTypes[i]);
+        }
+
+        // the result of invocation
+        Object returnObject = null;
+        if(jvmMethod.isStatic()) {
+            returnObject = method.invoke(null, parameterObjects);
+        } else {
+            // non static method, so we must pass this pointer
+            Reference reference = localVariables.getReference(0);
+            Object thisObject = ReferenceUtils.reference2Object(reference);
+            returnObject = method.invoke(thisObject, parameterObjects);
+        }
+
+        if(!void.class.equals(method.getReturnType())) {
+            // exists return value
+            Reference returnReference = ReferenceUtils.object2Reference(jvmClassLoader, returnObject);
+            // push the result
+            frame.getOperandStacks().pushReference(returnReference);
         }
     }
 

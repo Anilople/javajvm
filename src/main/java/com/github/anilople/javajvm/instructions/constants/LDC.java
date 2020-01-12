@@ -7,8 +7,11 @@ import com.github.anilople.javajvm.heap.constant.*;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ClassObjectReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import com.github.anilople.javajvm.utils.ClassNameConverterUtils;
 import com.github.anilople.javajvm.utils.ConstantPoolUtils;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 import com.github.anilople.javajvm.utils.ReferenceUtils;
@@ -85,7 +88,9 @@ public class LDC implements Instruction {
 //            throw new RuntimeException("LDC now cannot support " + jvmConstant);
         } else if(jvmConstant instanceof JvmConstantClass) {
             JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstant;
-            throw new RuntimeException("LDC now cannot support " + jvmConstantClass.getName());
+            JvmClass jvmClass = jvmConstantClass.resolveJvmClass();
+            ClassObjectReference classObjectReference = ClassObjectReference.getInstance(jvmClass);
+            frame.getOperandStacks().pushReference(classObjectReference);
         } else if(jvmConstant instanceof JvmConstantMethodType) {
             JvmConstantMethodType jvmConstantMethodType = (JvmConstantMethodType) jvmConstant;
             throw new RuntimeException("LDC now cannot support " + jvmConstantMethodType);

@@ -309,13 +309,19 @@ public class ReferenceUtils {
     }
 
     /**
-     * convert self-define object reference to real object
+     * convert self-define object reference to real object,
+     * but notice that java.lang.Class cannot
      * @param objectReference
      * @return
      * @throws IllegalAccessException
      */
     public static Object objectReference2Object(ObjectReference objectReference) throws IllegalAccessException {
-        Class<?> clazz = objectReference.getJvmClass().getRealClassInJvm();
+        final JvmClass jvmClass = objectReference.getJvmClass();
+        final Class<?> clazz = jvmClass.getRealClassInJvm();
+        if(objectReference instanceof ClassObjectReference) {
+            return ClassObjectReference.getRealClassInJvm((ClassObjectReference) objectReference);
+        }
+
         Object object = null;
         try {
             object = clazz.newInstance();
@@ -472,5 +478,61 @@ public class ReferenceUtils {
             objects[i] = object;
         }
         return objects;
+    }
+
+    /**
+     * get the local variable from local variable
+     * @param localVariables
+     * @param offset
+     * @param type
+     * @return
+     * @throws IllegalAccessException
+     */
+    public static Object getLocalVariableByClassType(
+            LocalVariables localVariables, int offset, Class<?> type
+    ) {
+        if(type.isPrimitive()) {
+            // primitive value
+            return getPrimitiveLocalVariableByClassType(localVariables, offset, type);
+        } else {
+            // reference value
+            Reference reference = localVariables.getReference(offset);
+            try {
+                return reference2Object(reference);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * get the primitive value from local variables
+     * @param localVariables
+     * @param offset
+     * @param type
+     * @return
+     */
+    public static Object getPrimitiveLocalVariableByClassType(
+            LocalVariables localVariables, int offset, Class<?> type
+    ) {
+        if(type.equals(boolean.class)) {
+            return localVariables.getBooleanValue(offset);
+        } else if(type.equals(byte.class)) {
+            return localVariables.getByteValue(offset);
+        } else if(type.equals(short.class)) {
+            return localVariables.getShortValue(offset);
+        } else if(type.equals(char.class)) {
+            return localVariables.getCharValue(offset);
+        } else if(type.equals(int.class)) {
+            return localVariables.getIntValue(offset);
+        } else if(type.equals(float.class)) {
+            return localVariables.getFloatValue(offset);
+        } else if(type.equals(long.class)) {
+            return localVariables.getLongValue(offset);
+        } else if(type.equals(double.class)) {
+            return localVariables.getDoubleValue(offset);
+        } else {
+            throw new IllegalArgumentException("Cannot set type " + type);
+        }
     }
 }
