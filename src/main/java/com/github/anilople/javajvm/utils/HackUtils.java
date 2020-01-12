@@ -35,8 +35,15 @@ public class HackUtils {
                     jvmMethod.getDescriptor()
             );
         }
-        return jvmMethod.getJvmClass().isSameName(PrintStream.class)
-                || (jvmMethod.getJvmClass().isSameName(Class.class) && jvmMethod.isNative());
+        if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
+            return true;
+        }
+        if(jvmMethod.getJvmClass().isSameName(Class.class) && jvmMethod.isNative()) {
+            return true;
+        }
+
+        // default action: hack all native method
+        return jvmMethod.isNative();
     }
 
     /**
@@ -50,9 +57,8 @@ public class HackUtils {
         if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
             // System.out
             hackSystemOut(jvmMethod, localVariables);
-        }
-        if(jvmMethod.getJvmClass().isSameName(Class.class)) {
-            // java.lang.Class
+        } else {
+            // default action: hack all native method
             try {
                 hackAllNativeMethod(frame, jvmMethod, localVariables);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
