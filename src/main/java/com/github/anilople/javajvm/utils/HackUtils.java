@@ -7,6 +7,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
@@ -58,6 +59,8 @@ public class HackUtils {
         if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
             // System.out
             hackSystemOut(jvmMethod, localVariables);
+        } else if(jvmMethod.getJvmClass().isSameName(System.class) && jvmMethod.getName().equals("arraycopy")) {
+            hackSystemArrayCopy(localVariables);
         } else {
             // default action: hack all native method
             try {
@@ -171,6 +174,19 @@ public class HackUtils {
             default:
                 throw new IllegalStateException("Unexpected value: " + parameterDescriptor);
         }
+    }
+
+    /**
+     * @see java.lang.System arraycopy method
+     * @param localVariables
+     */
+    private static void hackSystemArrayCopy(LocalVariables localVariables) {
+        ArrayReference srcArrayReference = (ArrayReference) localVariables.getReference(0);
+        int srcPos = localVariables.getIntValue(1);
+        ArrayReference destArrayReference = (ArrayReference) localVariables.getReference(2);
+        int destPos = localVariables.getIntValue(3);
+        int length = localVariables.getIntValue(4);
+        ReferenceUtils.arrayCopy(srcArrayReference, srcPos, destArrayReference, destPos, length);
     }
 
     public static void assertNativeMethod(JvmMethod jvmMethod) {

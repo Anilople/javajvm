@@ -535,4 +535,96 @@ public class ReferenceUtils {
             throw new IllegalArgumentException("Cannot set type " + type);
         }
     }
+
+    /**
+     * emulator "arraycopy" in System
+     * @see java.lang.System arraycopy
+     * @param src
+     * @param srcPos
+     * @param dest
+     * @param destPos
+     * @param length
+     */
+    public static void arrayCopy(
+            ArrayReference src, int srcPos,
+            ArrayReference dest, int destPos,
+            int length
+    ) {
+        if(!src.getClass().equals(dest.getClass())) {
+            throw new IllegalArgumentException(src + " type not same as " + dest);
+        }
+        if(src instanceof BaseTypeArrayReference) {
+            arrayCopy((BaseTypeArrayReference) src, srcPos, (BaseTypeArrayReference) dest, destPos, length);
+        } else if(src instanceof ObjectArrayReference) {
+            throw new RuntimeException("Now cannot support array copy " + ObjectArrayReference.class);
+        } else {
+            throw new IllegalStateException("Wrong type " + src);
+        }
+    }
+
+    /**
+     * copy the primitive values of self-define bast type array
+     * @param src
+     * @param srcPos
+     * @param dest
+     * @param destPos
+     * @param length
+     */
+    private static void arrayCopy(
+            BaseTypeArrayReference src, int srcPos,
+            BaseTypeArrayReference dest, int destPos,
+            int length
+    ) {
+        if(src.getTypeCode() != dest.getTypeCode()) {
+            throw new IllegalArgumentException("type code not same");
+        }
+        for(int i = 0; i < length; i++) {
+            arrayCopyPrimitiveOne(src, srcPos + i, dest, destPos + i);
+        }
+    }
+
+    /**
+     * just copy 1 primitive element in array
+     * @param src
+     * @param srcIndex
+     * @param dest
+     * @param destIndex
+     */
+    private static void arrayCopyPrimitiveOne(
+            BaseTypeArrayReference src, int srcIndex,
+            BaseTypeArrayReference dest, int destIndex
+    ) {
+        if(src.getTypeCode() != dest.getTypeCode()) {
+            throw new IllegalArgumentException("type code not same");
+        }
+        final byte typeCode = src.getTypeCode();
+        switch (typeCode) {
+            case ArrayTypeCodes.T_BOOLEAN:
+                dest.setBooleanValue(destIndex, src.getBooleanValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_BYTE:
+                dest.setByteValue(destIndex, src.getByteValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_CHAR:
+                dest.setCharValue(destIndex, src.getCharValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_DOUBLE:
+                dest.setDoubleValue(destIndex, src.getDoubleValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_FLOAT:
+                dest.setFloatValue(destIndex, src.getFloatValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_INT:
+                dest.setIntValue(destIndex, src.getIntValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_LONG:
+                dest.setLongValue(destIndex, src.getLongValue(srcIndex));
+                break;
+            case ArrayTypeCodes.T_SHORT:
+                dest.setShortValue(destIndex, src.getShortValue(srcIndex));
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeCode);
+        }
+    }
 }
