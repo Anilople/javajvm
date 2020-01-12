@@ -127,4 +127,21 @@ public class ReflectionUtils {
         }
         return clazz;
     }
+
+    /**
+     * calculate the field's offset in class
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    public static int getNonStaticOffset(Class<?> clazz, String fieldName) {
+        int offset = 0;
+        for(Field field : ReflectionUtils.getNonStaticFieldsFromAncestor(clazz)) {
+            if(field.getName().equals(fieldName)) {
+                return offset;
+            }
+            offset += ReflectionUtils.getFieldSize(field);
+        }
+        throw new RuntimeException("field name " + fieldName + " not in class " + clazz);
+    }
 }
