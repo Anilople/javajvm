@@ -9,9 +9,6 @@ import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.*;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -71,7 +68,7 @@ public class ReferenceUtils {
      * @return
      * @throws IllegalAccessException
      */
-    public static ObjectReference object2ObjectReference(
+    static ObjectReference object2ObjectReference(
             JvmClassLoader jvmClassLoader, Object object
     ) throws IllegalAccessException {
         final Class<?> clazz = object.getClass();
@@ -86,9 +83,9 @@ public class ReferenceUtils {
         int nonStaticFieldCurrentOffset = 0;
         for(Field nonStaticField : nonStaticFields) {
             if(nonStaticField.getType().isPrimitive()) {
-                setPrimitive2Object(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
+                setPrimitive2ObjectField(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
             } else {
-                setReferenceType(objectReference, nonStaticFieldCurrentOffset, jvmClassLoader, object, nonStaticField);
+                setObjectField2ObjectReference(objectReference, nonStaticFieldCurrentOffset, jvmClassLoader, object, nonStaticField);
             }
             nonStaticFieldCurrentOffset += ReflectionUtils.getFieldSize(nonStaticField);
         }
@@ -101,7 +98,7 @@ public class ReferenceUtils {
      * @param arrayObject array
      * @return array reference
      */
-    public static ArrayReference array2ArrayReference(
+    static ArrayReference array2ArrayReference(
             JvmClassLoader jvmClassLoader, Object arrayObject
     ) throws IllegalAccessException {
         int dimensions = DescriptorUtils.getDimensions(arrayObject.getClass().getName());
@@ -126,7 +123,7 @@ public class ReferenceUtils {
      * @param primitiveArrayObject 1 dimension array of primitive type
      * @return self-define array reference
      */
-    public static BaseTypeArrayReference singleDimensionPrimitiveArray2ArrayReference(Object primitiveArrayObject) {
+    static BaseTypeArrayReference singleDimensionPrimitiveArray2ArrayReference(Object primitiveArrayObject) {
         // get component type
         final Class<?> type = primitiveArrayObject.getClass().getComponentType();
         if(type.equals(boolean.class)) {
@@ -154,7 +151,7 @@ public class ReferenceUtils {
      * @param objectArrayObject 1 dimension array of object reference
      * @return self-define array reference
      */
-    public static ObjectArrayReference singleDimensionObjectArray2ObjectArrayReference(
+    static ObjectArrayReference singleDimensionObjectArray2ObjectArrayReference(
             JvmClassLoader jvmClassLoader, Object objectArrayObject
     ) throws IllegalAccessException {
         Object[] objects = (Object[]) objectArrayObject;
@@ -177,7 +174,7 @@ public class ReferenceUtils {
      * @param offset position in the object
      * @param field must be primitive type
      */
-    private static void setPrimitive2Object(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
+    private static void setPrimitive2ObjectField(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
         field.setAccessible(true);
         final Class<?> fieldType = field.getType();
         final Class<?> type = fieldType;
@@ -210,42 +207,6 @@ public class ReferenceUtils {
         }
     }
 
-
-    /**
-     * set the value to position offset
-     * according to the value's type
-     * the value must can unpack to primitive value
-     * @param type value's type
-     * @param baseTypeArrayReference
-     * @param offset
-     * @param value primitive type value
-     */
-    private static void setPrimitive2Object(
-            Class<?> type,
-            BaseTypeArrayReference baseTypeArrayReference, int offset,
-            Object value) {
-        if(type.equals(boolean.class)) {
-            baseTypeArrayReference.setBooleanValue(offset, (Boolean) value);
-        } else if(type.equals(byte.class)) {
-            baseTypeArrayReference.setByteValue(offset, (Byte) value);
-        } else if(type.equals(short.class)) {
-            baseTypeArrayReference.setShortValue(offset, (Short) value);
-        } else if(type.equals(char.class)) {
-            baseTypeArrayReference.setCharValue(offset, (Character) value);
-        } else if(type.equals(int.class)) {
-            baseTypeArrayReference.setIntValue(offset, (Integer) value);
-        } else if(type.equals(float.class)) {
-            baseTypeArrayReference.setFloatValue(offset, (Float) value);
-        } else if(type.equals(long.class)) {
-            baseTypeArrayReference.setLongValue(offset, (Long) value);
-        } else if(type.equals(double.class)) {
-            baseTypeArrayReference.setDoubleValue(offset, (Double) value);
-        } else {
-            throw new IllegalArgumentException("Cannot set type " + type);
-        }
-    }
-
-
     /**
      * set the value to position offset
      * according to the value's type
@@ -256,7 +217,7 @@ public class ReferenceUtils {
      * @param object
      * @param field
      */
-    private static void setReferenceType(
+    private static void setObjectField2ObjectReference(
             LocalVariables localVariables, int fieldCurrentOffset,
             JvmClassLoader jvmClassLoader,
             Object object, Field field
@@ -315,7 +276,7 @@ public class ReferenceUtils {
      * @return
      * @throws IllegalAccessException
      */
-    public static Object objectReference2Object(ObjectReference objectReference) throws IllegalAccessException {
+    static Object objectReference2Object(ObjectReference objectReference) throws IllegalAccessException {
         final JvmClass jvmClass = objectReference.getJvmClass();
         final Class<?> clazz = jvmClass.getRealClassInJvm();
         if(objectReference instanceof ClassObjectReference) {
@@ -334,7 +295,7 @@ public class ReferenceUtils {
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             if(field.getType().isPrimitive()) {
-                setPrimitive2Object(object, field, objectReference, realOffset);
+                setPrimitive2ObjectField(object, field, objectReference, realOffset);
             } else {
                 setReference2ObjectField(object, field, jvmClassLoader, objectReference, realOffset);
             }
@@ -352,7 +313,7 @@ public class ReferenceUtils {
      * @param offset
      * @throws IllegalAccessException
      */
-    private static void setPrimitive2Object(
+    private static void setPrimitive2ObjectField(
             Object object, Field field,
             ObjectReference objectReference, int offset
     ) throws IllegalAccessException {
@@ -407,7 +368,7 @@ public class ReferenceUtils {
      * @param baseTypeArrayReference
      * @return
      */
-    public static Object baseTypeArrayReference2Object(BaseTypeArrayReference baseTypeArrayReference) {
+    static Object baseTypeArrayReference2Object(BaseTypeArrayReference baseTypeArrayReference) {
         final int length = baseTypeArrayReference.length();
         final byte typeCode = baseTypeArrayReference.getTypeCode();
         switch (typeCode) {
@@ -470,7 +431,7 @@ public class ReferenceUtils {
      * @return
      * @throws IllegalAccessException
      */
-    public static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) throws IllegalAccessException {
+    static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) throws IllegalAccessException {
         final int length = objectArrayReference.length();
         Object[] objects = new Object[length];
         for(int i = 0; i < length; i++) {
@@ -488,7 +449,7 @@ public class ReferenceUtils {
      * @return
      * @throws IllegalAccessException
      */
-    public static Object getLocalVariableByClassType(
+    static Object getLocalVariableByClassType(
             LocalVariables localVariables, int offset, Class<?> type
     ) {
         if(type.isPrimitive()) {
@@ -512,7 +473,7 @@ public class ReferenceUtils {
      * @param type
      * @return
      */
-    public static Object getPrimitiveLocalVariableByClassType(
+    static Object getPrimitiveLocalVariableByClassType(
             LocalVariables localVariables, int offset, Class<?> type
     ) {
         if(type.equals(boolean.class)) {
