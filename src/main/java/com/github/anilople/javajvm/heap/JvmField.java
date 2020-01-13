@@ -78,5 +78,22 @@ public class JvmField extends JvmClassMember {
         return JvmFieldUtils.calculateNonStaticFieldOffset(this.getJvmClass(), this);
     }
 
-
+    /**
+     *
+     * @return this static field's offset in declared class
+     */
+    public int getStaticFieldOffset() {
+        final JvmClass jvmClass = getJvmClass();
+        int staticOffset = 0;
+        for(JvmField jvmField : jvmClass.getJvmFields()) {
+            if(jvmField.equals(this)) {
+                return staticOffset;
+            } else if(jvmField.isStatic()){
+                staticOffset += jvmField.getSize();
+            } else {
+                // non-static field does not affect the offset
+            }
+        }
+        throw new RuntimeException(this.getName() + " not in " + jvmClass.getName());
+    }
 }

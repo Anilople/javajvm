@@ -8,6 +8,7 @@ import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.utils.ByteUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
@@ -145,7 +146,11 @@ public class GETSTATIC implements Instruction {
      * @param jvmField
      */
     public static void executeGetArrayType(Frame frame, JvmField jvmField) {
-        throw new RuntimeException("executeGetArrayType not implement!");
+        final JvmClass jvmClass = jvmField.getJvmClass();
+        final int staticOffset = jvmField.getStaticFieldOffset();
+        ArrayReference arrayReference = (ArrayReference) jvmClass.getStaticFieldsValue().getReference(staticOffset);
+        frame.getOperandStacks().pushReference(arrayReference);
+//        throw new RuntimeException("executeGetArrayType not implement!");
     }
 
     @Override
