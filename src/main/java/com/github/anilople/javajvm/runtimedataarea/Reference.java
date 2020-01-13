@@ -20,4 +20,23 @@ public interface Reference {
             throw new NullPointerException();
         }
     }
+
+    /**
+     * self-define reference is "null" or not.
+     * only 1 "null" in jvm, i.e the instance of NullReference
+     * @see NullReference
+     * @param reference
+     * @return
+     */
+    static boolean isNull(Reference reference) {
+        if(null == reference) {
+            throw new NullPointerException("Why you pass a real null as parameter instead of Reference NULL?");
+        }
+
+        if(reference instanceof NullReference && !NULL.equals(reference)) {
+            throw new RuntimeException("Why exists multiple instances of NullReference?");
+        }
+
+        return NULL.equals(reference);
+    }
 }
