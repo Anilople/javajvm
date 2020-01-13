@@ -3,8 +3,12 @@ package com.github.anilople.javajvm.instructions.comparisons;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FCMPL implements Instruction {
+
+    private static final Logger logger = LoggerFactory.getLogger(FCMPL.class);
 
     @Override
     public void fetchOperands(BytecodeReader bytecodeReader) {
@@ -13,9 +17,22 @@ public class FCMPL implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        float value2 = frame.getOperandStacks().popFloatValue();
+        float value1 = frame.getOperandStacks().popFloatValue();
+        if(value1 > value2) {
+            frame.getOperandStacks().pushIntValue(1);
+        } else if(value1 == value2) {
+            frame.getOperandStacks().pushIntValue(0);
+        } else if(value1 < value2) {
+            frame.getOperandStacks().pushIntValue(-1);
+        } else {
+            logger.debug("at least one is NaN. [{}] [{}]", value1, value2);
+            // Otherwise, at least one of value1' or value2' is NaN.
+            // the fcmpl instruction pushes the int value -1 onto the operand stack.
+            frame.getOperandStacks().pushIntValue(-1);
+        }
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override
