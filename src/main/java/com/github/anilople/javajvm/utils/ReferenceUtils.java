@@ -7,6 +7,9 @@ import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.*;
+import org.objenesis.Objenesis;
+import org.objenesis.ObjenesisStd;
+import org.objenesis.instantiator.ObjectInstantiator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -333,12 +336,12 @@ public class ReferenceUtils {
         }
 
         // not in cache, new one
-        Object object = null;
-        try {
-            object = clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        }
+        Objenesis objenesis = new ObjenesisStd();
+        ObjectInstantiator<?> objectInstantiator = objenesis.getInstantiatorOf(clazz);
+//        object = clazz.newInstance();
+        // new instance by objenesis
+        Object object = objectInstantiator.newInstance();
+
         // then add it to cache
         cache.put(objectReference, object);
 
