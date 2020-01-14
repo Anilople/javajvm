@@ -1,9 +1,7 @@
 package com.github.anilople.javajvm.utils;
 
 import com.github.anilople.javajvm.constants.Descriptors;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sun.security.krb5.internal.crypto.Des;
 
 import static org.junit.jupiter.api.Assertions.*;
 
