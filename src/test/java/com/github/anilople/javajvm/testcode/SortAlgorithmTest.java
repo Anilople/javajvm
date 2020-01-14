@@ -22,19 +22,19 @@ public class SortAlgorithmTest {
     }
 
     public static void main(String[] args) throws NoSuchFieldException {
-        for(Field field : Throwable.class.getDeclaredFields()) {
-            System.out.println(field);
-        }
-        System.out.println("##############");
-        Field backtrace = Throwable.class.getDeclaredField("backtrace");
-        System.out.println(backtrace);
+//        for(Field field : Throwable.class.getDeclaredFields()) {
+//            System.out.println(field);
+//        }
+//        System.out.println("##############");
+//        Field backtrace = Throwable.class.getDeclaredField("backtrace");
+//        System.out.println(backtrace);
 //        System.out.println(ReflectionUtils.getNonStaticFieldsFromAncestor(IllegalAccessException.class));
 //        System.out.println(Throwable.class.getDeclaredFields().length);
-//        List<Integer> integers = new ArrayList<>();
-//        integers.add(3);
-//        for(Integer integer : integers) {
-//            System.out.println(integer);
-//        }
+        List<Integer> integers = new ArrayList<>();
+        integers.add(3);
+        for(Integer integer : integers) {
+            System.out.println(integer);
+        }
     }
 
     @Test
