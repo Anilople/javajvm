@@ -7,14 +7,20 @@ import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A bridge between real java object and self-define reference
  */
 public class ReferenceUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReferenceUtils.class);
 
     /**
      * get the string.
@@ -235,6 +241,7 @@ public class ReferenceUtils {
      * fetch the reference from self-define object reference
      * and convert the reference fetched to a real object value in JVM,
      * then set this real object value to object's field
+     * @param cache
      * @param object
      * @param field
      * @param jvmClassLoader
@@ -242,31 +249,53 @@ public class ReferenceUtils {
      * @param offset
      */
     private static void setReference2ObjectField(
+            Map<Reference, Object> cache,
             Object object, Field field,
             JvmClassLoader jvmClassLoader,
             ObjectReference objectReference, int offset
     ) throws IllegalAccessException {
        Reference reference = objectReference.getReference(offset);
-       Object value = reference2Object(reference);
+       Object value = reference2Object(cache, reference);
        // set the value
        field.setAccessible(true);
        field.set(object, value);
     }
+
+
     /**
      * convert self-define reference to a real object
      * @param reference
      * @return
      */
     public static Object reference2Object(Reference reference) throws IllegalAccessException {
-        if(reference instanceof NullReference) {
+        return reference2Object(new HashMap<>(), reference);
+    }
+
+    /**
+     *
+     * @param cache cache object, forbid stack over flow (recursion cause by graph's circle)
+     * @param reference
+     * @return
+     * @throws IllegalAccessException
+     */
+    private static Object reference2Object(
+            Map<Reference, Object> cache, Reference reference
+    ) throws IllegalAccessException {
+        // null
+        if(Reference.isNull(reference)) {
             return null;
-        } else if(reference instanceof ObjectReference) {
-            return objectReference2Object((ObjectReference) reference);
-        } else if(reference instanceof ArrayReference) {
-            return arrayReference2Object((ArrayReference) reference);
-        } else {
-            throw new IllegalStateException("Unexpected value: " + reference.toString());
         }
+        // look up from cache, forbid graph circle!!!
+        if(cache.containsKey(reference)) {
+            return cache.get(reference);
+        }
+        if(reference instanceof ObjectReference) {
+            return objectReference2Object(cache, (ObjectReference) reference);
+        }
+        if(reference instanceof ArrayReference) {
+            return arrayReference2Object(cache, (ArrayReference) reference);
+        }
+        throw new IllegalStateException("Unexpected value: " + reference.toString());
     }
 
     /**
@@ -277,31 +306,75 @@ public class ReferenceUtils {
      * @throws IllegalAccessException
      */
     static Object objectReference2Object(ObjectReference objectReference) throws IllegalAccessException {
+        return objectReference2Object(new HashMap<>(), objectReference);
+    }
+
+    /**
+     * convert a self define object reference to a real object
+     * @param cache cache object, forbid stack over flow (recursion cause by graph's circle)
+     * @param objectReference
+     * @return
+     * @throws IllegalAccessException
+     */
+    private static Object objectReference2Object(
+            Map<Reference, Object> cache, ObjectReference objectReference
+    ) throws IllegalAccessException {
         final JvmClass jvmClass = objectReference.getJvmClass();
         final Class<?> clazz = jvmClass.getRealClassInJvm();
         if(objectReference instanceof ClassObjectReference) {
             return ClassObjectReference.getRealClassInJvm((ClassObjectReference) objectReference);
         }
 
+        // check cache
+        if(cache.containsKey(objectReference)) {
+            // in cache already, so just get it
+            return cache.get(objectReference);
+        }
+
+        // not in cache, new one
         Object object = null;
         try {
             object = clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
-        final JvmClassLoader jvmClassLoader = objectReference.getJvmClass().getLoader();
+        // then add it to cache
+        cache.put(objectReference, object);
+
+        // change fields in object
+        setObjectFields(cache, object, objectReference);
+
+        return object;
+    }
+
+    /**
+     * set the values in self define object reference to real object's fields
+     * @param cache
+     * @param object
+     * @param objectReference
+     * @throws IllegalAccessException
+     */
+    private static void setObjectFields(
+            Map<Reference, Object> cache, Object object, ObjectReference objectReference
+    ) throws IllegalAccessException {
+
+        final JvmClass jvmClass = objectReference.getJvmClass();
+        final Class<?> clazz = jvmClass.getRealClassInJvm();
+        final JvmClassLoader jvmClassLoader = jvmClass.getLoader();
+
         List<Field> fields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
+
         int realOffset = 0;
+        // change object's fields value
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             if(field.getType().isPrimitive()) {
                 setPrimitive2ObjectField(object, field, objectReference, realOffset);
             } else {
-                setReference2ObjectField(object, field, jvmClassLoader, objectReference, realOffset);
+                setReference2ObjectField(cache, object, field, jvmClassLoader, objectReference, realOffset);
             }
             realOffset += ReflectionUtils.getFieldSize(field);
         }
-        return object;
     }
 
     /**
@@ -353,11 +426,14 @@ public class ReferenceUtils {
     }
 
 
-    private static Object arrayReference2Object(ArrayReference arrayReference) throws IllegalAccessException {
+    private static Object arrayReference2Object(
+            Map<Reference, Object> cache, ArrayReference arrayReference
+    ) throws IllegalAccessException {
         if(arrayReference instanceof BaseTypeArrayReference) {
+            // primitive type array does not need cache
             return baseTypeArrayReference2Object((BaseTypeArrayReference) arrayReference);
         } else if(arrayReference instanceof ObjectArrayReference) {
-            return objectArrayReference2Object((ObjectArrayReference) arrayReference);
+            return objectArrayReference2Object(cache, (ObjectArrayReference) arrayReference);
         } else {
             throw new IllegalStateException("Unexpected value: " + arrayReference.toString());
         }
@@ -434,6 +510,27 @@ public class ReferenceUtils {
     static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) throws IllegalAccessException {
         final int length = objectArrayReference.length();
         Object[] objects = new Object[length];
+        for(int i = 0; i < length; i++) {
+            Object object = reference2Object(objectArrayReference.getReference(i));
+            objects[i] = object;
+        }
+        return objects;
+    }
+
+    private static Object objectArrayReference2Object(
+            Map<Reference, Object> cache, ObjectArrayReference objectArrayReference
+    ) throws IllegalAccessException {
+        final int length = objectArrayReference.length();
+        Object[] objects = null;
+        // check cache
+        if(cache.containsKey(objectArrayReference)) {
+            objects = (Object[]) cache.get(objectArrayReference);
+        } else {
+            // not in cache, new one
+            objects = new Object[length];
+            // then add it to cache
+            cache.put(objectArrayReference, objects);
+        }
         for(int i = 0; i < length; i++) {
             Object object = reference2Object(objectArrayReference.getReference(i));
             objects[i] = object;
