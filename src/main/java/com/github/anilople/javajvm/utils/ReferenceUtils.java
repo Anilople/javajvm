@@ -10,6 +10,7 @@ import com.github.anilople.javajvm.runtimedataarea.reference.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
@@ -556,20 +557,11 @@ public class ReferenceUtils {
 
     /**
      * convert self-define ObjectArrayReference to real reference type array
+     * @param cache
      * @param objectArrayReference
      * @return
      * @throws IllegalAccessException
      */
-    static Object objectArrayReference2Object(ObjectArrayReference objectArrayReference) throws IllegalAccessException {
-        final int length = objectArrayReference.length();
-        Object[] objects = new Object[length];
-        for(int i = 0; i < length; i++) {
-            Object object = reference2Object(objectArrayReference.getReference(i));
-            objects[i] = object;
-        }
-        return objects;
-    }
-
     private static Object objectArrayReference2Object(
             Map<Reference, Object> cache, ObjectArrayReference objectArrayReference
     ) throws IllegalAccessException {
@@ -580,7 +572,8 @@ public class ReferenceUtils {
             objects = (Object[]) cache.get(objectArrayReference);
         } else {
             // not in cache, new one
-            objects = new Object[length];
+            final Class<?> componentType =  objectArrayReference.getComponentType().getRealClassInJvm();
+            objects = (Object[]) Array.newInstance(componentType, length);
             // then add it to cache
             cache.put(objectArrayReference, objects);
         }
