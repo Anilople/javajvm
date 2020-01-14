@@ -357,6 +357,11 @@ public class ReferenceUtils {
     private static void setObjectFields(
             Map<Reference, Object> cache, Object object, ObjectReference objectReference
     ) throws IllegalAccessException {
+        if(object instanceof Throwable) {
+            // for the bug in jdk 8
+            setThrowableFields(cache, object, objectReference);
+            return;
+        }
 
         final JvmClass jvmClass = objectReference.getJvmClass();
         final Class<?> clazz = jvmClass.getRealClassInJvm();
@@ -365,6 +370,54 @@ public class ReferenceUtils {
         List<Field> fields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
 
         int realOffset = 0;
+        // change object's fields value
+        for(int i = 0; i < fields.size(); i++) {
+            Field field = fields.get(i);
+            if(field.getType().isPrimitive()) {
+                setPrimitive2ObjectField(object, field, objectReference, realOffset);
+            } else {
+                setReference2ObjectField(cache, object, field, jvmClassLoader, objectReference, realOffset);
+            }
+            realOffset += ReflectionUtils.getFieldSize(field);
+        }
+    }
+
+    /**
+     * {@code Throwable.class.getDeclaredField("backtrace")} will get Exception.
+     * So use this method to handle it manual
+     * @see <a href="https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8033735">JDK-8033735 : make Throwable.backtrace visible to Class.getDeclaredField again</a>
+     * @param cache
+     * @param object
+     * @param objectReference
+     * @throws IllegalAccessException
+     */
+    private static void setThrowableFields(
+            Map<Reference, Object> cache, Object object, ObjectReference objectReference
+    ) throws IllegalAccessException {
+        if(! (object instanceof Throwable)) {
+            throw new RuntimeException(object.getClass() + " is not subclass of " + Throwable.class);
+        }
+
+        final JvmClass jvmClass = objectReference.getJvmClass();
+        final Class<?> clazz = jvmClass.getRealClassInJvm();
+        final JvmClassLoader jvmClassLoader = jvmClass.getLoader();
+
+        List<Field> fields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
+        // private transient Object backtrace;
+        // cannot get by reflection in jdk 8
+        // we handle it manually
+        Reference backtrace = objectReference.getReference(0);
+        if(Reference.isNull(backtrace)) {
+            // the default value in object is null, so we do nothing
+        } else {
+            // cannot set field "backtrace"'s value by reflection
+            // so throw an exception here
+            throw new IllegalAccessException("Cannot change backtrace in " + Throwable.class + ", " + backtrace);
+        }
+
+        // skip private transient Object backtrace;
+        // from offset 1 not 0
+        int realOffset = 1;
         // change object's fields value
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
