@@ -8,6 +8,8 @@ import com.github.anilople.javajvm.runtimedataarea.reference.ObjectArrayReferenc
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ReferenceUtilsTest {
@@ -31,7 +33,7 @@ class ReferenceUtilsTest {
     @Test
     void singleDimensionBooleanArray2ArrayReference() throws IllegalAccessException {
         boolean[] booleans = new boolean[]{false, true, false};
-        BaseTypeArrayReference booleanArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(jvmClassLoader, booleans);
+        BaseTypeArrayReference booleanArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(new HashMap<>(), jvmClassLoader, booleans);
         for(int i = 0; i < booleans.length; i++) {
             assertEquals(booleans[i], booleanArray.getBooleanValue(i));
         }
@@ -40,7 +42,7 @@ class ReferenceUtilsTest {
     @Test
     void singleDimensionCharArray2ArrayReference() throws IllegalAccessException {
         char[] chars = new char[]{'a', '1', '+'};
-        BaseTypeArrayReference charArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(jvmClassLoader, chars);
+        BaseTypeArrayReference charArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(new HashMap<>(), jvmClassLoader, chars);
         for(int i = 0; i < chars.length; i++) {
             assertEquals(chars[i], charArray.getCharValue(i));
         }
@@ -49,7 +51,7 @@ class ReferenceUtilsTest {
     @Test
     void singleDimensionIntArray2ArrayReference() throws IllegalAccessException {
         int[] ints = new int[]{-1, 2, 3, 5};
-        BaseTypeArrayReference intArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(jvmClassLoader, ints);
+        BaseTypeArrayReference intArray = (BaseTypeArrayReference) ReferenceUtils.array2ArrayReference(new HashMap<>(), jvmClassLoader, ints);
         for(int i = 0; i < ints.length; i++) {
             assertEquals(ints[i], intArray.getIntValue(i));
         }
@@ -58,7 +60,7 @@ class ReferenceUtilsTest {
     @Test
     void singleDimensionObjectArray2ObjectArrayReference() throws IllegalAccessException {
         Object[] objects = new Object[]{"sdf", "hei"};
-        ObjectArrayReference objectArrayReference = ReferenceUtils.singleDimensionObjectArray2ObjectArrayReference(jvmClassLoader, objects);
+        ObjectArrayReference objectArrayReference = ReferenceUtils.singleDimensionObjectArray2ObjectArrayReference(new HashMap<>(), jvmClassLoader, objects);
         assertEquals(objects.length, objectArrayReference.length());
         ObjectReference a = (ObjectReference) objectArrayReference.getReference(0);
         BaseTypeArrayReference aCharArray = (BaseTypeArrayReference) a.getReference(0);

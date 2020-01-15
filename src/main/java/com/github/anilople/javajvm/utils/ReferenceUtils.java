@@ -58,13 +58,33 @@ public class ReferenceUtils {
      * @return
      */
     public static Reference object2Reference(JvmClassLoader jvmClassLoader, Object object) throws IllegalAccessException {
+        return object2Reference(new HashMap<>(), jvmClassLoader, object);
+    }
+
+    /**
+     * @param cache save the references to forbid stack over flow by graph circle
+     * @param jvmClassLoader
+     * @param object
+     * @return
+     * @throws IllegalAccessException
+     */
+    private static Reference object2Reference(
+            Map<Object, Reference> cache, JvmClassLoader jvmClassLoader, Object object
+    ) throws IllegalAccessException {
         if(null == object) {
             return Reference.NULL;
         }
+
+        if(cache.containsKey(object)) {
+            return cache.get(object);
+        }
+
+        logger.trace("{} not in cache.", object);
+
         final Class<?> clazz = object.getClass();
         // array
         if(clazz.isArray()) {
-            return array2ArrayReference(jvmClassLoader, object);
+            return array2ArrayReference(cache, jvmClassLoader, object);
         }
 
         // object
@@ -81,10 +101,19 @@ public class ReferenceUtils {
     static ObjectReference object2ObjectReference(
             JvmClassLoader jvmClassLoader, Object object
     ) throws IllegalAccessException {
+        return object2ObjectReference(new HashMap<>(), jvmClassLoader, object);
+    }
+
+    private static ObjectReference object2ObjectReference(
+            Map<Object, Reference> cache,
+            JvmClassLoader jvmClassLoader, Object object
+    ) throws IllegalAccessException {
         final Class<?> clazz = object.getClass();
         // get the JvmClass of object
         JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
         ObjectReference objectReference = new ObjectReference(jvmClass);
+        // cache it
+        cache.put(object, objectReference);
 
         // converter the static fields, todo
 
@@ -95,7 +124,12 @@ public class ReferenceUtils {
             if(nonStaticField.getType().isPrimitive()) {
                 setPrimitive2ObjectField(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
             } else {
-                setObjectField2ObjectReference(objectReference, nonStaticFieldCurrentOffset, jvmClassLoader, object, nonStaticField);
+                setObjectField2ObjectReference(
+                        cache,
+                        objectReference, nonStaticFieldCurrentOffset,
+                        jvmClassLoader,
+                        object, nonStaticField
+                );
             }
             nonStaticFieldCurrentOffset += ReflectionUtils.getFieldSize(nonStaticField);
         }
@@ -105,11 +139,14 @@ public class ReferenceUtils {
 
     /**
      * convert an array object to self-define array reference
+     * @param cache
+     * @param jvmClassLoader
      * @param arrayObject array
      * @return array reference
+     * @throws IllegalAccessException
      */
     static ArrayReference array2ArrayReference(
-            JvmClassLoader jvmClassLoader, Object arrayObject
+            Map<Object, Reference> cache, JvmClassLoader jvmClassLoader, Object arrayObject
     ) throws IllegalAccessException {
         int dimensions = DescriptorUtils.getDimensions(arrayObject.getClass().getName());
         if(dimensions <= 0) {
@@ -119,11 +156,17 @@ public class ReferenceUtils {
             // end the recursion
             final Class<?> componentType = arrayObject.getClass().getComponentType();
             if(componentType.isPrimitive()) {
-                return singleDimensionPrimitiveArray2ArrayReference(arrayObject);
+                // primitive should be cached too
+                BaseTypeArrayReference baseTypeArrayReference = singleDimensionPrimitiveArray2ArrayReference(arrayObject);
+                cache.put(arrayObject, baseTypeArrayReference);
             } else {
-                return singleDimensionObjectArray2ObjectArrayReference(jvmClassLoader, arrayObject);
+                ObjectArrayReference objectArrayReference = singleDimensionObjectArray2ObjectArrayReference(cache, jvmClassLoader, arrayObject);
+                cache.put(arrayObject, objectArrayReference);
             }
+
+            return (ArrayReference) cache.get(arrayObject);
         }
+
 
         // multiple dimensions
         throw new RuntimeException("Now cannot support multiple dimensions array");
@@ -158,10 +201,15 @@ public class ReferenceUtils {
     }
 
     /**
+     *
+     * @param cache
+     * @param jvmClassLoader
      * @param objectArrayObject 1 dimension array of object reference
      * @return self-define array reference
+     * @throws IllegalAccessException
      */
     static ObjectArrayReference singleDimensionObjectArray2ObjectArrayReference(
+            Map<Object, Reference> cache,
             JvmClassLoader jvmClassLoader, Object objectArrayObject
     ) throws IllegalAccessException {
         Object[] objects = (Object[]) objectArrayObject;
@@ -170,8 +218,12 @@ public class ReferenceUtils {
                 jvmClassLoader.loadClass(componentClass),
                 objects.length
         );
+        // cache it
+        cache.put(objectArrayObject, objectArrayReference);
+
+        // set the values to array
         for(int i = 0; i < objects.length; i++) {
-            Reference reference = object2Reference(jvmClassLoader, objects[i]);
+            Reference reference = object2Reference(cache, jvmClassLoader, objects[i]);
             objectArrayReference.setReference(i, reference);
         }
         return objectArrayReference;
@@ -221,6 +273,7 @@ public class ReferenceUtils {
      * set the value to position offset
      * according to the value's type
      * the value must be object reference
+     * @param cache
      * @param localVariables
      * @param fieldCurrentOffset
      * @param jvmClassLoader
@@ -228,6 +281,7 @@ public class ReferenceUtils {
      * @param field
      */
     private static void setObjectField2ObjectReference(
+            Map<Object, Reference> cache,
             LocalVariables localVariables, int fieldCurrentOffset,
             JvmClassLoader jvmClassLoader,
             Object object, Field field
@@ -236,7 +290,7 @@ public class ReferenceUtils {
         field.setAccessible(true);
         Object fieldObject = field.get(object);
         // resolve the reference
-        Reference reference = object2Reference(jvmClassLoader, fieldObject);
+        Reference reference = object2Reference(cache, jvmClassLoader, fieldObject);
         // set the reference
         localVariables.setReference(fieldCurrentOffset, reference);
     }
