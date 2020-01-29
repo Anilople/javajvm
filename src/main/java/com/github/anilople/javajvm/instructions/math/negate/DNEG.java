@@ -4,6 +4,14 @@ import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
+/**
+ * Operation
+ * Negate double
+ *
+ * Operand ..., value →
+ * Stack ..., result
+ *
+ */
 public class DNEG implements Instruction {
 
     @Override
@@ -13,9 +21,11 @@ public class DNEG implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        double value = frame.getOperandStacks().popDoubleValue();
+        double result = - value;
+        frame.getOperandStacks().pushDoubleValue(result);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override

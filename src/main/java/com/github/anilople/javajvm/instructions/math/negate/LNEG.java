@@ -13,9 +13,11 @@ public class LNEG implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        long value = frame.getOperandStacks().popLongValue();
+        long result = - value;
+        frame.getOperandStacks().pushLongValue(result);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override

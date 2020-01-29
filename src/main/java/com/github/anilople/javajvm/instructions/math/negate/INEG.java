@@ -13,9 +13,11 @@ public class INEG implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        int value = frame.getOperandStacks().popIntValue();
+        int result = - value;
+        frame.getOperandStacks().pushIntValue(result);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override
