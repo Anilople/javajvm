@@ -13,9 +13,12 @@ public class IREM implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        int value2 = frame.getOperandStacks().popIntValue();
+        int value1 = frame.getOperandStacks().popIntValue();
+        int result = value1 % value2;
+        frame.getOperandStacks().pushIntValue(result);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override

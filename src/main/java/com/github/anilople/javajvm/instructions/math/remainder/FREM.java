@@ -13,9 +13,12 @@ public class FREM implements Instruction {
 
     @Override
     public void execute(Frame frame) {
-        throw new RuntimeException("Now cannot support " + this.getClass());
-//        int nextPc = frame.getNextPc() + this.size();
-//        frame.setNextPc(nextPc);
+        float value2 = frame.getOperandStacks().popFloatValue();
+        float value1 = frame.getOperandStacks().popFloatValue();
+        float result = value1 % value2;
+        frame.getOperandStacks().pushFloatValue(result);
+        int nextPc = frame.getNextPc() + this.size();
+        frame.setNextPc(nextPc);
     }
 
     @Override
