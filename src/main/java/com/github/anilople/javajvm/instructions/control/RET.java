@@ -4,6 +4,10 @@ import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 
+/**
+ * Abandon from jdk 1.6
+ */
+@Deprecated
 public class RET implements Instruction {
 
     @Override
