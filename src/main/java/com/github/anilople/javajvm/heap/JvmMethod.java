@@ -7,6 +7,8 @@ import com.github.anilople.javajvm.constants.AccessFlags;
 import com.github.anilople.javajvm.heap.constant.JvmConstantClass;
 import com.github.anilople.javajvm.utils.PrimitiveTypeUtils;
 
+import java.util.Objects;
+
 public class JvmMethod extends JvmClassMember {
 
     private short maxStack;
@@ -51,6 +53,35 @@ public class JvmMethod extends JvmClassMember {
             jvmMethods[i] = new JvmMethod(jvmClass, methodInfos[i]);
         }
         return jvmMethods;
+    }
+
+    /**
+     *
+     * @param exceptionClass
+     * @return exists exception handler of exception class given in this method or not
+     */
+    public boolean existsExceptionHandler(JvmClass exceptionClass) {
+        for(ExceptionHandler exceptionHandler : exceptionHandlers) {
+            if(exceptionHandler.matchExceptionClass(exceptionClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param exceptionClass exception class
+     * @throws RuntimeException if there are not exception handler match
+     * @return exception handler
+     */
+    public ExceptionHandler getExceptionHandler(JvmClass exceptionClass) {
+        for(ExceptionHandler exceptionHandler : exceptionHandlers) {
+            if(exceptionHandler.matchExceptionClass(exceptionClass)) {
+                return exceptionHandler;
+            }
+        }
+        throw new RuntimeException("No exception handler for exception " + exceptionClass);
     }
 
     public static class ExceptionHandler {
@@ -107,6 +138,21 @@ public class JvmMethod extends JvmClassMember {
                 }
             }
             return exceptionHandlers;
+        }
+
+        /**
+         *
+         * @param exceptionClass
+         * @return this exception handler can handle the exception given or not
+         */
+        public boolean matchExceptionClass(JvmClass exceptionClass) {
+            Objects.requireNonNull(exceptionClass, "You can not pass a null value with class");
+            if(null == this.catchType) {
+                // match all, "finally" in Java
+                return true;
+            } else {
+                return exceptionClass.equals(this.catchType) || exceptionClass.isSubClassOf(this.catchType);
+            }
         }
 
         public int getStartPc() {

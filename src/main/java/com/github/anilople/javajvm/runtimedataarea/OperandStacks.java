@@ -32,6 +32,10 @@ public class OperandStacks {
                 '}';
     }
 
+    public void clear() {
+        operandStack.clear();
+    }
+
     public void push(LocalVariable localVariable) {
         operandStack.push(localVariable);
     }

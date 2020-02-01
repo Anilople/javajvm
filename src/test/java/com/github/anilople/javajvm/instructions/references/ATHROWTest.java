@@ -17,11 +17,11 @@ class ATHROWTest {
     }
 
     private static void handleExc(Exception e) {
-
+        System.out.println(e.getMessage());
     }
 
     private static void tryItOut() throws Exception {
-        throw new Exception();
+        throw new Exception("try it out!");
     }
 
     public static void main(String[] args) throws Exception {

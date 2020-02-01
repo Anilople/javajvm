@@ -365,6 +365,10 @@ public class JvmClass {
         return isInheritFrom(jvmClass);
     }
 
+    public boolean isSubClassOf(JvmClass jvmClass) {
+        return this.isInheritFrom(jvmClass);
+    }
+
     /**
      * this class is implement then interface class given or not
      * @param interfaceClass
