@@ -47,6 +47,7 @@ public class JvmClassLoader {
         }
 
         // load a new class
+        logger.debug("load a new class not in cache: {}", className);
         if(DescriptorUtils.isArrayType(className)) {
             // array class
             this.loadArrayClass(className);
@@ -82,9 +83,13 @@ public class JvmClassLoader {
         // define
         ClassFile.ClassReader classReader = new ClassFile.ClassReader(bytes);
         ClassFile classFile = ClassFile.parse(classReader);
-        JvmClass jvmClass = new JvmClass(this, classFile);
-        // load super classes have been done in new JvmClass, may cause dead loop
+
+        // new a instance without initial, Why? forbid the circle in graph
+        JvmClass jvmClass = new JvmClass(this);
+        // add it to cache
         classConcurrentMap.put(className, jvmClass);
+        // initial it
+        jvmClass.initial(classFile);
 
         // linking
         verify(jvmClass);

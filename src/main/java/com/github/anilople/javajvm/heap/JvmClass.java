@@ -65,7 +65,24 @@ public class JvmClass {
 
     }
 
-    public JvmClass(JvmClassLoader jvmClassLoader, ClassFile classFile) {
+    /**
+     * just new a instance, not initial it
+     * @param jvmClassLoader
+     */
+    public JvmClass(JvmClassLoader jvmClassLoader) {
+        this.loader = jvmClassLoader;
+    }
+
+    /**
+     * initial the jvm class from raw data,
+     * for the class loader using.
+     * Why delay the initialize?
+     * We need to forbid the circle in graph,
+     * which will cause the dead loop
+     * @see ClassFile
+     * @param classFile class's structure
+     */
+    void initial(ClassFile classFile) {
         this.accessFlags = classFile.getAccessFlags();
         this.name = classFile.getClassName();
         this.superClassName = classFile.existSuperClass() ? classFile.getSuperClassName() : null;
@@ -73,12 +90,11 @@ public class JvmClass {
         this.jvmConstantPool = new JvmConstantPool(this, classFile.getConstantPool());
         this.jvmFields = JvmField.generateJvmFields(this, classFile.getFields());
         this.jvmMethods = JvmMethod.generateJvmMethods(this, classFile.getMethods());
-        this.loader = jvmClassLoader;
 
         // load super class
         if(null != this.superClassName) {
             logger.debug("load super class : {}", this.superClassName);
-            this.superClass = jvmClassLoader.loadClass(classFile.getSuperClassName());
+            this.superClass = this.getLoader().loadClass(classFile.getSuperClassName());
         } else {
             logger.debug("class {} have no super class", this.name);
             this.superClass = null;
@@ -87,7 +103,7 @@ public class JvmClass {
         // interfaces from class loader and interface names
         interfaces = new JvmClass[this.interfaceNames.length];
         for(int i = 0; i < this.interfaceNames.length; i++) {
-            interfaces[i] = jvmClassLoader.loadClass(this.interfaceNames[i]);
+            interfaces[i] = this.getLoader().loadClass(this.interfaceNames[i]);
         }
 
         // static fields value
