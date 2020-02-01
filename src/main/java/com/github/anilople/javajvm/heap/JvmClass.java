@@ -340,6 +340,16 @@ public class JvmClass {
     }
 
     /**
+     *
+     * @param clazz
+     * @return this class in inherits from the class given or not
+     */
+    public boolean isSubClassOf(Class<?> clazz) {
+        JvmClass jvmClass = this.getLoader().loadClass(clazz);
+        return isInheritFrom(jvmClass);
+    }
+
+    /**
      * this class is implement then interface class given or not
      * @param interfaceClass
      * @return
