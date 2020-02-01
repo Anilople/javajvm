@@ -8,6 +8,7 @@ import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import com.github.anilople.javajvm.utils.ReferenceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class ATHROW implements Instruction {
         } else {
             // jvm stack frame is empty
             // it mean that jvm find no exception handler for this exception
-            handleUncaughtException(jvmThread, exceptionClass);
+            handleUncaughtException(jvmThread, throwableObjectReference);
         }
     }
 
@@ -78,11 +79,39 @@ public class ATHROW implements Instruction {
      * so jvm need to handle this situation,
      * the method is use to do it.
      * @param jvmThread
-     * @param exceptionClass
+     * @param throwableObjectReference
      */
-    private void handleUncaughtException(JvmThread jvmThread, JvmClass exceptionClass) {
-        // todo
-        throw new RuntimeException("todo");
+    private void handleUncaughtException(JvmThread jvmThread, ObjectReference throwableObjectReference) {
+        jvmThread.clearStack();
+
+        // print exception
+        final String detailMessage;
+        try {
+            detailMessage = (String) ReferenceUtils.reference2Object(
+                    throwableObjectReference.getReference("detailMessage")
+            );
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        if(detailMessage.length() > 0) {
+            System.out.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName() + ": " + detailMessage);
+        } else {
+            System.out.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName());
+        }
+
+        // print stack trace
+        final StackTraceElement[] stackTraceElements;
+        try {
+            stackTraceElements = (StackTraceElement[]) ReferenceUtils.reference2Object(
+                    throwableObjectReference.getReference("stackTrace")
+            );
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+
+        for(StackTraceElement stackTraceElement : stackTraceElements) {
+            System.out.println("\tat " + stackTraceElement);
+        }
     }
 
     @Override

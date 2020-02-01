@@ -24,13 +24,32 @@ class ATHROWTest {
         throw new Exception("try it out!");
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void runtime() {
+        throw new RuntimeException("sdf");
+    }
+
+    public static void main(String[] args) {
         catchOne();
     }
 
     @Test
     void execute() {
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
+
+        jvmThreadRunner.run();
+
+        assertTrue(jvmThreadRunner.isExecuted(ATHROW.class));
+    }
+
+    @Test
+    void uncaughtException() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "runtime",
+                        "()V"
+                )
+        );
 
         jvmThreadRunner.run();
 

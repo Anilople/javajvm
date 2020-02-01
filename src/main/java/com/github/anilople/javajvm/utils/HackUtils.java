@@ -3,10 +3,7 @@ package com.github.anilople.javajvm.utils;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
-import com.github.anilople.javajvm.runtimedataarea.Frame;
-import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
-import com.github.anilople.javajvm.runtimedataarea.OperandStacks;
-import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.runtimedataarea.*;
 import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.anilople.javajvm.constants.Descriptors.BaseType.*;
@@ -43,6 +41,11 @@ public class HackUtils {
         if(jvmMethod.getJvmClass().isSameName(Class.class) && jvmMethod.isNative()) {
             return true;
         }
+        if(jvmMethod.getJvmClass().isSameName(Throwable.class)
+        && jvmMethod.getName().equals("fillInStackTrace")
+        && jvmMethod.getDescriptor().equals("(I)Ljava/lang/Throwable;")) {
+            return true;
+        }
 
         // default action: hack all native method
         return jvmMethod.isNative();
@@ -61,6 +64,10 @@ public class HackUtils {
             hackSystemOut(jvmMethod, localVariables);
         } else if(jvmMethod.getJvmClass().isSameName(System.class) && jvmMethod.getName().equals("arraycopy")) {
             hackSystemArrayCopy(localVariables);
+        } else if(jvmMethod.getJvmClass().isSameName(Throwable.class)
+                && jvmMethod.getName().equals("fillInStackTrace")
+                && jvmMethod.getDescriptor().equals("(I)Ljava/lang/Throwable;")) {
+            hackThrowableFillInStackTrace0(frame.getJvmThread(), jvmMethod, localVariables);
         } else {
             // default action: hack all native method
             try {
@@ -74,6 +81,43 @@ public class HackUtils {
                 );
             }
         }
+    }
+
+    private static void hackThrowableFillInStackTrace0(JvmThread jvmThread, JvmMethod jvmMethod, LocalVariables localVariables) {
+        // get "this"
+        ObjectReference thisObjectReference = (ObjectReference) localVariables.getReference(0);
+
+        // we don't care about the rest of parameters
+
+        // "UNASSIGNED_STACK" in Throwable will be changed by this method
+        List<Frame> frames = jvmThread.dumpFrames();
+        logger.trace("frames: {}", frames);
+        StackTraceElement[] stackTraceElements = new StackTraceElement[frames.size()];
+        Collections.reverse(frames);
+        // remove some frames, todo
+        for(int i = 0; i < frames.size(); i++) {
+            Frame frame = frames.get(i);
+            // Frame -> StackTraceElement
+            // resolve the fileName and lineNumber, todo
+            StackTraceElement stackTraceElement = new StackTraceElement(
+                    frame.getJvmMethod().getJvmClass().getName(),
+                    frame.getJvmMethod().getName(),
+                    null,
+                    -1
+            );
+            stackTraceElements[i] = stackTraceElement;
+        }
+        // change "stackTrace" in "this"
+        final Reference stackTraceReference;
+        try {
+            stackTraceReference = ReferenceUtils.object2Reference(jvmMethod.getJvmClass().getLoader(), stackTraceElements);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        thisObjectReference.setReference("UNASSIGNED_STACK", stackTraceReference);
+
+        // push null to operand stack
+        jvmThread.currentFrame().getOperandStacks().pushReference(Reference.NULL);
     }
 
     /**

@@ -139,6 +139,51 @@ public class JvmClass {
     }
 
     /**
+     *
+     * @param fieldName
+     * @return exist field in current class or not (not include super class's fields!)
+     */
+    private boolean existsField(String fieldName) {
+        for(JvmField jvmField : this.getJvmFields()) {
+            if(jvmField.getName().equals(fieldName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param fieldName
+     * @return exist field in current class or not (include super class's fields)
+     */
+    public boolean existsFieldIncludeAncestors(String fieldName) {
+        for(JvmClass now = this; null != now; now = now.getSuperClass()) {
+            if(now.existsField(fieldName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * find the field by name given
+     * @param fieldName
+     * @throws RuntimeException if there are no fields match
+     * @return
+     */
+    public JvmField getJvmFieldByNameIncludeAncestors(String fieldName) {
+        for(JvmClass now = this; null != now; now = now.getSuperClass()) {
+            for(JvmField jvmField : now.getJvmFields()) {
+                if(jvmField.getName().equals(fieldName)) {
+                    return jvmField;
+                }
+            }
+        }
+        throw new RuntimeException("field " + fieldName + " not in class " + this);
+    }
+
+    /**
      * get method in this class
      * @param name
      * @param descriptor

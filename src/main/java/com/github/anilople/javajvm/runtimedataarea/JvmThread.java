@@ -1,5 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -64,5 +66,21 @@ public class JvmThread {
 
     public boolean existFrame() {
         return stack.size() > 0;
+    }
+
+    /**
+     * clear the jvm stack
+     * all frames in stack will be removed
+     */
+    public void clearStack() {
+        stack.clear();
+    }
+
+    /**
+     *
+     * @return all stack frames in current thread
+     */
+    public List<Frame> dumpFrames() {
+        return new ArrayList<>(stack);
     }
 }

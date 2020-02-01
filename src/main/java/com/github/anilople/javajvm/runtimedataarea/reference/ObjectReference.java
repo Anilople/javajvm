@@ -68,6 +68,52 @@ public class ObjectReference extends LocalVariables implements Reference {
         }
     }
 
+    /**
+     * give a field name, find a reference which name is same as given name
+     * @param fieldName
+     * @throws RuntimeException if there is no field
+     * @return reference named by given name
+     */
+    public Reference getReference(String fieldName) {
+        final JvmClass jvmClass = this.getJvmClass();
+        if(jvmClass.existsFieldIncludeAncestors(fieldName)) {
+            JvmField jvmField = jvmClass.getJvmFieldByNameIncludeAncestors(fieldName);
+            if(jvmField.isStatic()) {
+                int staticFieldOffset = jvmField.getStaticFieldOffset();
+                return jvmField.getJvmClass().getStaticFieldsValue().getReference(staticFieldOffset);
+            } else {
+                int index = jvmField.calculateNonStaticFieldOffset();
+                return this.getReference(index);
+            }
+        } else {
+            throw new RuntimeException(fieldName + " not in class " + jvmClass);
+        }
+    }
+
+    /**
+     * give a field name and a reference,
+     * set the reference to the field
+     * @param fieldName
+     * @param reference
+     * @throws RuntimeException if there is no field
+     */
+    public void setReference(String fieldName, Reference reference) {
+        final JvmClass jvmClass = this.getJvmClass();
+        if(jvmClass.existsFieldIncludeAncestors(fieldName)) {
+            JvmField jvmField = jvmClass.getJvmFieldByNameIncludeAncestors(fieldName);
+            if(jvmField.isStatic()) {
+                int staticFieldOffset = jvmField.getStaticFieldOffset();
+                JvmClass classFieldBelongTo = jvmField.getJvmClass();
+                classFieldBelongTo.getStaticFieldsValue().setReference(staticFieldOffset, reference);
+            } else {
+                int index = jvmField.calculateNonStaticFieldOffset();
+                this.setReference(index, reference);
+            }
+        } else {
+            throw new RuntimeException(fieldName + " not in class " + jvmClass);
+        }
+    }
+
     @Override
     public String toString() {
         return "ObjectReference{" +
