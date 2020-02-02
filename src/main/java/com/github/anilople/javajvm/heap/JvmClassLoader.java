@@ -5,6 +5,7 @@ import com.github.anilople.javajvm.classfile.ClassFile;
 import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.constants.SpecialMethods;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
+import com.github.anilople.javajvm.vm.VM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,8 @@ public class JvmClassLoader {
     public JvmClassLoader(ClassContext classContext) {
         this.classContext = classContext;
         this.classConcurrentMap = new ConcurrentHashMap<>();
+        // initial the vm
+        VM.initial(this);
     }
 
     /**
