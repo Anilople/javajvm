@@ -36,7 +36,7 @@ public class JvmMethod extends JvmClassMember {
                 this.maxStack = codeAttribute.getMaxStack();
                 this.maxLocals = codeAttribute.getMaxLocals();
                 this.code = codeAttribute.getCode();
-                this.exceptionHandlers = ExceptionHandler.resolveExceptionTables(codeAttribute.getExceptionTable(), this);
+                this.exceptionHandlers = ExceptionHandler.generateExceptionTables(this, (codeAttribute.getExceptionTable()));
             }
         }
     }
@@ -86,56 +86,36 @@ public class JvmMethod extends JvmClassMember {
 
     public static class ExceptionHandler {
 
-        private int startPc;
+        private JvmMethod jvmMethod;
 
-        private int endPc;
-
-        private int handlerPc;
-
-        /**
-         * resolve the catch type here,
-         * if raw catch type is 0,
-         * a null will be here
-         * @see CodeAttribute.ExceptionTableEntry
-         */
-        private JvmClass catchType;
+        private CodeAttribute.ExceptionTableEntry exceptionTableEntry;
 
         /**
          * construct from raw data
+         * @param jvmMethod which method this exception table belong to
          * @param exceptionTableEntry raw data in .class file
-         * @param catchType exception class resolved
          */
-        public ExceptionHandler(CodeAttribute.ExceptionTableEntry exceptionTableEntry, JvmClass catchType) {
-            this.startPc = exceptionTableEntry.getStartPc();
-            this.endPc = exceptionTableEntry.getEndPc();
-            this.handlerPc = exceptionTableEntry.getHandlerPc();
-            this.catchType = catchType;
+        public ExceptionHandler(JvmMethod jvmMethod, CodeAttribute.ExceptionTableEntry exceptionTableEntry) {
+            this.jvmMethod = jvmMethod;
+            this.exceptionTableEntry = exceptionTableEntry;
         }
 
         /**
          * exception_table  belong to Code_attribute
          * Code_attribute   belong to a java method
-         * @param exceptionTableEntries raw data in .class file
          * @param jvmMethod which method those exception tables belong to
+         * @param exceptionTableEntries raw data in .class file
          * @return exception tables resolved
          */
-        public static ExceptionHandler[] resolveExceptionTables(
-                CodeAttribute.ExceptionTableEntry[] exceptionTableEntries,
-                JvmMethod jvmMethod) {
+        public static ExceptionHandler[] generateExceptionTables(
+                JvmMethod jvmMethod,
+            CodeAttribute.ExceptionTableEntry[] exceptionTableEntries) {
             final JvmConstantPool jvmConstantPool = jvmMethod.getJvmClass().getJvmConstantPool();
             final int length = exceptionTableEntries.length;
             ExceptionHandler[] exceptionHandlers = new ExceptionHandler[length];
             for(int i = 0; i < length; i++) {
                 final CodeAttribute.ExceptionTableEntry exceptionTableEntry = exceptionTableEntries[i];
-                final short catchType = exceptionTableEntry.getCatchType();
-                if(0 == catchType) {
-                    // catch all, use to implement finally
-                    exceptionHandlers[i] = new ExceptionHandler(exceptionTableEntry, null);
-                } else {
-                    // catch one exception
-                    JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstantPool.getJvmConstant(PrimitiveTypeUtils.intFormUnsignedShort(catchType));
-                    exceptionHandlers[i] = new ExceptionHandler(exceptionTableEntry, jvmConstantClass.resolveJvmClass());
-                }
+                exceptionHandlers[i] = new ExceptionHandler(jvmMethod, exceptionTableEntry);
             }
             return exceptionHandlers;
         }
@@ -147,28 +127,45 @@ public class JvmMethod extends JvmClassMember {
          */
         public boolean matchExceptionClass(JvmClass exceptionClass) {
             Objects.requireNonNull(exceptionClass, "You can not pass a null value with class");
-            if(null == this.catchType) {
+            JvmClass catchType = this.resolveCatchType();
+            if(null == catchType) {
                 // match all, "finally" in Java
                 return true;
             } else {
-                return exceptionClass.equals(this.catchType) || exceptionClass.isSubClassOf(this.catchType);
+                return exceptionClass.equals(catchType) || exceptionClass.isSubClassOf(catchType);
+            }
+        }
+
+        /**
+         * resolve the catch type here,
+         * if raw catch type is 0,
+         * a null will be here
+         * @see CodeAttribute.ExceptionTableEntry
+         */
+        public JvmClass resolveCatchType() {
+            short catchTypeIndex = exceptionTableEntry.getCatchType();
+            if(0 == catchTypeIndex) {
+                // catch all, use to implement finally
+                return null;
+            } else {
+                // catch one exception
+                // cache the resolve type here, todo
+                JvmConstantPool jvmConstantPool = jvmMethod.getJvmClass().getJvmConstantPool();
+                JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstantPool.getJvmConstant(PrimitiveTypeUtils.intFormUnsignedShort(catchTypeIndex));
+                return jvmConstantClass.resolveJvmClass();
             }
         }
 
         public int getStartPc() {
-            return startPc;
+            return exceptionTableEntry.getStartPc();
         }
 
         public int getEndPc() {
-            return endPc;
+            return exceptionTableEntry.getEndPc();
         }
 
         public int getHandlerPc() {
-            return handlerPc;
-        }
-
-        public JvmClass getCatchType() {
-            return catchType;
+            return exceptionTableEntry.getHandlerPc();
         }
     }
 
