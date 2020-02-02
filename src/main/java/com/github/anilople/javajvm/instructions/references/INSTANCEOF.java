@@ -45,15 +45,15 @@ public class INSTANCEOF implements Instruction {
     public void execute(Frame frame) {
         final JvmClass currentClass = frame.getJvmMethod().getJvmClass();
         final int index = this.resolveIndex();
-        final ObjectReference objectref = (ObjectReference) frame.getOperandStacks().popReference();
-        if(Reference.isNull(objectref)) {
+        final Reference reference = frame.getOperandStacks().popReference();
+        if(Reference.isNull(reference)) {
             frame.getOperandStacks().pushIntValue(0);
         } else {
             JvmConstant jvmConstant = currentClass.getJvmConstantPool().getJvmConstant(index);
             // a symbolic reference to a class, array, or interface type
             JvmConstantClass jvmConstantClass = (JvmConstantClass) jvmConstant;
             JvmClass T = jvmConstantClass.resolveJvmClass();
-            JvmClass S = objectref.getJvmClass();
+            JvmClass S = ((ObjectReference) reference).getJvmClass();
             if(JvmClassUtils.typeCast(S, T)) {
                 frame.getOperandStacks().pushIntValue(1);
             } else {
