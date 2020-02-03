@@ -67,7 +67,7 @@ public class NEW implements Instruction {
         // allocate an object without initial
         JvmClass targetJvmClass = jvmConstantClass.resolveJvmClass();
         logger.debug("try to allocate an object: {}", targetJvmClass);
-        ObjectReference objectReference = new ObjectReference(targetJvmClass);
+        ObjectReference objectReference = ObjectReference.makeObjectReference(targetJvmClass);
         frame.getOperandStacks().pushReference(objectReference);
 
         int nextPc = frame.getNextPc() + this.size();

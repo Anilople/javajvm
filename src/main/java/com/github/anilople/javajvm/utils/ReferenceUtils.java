@@ -39,7 +39,7 @@ public class ReferenceUtils {
         }
         // exists in pool or not
         if(!StringPool.exists(utf8)) {
-            ObjectReference objectReference = new ObjectReference(stringClass);
+            ObjectReference objectReference = ObjectReference.makeObjectReference(stringClass);
             BaseTypeArrayReference charArrayReference = new BaseTypeArrayReference(stringClass.getLoader(), utf8.toCharArray());
             // use hack skill to generate string
             objectReference.setReference(0, charArrayReference);
@@ -101,17 +101,48 @@ public class ReferenceUtils {
     static ObjectReference object2ObjectReference(
             JvmClassLoader jvmClassLoader, Object object
     ) throws IllegalAccessException {
-        return object2ObjectReference(new HashMap<>(), jvmClassLoader, object);
+        if(object instanceof java.lang.Class) {
+            return classObject2ClassObjectReference(jvmClassLoader, (Class<?>) object);
+        } else {
+            return object2ObjectReference(new HashMap<>(), jvmClassLoader, object);
+        }
     }
 
+    /**
+     * We don't need cache here,
+     * because the relationship between ClassObjectReference and java.lang.Class
+     * is one to one
+     * @param jvmClassLoader class loader
+     * @param clazz boolean.class, byte.class, Integer.class, etc..
+     * @return
+     */
+    private static ClassObjectReference classObject2ClassObjectReference(
+        JvmClassLoader jvmClassLoader, Class<?> clazz
+    ) {
+        JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
+        return ClassObjectReference.getInstance(jvmClass);
+    }
+
+    /**
+     *
+     * @param cache
+     * @param jvmClassLoader
+     * @param object {@code object.getClass()} must not be java.lang.Class
+     * @return
+     * @throws IllegalAccessException
+     */
     private static ObjectReference object2ObjectReference(
             Map<Object, Reference> cache,
             JvmClassLoader jvmClassLoader, Object object
     ) throws IllegalAccessException {
+        if(object instanceof Class) {
+            throw new IllegalStateException(object + "'s type is java.lang.Class");
+        }
+
         final Class<?> clazz = object.getClass();
         // get the JvmClass of object
         JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
-        ObjectReference objectReference = new ObjectReference(jvmClass);
+        ObjectReference objectReference = ObjectReference.makeObjectReference(jvmClass);
         // cache it
         cache.put(object, objectReference);
 

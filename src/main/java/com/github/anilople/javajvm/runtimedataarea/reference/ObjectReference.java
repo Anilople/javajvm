@@ -21,7 +21,7 @@ public class ObjectReference extends LocalVariables implements Reference {
      * jls8, 4.12.5 Initial Values of Variables, Page 87
      * @param jvmClass object ref's class
      */
-    public ObjectReference(JvmClass jvmClass) {
+    ObjectReference(JvmClass jvmClass) {
         // an Object in run-time exist own fields (non static fields)
         super(jvmClass.getNonStaticFieldsSize());
         this.jvmClass = jvmClass;
@@ -65,6 +65,22 @@ public class ObjectReference extends LocalVariables implements Reference {
 
             // add the offset
             fieldOffset += jvmField.getSize();
+        }
+    }
+
+    /**
+     * Why not use constructor method?
+     * Because the special class {@code java.lang.Class},
+     * it must use {@code ClassObjectReference} to represent.
+     * @see java.lang.Class
+     * @param jvmClass
+     * @return
+     */
+    public static ObjectReference makeObjectReference(JvmClass jvmClass) {
+        if(jvmClass.isSameName(java.lang.Class.class)) {
+            return ClassObjectReference.getInstance(jvmClass);
+        } else {
+            return new ObjectReference(jvmClass);
         }
     }
 

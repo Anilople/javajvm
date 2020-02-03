@@ -4,10 +4,7 @@ import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
 import com.github.anilople.javajvm.runtimedataarea.*;
-import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.BaseTypeArrayReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
-import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
+import com.github.anilople.javajvm.runtimedataarea.reference.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +24,14 @@ public class HackUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(HackUtils.class);
 
+    /**
+     * We know that all native methods must be hacked.
+     * But there are still some methods not native should be hacked too.
+     * Like System.out.Println()...
+     * So for the non-native method, this judgement is necessary
+     * @param jvmMethod
+     * @return should hack jvm method given or not
+     */
     public static boolean isInHackMethods(JvmMethod jvmMethod) {
         if(jvmMethod.isNative()) {
             logger.warn("Hack judgement for class {} 's native method: {} {}",
@@ -36,14 +41,7 @@ public class HackUtils {
             );
         }
         if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
-            return true;
-        }
-        if(jvmMethod.getJvmClass().isSameName(Class.class) && jvmMethod.isNative()) {
-            return true;
-        }
-        if(jvmMethod.getJvmClass().isSameName(Throwable.class)
-        && jvmMethod.getName().equals("fillInStackTrace")
-        && jvmMethod.getDescriptor().equals("(I)Ljava/lang/Throwable;")) {
+            // System.out.* should be hacked
             return true;
         }
 
@@ -59,23 +57,26 @@ public class HackUtils {
      * @return
      */
     public static void hackMethod(Frame frame, JvmMethod jvmMethod, LocalVariables localVariables) {
-        if(jvmMethod.getJvmClass().isSameName(PrintStream.class)) {
+        final JvmClass jvmClass = jvmMethod.getJvmClass();
+        if(jvmClass.isSameName(PrintStream.class)) {
             // System.out
             hackSystemOut(jvmMethod, localVariables);
-        } else if(jvmMethod.getJvmClass().isSameName(System.class) && jvmMethod.getName().equals("arraycopy")) {
+        } else if(jvmClass.isSameName(System.class) && jvmMethod.getName().equals("arraycopy")) {
             hackSystemArrayCopy(localVariables);
-        } else if(jvmMethod.getJvmClass().isSameName(Throwable.class)
+        } else if(jvmClass.isSameName(Throwable.class)
                 && jvmMethod.getName().equals("fillInStackTrace")
                 && jvmMethod.getDescriptor().equals("(I)Ljava/lang/Throwable;")) {
             hackThrowableFillInStackTrace0(frame.getJvmThread(), jvmMethod, localVariables);
+        } else if(jvmClass.isSameName(Class.class) && jvmMethod.getName().equals("getComponentType")) {
+            hackClassGetComponentType(frame, localVariables);
         } else {
             // default action: hack all native method
             try {
-                hackAllNativeMethod(frame, jvmMethod, localVariables);
+                 hackAllNativeMethod(frame, jvmMethod, localVariables);
             } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 throw new RuntimeException(
                         "hack method " +
-                                jvmMethod.getJvmClass().getName() + "." + jvmMethod.getName() +
+                                jvmClass.getName() + "." + jvmMethod.getName() +
                                 " fail",
                         e
                 );
@@ -231,6 +232,25 @@ public class HackUtils {
         int destPos = localVariables.getIntValue(3);
         int length = localVariables.getIntValue(4);
         ReferenceUtils.arrayCopy(srcArrayReference, srcPos, destArrayReference, destPos, length);
+    }
+
+    /**
+     *
+     * @param frame
+     * @param localVariables
+     * @see java.lang.Class getComponentType
+     */
+    private static void hackClassGetComponentType(Frame frame, LocalVariables localVariables) {
+        // get "this", reference of java.lang.Class
+        Reference reference = localVariables.getReference(0);
+        if(Reference.isNull(reference)) {
+            throw new NullPointerException();
+        }
+
+        ClassObjectReference classObjectReference = (ClassObjectReference) reference;
+        Reference componentTypeReference = classObjectReference.getComponentType();
+        logger.debug("java.lang.Class.getComponentType: {}", componentTypeReference);
+        frame.getOperandStacks().pushReference(componentTypeReference);
     }
 
     public static void assertNativeMethod(JvmMethod jvmMethod) {

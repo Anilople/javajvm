@@ -2,8 +2,8 @@ package com.github.anilople.javajvm.runtimedataarea.reference;
 
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
+import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.utils.ReferenceUtils;
-import com.github.anilople.javajvm.utils.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see java.lang.Class
  *
  * This class is per to per with java.lang.Class in real jvm
+ * Every class only exists one java.lang.Class,
+ * so every {@code JvmClass} must follow this rule!
  */
 public class ClassObjectReference extends ObjectReference {
 
@@ -30,48 +32,38 @@ public class ClassObjectReference extends ObjectReference {
     /**
      * Remember that new java.lang.Class() is forbidden,
      * so the initialize must be manual!
-     * @param jvmClass must represents java.lang.Class
-     * @param clazz
+     * {@code JvmClass} per to per with {@code ClassObjectReference}
+     * @see JvmClass
+     * @param jvmClass {@code Class<?>} ? represents a class in java
      */
-    private ClassObjectReference(JvmClass jvmClass, Class<?> clazz) {
-        super(jvmClass);
-        if (!jvmClass.isSameName(Class.class)) {
-            throw new RuntimeException(jvmClass.getName() + "'s type is not java.lang.Class");
-        }
+    private ClassObjectReference(JvmClass jvmClass) {
+        // this object reference's type is java.lang.Class
+        super(jvmClass.getLoader().loadClass(Class.class));
+
+        final String javaLevelClassName = jvmClass.getJavaLevelClassName();
+
+        logger.debug("make a new ClassObjectReference for JvmClass [{}] -- java level class name", javaLevelClassName);
+
         // hack the name
         ObjectReference stringReference = ReferenceUtils.getStringObjectReference(
                 jvmClass.getLoader().loadClass(String.class),
-                clazz.getName()
+                javaLevelClassName
         );
-        int nameOffset = ReflectionUtils.getNonStaticOffset(Class.class, "name");
-        this.setReference(nameOffset, stringReference);
+        this.setReference("name", stringReference);
     }
 
     /**
-     *
+     * one JvmClass, one ClassObjectReference
      * @param jvmClass represents {@code Class<String>}, {@code Class<Object>}, int.class, void.class, etc..
      * @return self-define ClassObjectReference
      */
     public static ClassObjectReference getInstance(JvmClass jvmClass) {
         // which java.lang.Class<?> this JvmClass should be
         final Class<?> clazz = jvmClass.getRealClassInJvm();
-        return getInstance(jvmClass.getLoader(), clazz);
-    }
-
-    /**
-     * {@code java.lang.Class} -> {@code ClassObjectReference}
-     * @see java.lang.Class
-     * @param jvmClassLoader class loader
-     * @param clazz java.lang.Class in real JVM
-     * @return self-define ClassObjectReference
-     */
-    public static ClassObjectReference getInstance(JvmClassLoader jvmClassLoader, Class<?> clazz) {
-        // do not consider concurrent problem
         if(!class2ClassObjectReference.containsKey(clazz)) {
             logger.debug("{} not exists, now try to add it.", clazz);
-            // it is special, because we want the object reference to java.lang.Class
-            final JvmClass classJvmClass = jvmClassLoader.loadClass(Class.class);
-            ClassObjectReference classObjectReference = new ClassObjectReference(classJvmClass, clazz);
+            final JvmClass clazzJvmClass = jvmClass.getLoader().loadClass(clazz);
+            ClassObjectReference classObjectReference = new ClassObjectReference(clazzJvmClass);
             class2ClassObjectReference.put(clazz, classObjectReference);
             classObjectReference2Class.put(classObjectReference, clazz);
         }
@@ -90,6 +82,23 @@ public class ClassObjectReference extends ObjectReference {
             throw new RuntimeException(classObjectReference + " not exist");
         }
         return classObjectReference2Class.get(classObjectReference);
+    }
+
+    /**
+     * @see Class#getComponentType()
+     * @return
+     */
+    public Reference getComponentType() {
+        // must use this way to get java.lang.Class
+        Class<?> clazz = getRealClassInJvm(this);
+        Class<?> componentType = clazz.getComponentType();
+        if(null == componentType) {
+            return Reference.NULL;
+        } else {
+            JvmClassLoader jvmClassLoader = this.getJvmClass().getLoader();
+            JvmClass componentTypeJvmClass = jvmClassLoader.loadClass(componentType);
+            return getInstance(componentTypeJvmClass);
+        }
     }
 
     @Override
