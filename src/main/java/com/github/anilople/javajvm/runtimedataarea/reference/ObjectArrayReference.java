@@ -8,32 +8,21 @@ import java.util.Arrays;
 public class ObjectArrayReference extends ArrayReference {
 
     /**
-     * array exists component,
-     * this field represents the type of component
-     */
-    private JvmClass componentType;
-
-    /**
      * reference
      */
     private Reference[] references;
 
 
     public ObjectArrayReference(JvmClass componentType, int count) {
-        super(count);
-        this.componentType = componentType;
+        super(componentType, count);
         references = new Reference[count];
         Arrays.fill(references, Reference.NULL);
-    }
-
-    public JvmClass getComponentType() {
-        return componentType;
     }
 
     @Override
     public String toString() {
         return "ObjectArrayReference{" +
-                "typeReference=" + componentType +
+                "componentType=" + this.getComponentType() +
                 ", references=" + Arrays.toString(references) +
                 '}';
     }

@@ -1,8 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea.reference;
 
 import com.github.anilople.javajvm.constants.ArrayTypeCodes;
-import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
-import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +32,13 @@ public class BaseTypeArrayReference extends ArrayReference {
 
     private double[] doubles;
 
-    public BaseTypeArrayReference(byte typeCode, int count) {
-        super(count);
-        this.typeCode = typeCode;
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, byte typeCode, int count) {
+        this(jvmClassLoader, ArrayTypeCodes.typeCode2PrimitiveClass(typeCode), count);
+    }
+
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, Class<?> baseType, int count) {
+        super(jvmClassLoader.loadClass(baseType), count);
+        this.typeCode = ArrayTypeCodes.fromClass(baseType);
         logger.trace("array type code: {}, length: {}", typeCode, count);
         switch (typeCode) {
             case ArrayTypeCodes.T_BOOLEAN:
@@ -67,20 +70,20 @@ public class BaseTypeArrayReference extends ArrayReference {
         }
     }
 
-    public BaseTypeArrayReference(boolean[] booleans) {
-        super(booleans.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, boolean[] booleans) {
+        super(jvmClassLoader.loadClass(boolean.class), booleans.length);
         this.typeCode = ArrayTypeCodes.T_BOOLEAN;
         this.booleans = booleans;
     }
 
-    public BaseTypeArrayReference(byte[] bytes) {
-        super(bytes.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, byte[] bytes) {
+        super(jvmClassLoader.loadClass(byte.class), bytes.length);
         this.typeCode = ArrayTypeCodes.T_BYTE;
         this.bytes = bytes;
     }
 
-    public BaseTypeArrayReference(short[] shorts) {
-        super(shorts.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, short[] shorts) {
+        super(jvmClassLoader.loadClass(short.class), shorts.length);
         this.typeCode = ArrayTypeCodes.T_SHORT;
         this.shorts = shorts;
     }
@@ -89,32 +92,32 @@ public class BaseTypeArrayReference extends ArrayReference {
      * construct from char array
      * @param chars
      */
-    public BaseTypeArrayReference(char[] chars) {
-        super(chars.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, char[] chars) {
+        super(jvmClassLoader.loadClass(char.class), chars.length);
         this.typeCode = ArrayTypeCodes.T_CHAR;
         this.chars = chars;
     }
 
-    public BaseTypeArrayReference(int[] ints) {
-        super(ints.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, int[] ints) {
+        super(jvmClassLoader.loadClass(int.class), ints.length);
         this.typeCode = ArrayTypeCodes.T_INT;
         this.ints = ints;
     }
 
-    public BaseTypeArrayReference(float[] floats) {
-        super(floats.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, float[] floats) {
+        super(jvmClassLoader.loadClass(float.class), floats.length);
         this.typeCode = ArrayTypeCodes.T_FLOAT;
         this.floats = floats;
     }
 
-    public BaseTypeArrayReference(long[] longs) {
-        super(longs.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, long[] longs) {
+        super(jvmClassLoader.loadClass(long.class), longs.length);
         this.typeCode = ArrayTypeCodes.T_LONG;
         this.longs = longs;
     }
 
-    public BaseTypeArrayReference(double[] doubles) {
-        super(doubles.length);
+    public BaseTypeArrayReference(JvmClassLoader jvmClassLoader, double[] doubles) {
+        super(jvmClassLoader.loadClass(double.class), doubles.length);
         this.typeCode = ArrayTypeCodes.T_DOUBLE;
         this.doubles = doubles;
     }

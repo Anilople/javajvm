@@ -193,7 +193,7 @@ public class MULTIANEWARRAY implements Instruction {
             String subTypeDescriptor = jvmClass.getName().substring(1);
             if(DescriptorUtils.isBaseType(subTypeDescriptor)) {
                 // last dimension is base type array
-                return NEWARRAY.allocate(subTypeDescriptor, count);
+                return NEWARRAY.allocate(jvmClass.getLoader(), subTypeDescriptor, count);
             } else {
                 // last dimension is object type array
                 // the descriptor like "Ljava/lang/String;", so we need to delete 'L' in left, ';' in right
