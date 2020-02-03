@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.instructions.references;
 
 import com.github.anilople.javajvm.constants.ArrayTypeCodes;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
@@ -55,8 +56,11 @@ public class NEWARRAY implements Instruction {
         if(count < 0) {
             throw new NegativeArraySizeException(count + " is less than 0");
         }
+
+        final JvmClassLoader jvmClassLoader = frame.getJvmMethod().getJvmClass().getLoader();
+
         frame.getOperandStacks().pushReference(
-                NEWARRAY.allocate(atype, count)
+                NEWARRAY.allocate(jvmClassLoader, atype, count)
         );
 
         int nextPc = frame.getNextPc() + this.size();
@@ -71,25 +75,27 @@ public class NEWARRAY implements Instruction {
     /**
      * allocate base type array
      * 1 dimensions
+     * @param jvmClassLoader class loader
      * @param typeCode type
      * @see ArrayTypeCodes
      * @param count array's length
      * @return
      */
-    public static BaseTypeArrayReference allocate(byte typeCode, int count) {
-        return new BaseTypeArrayReference(typeCode, count);
+    public static BaseTypeArrayReference allocate(JvmClassLoader jvmClassLoader, byte typeCode, int count) {
+        return new BaseTypeArrayReference(jvmClassLoader, typeCode, count);
     }
 
     /**
      * allocate base type array
      * 1 dimensions
+     * @param jvmClassLoader class loader
      * @param typeDescriptor descriptor of base type
      * @see com.github.anilople.javajvm.constants.Descriptors.BaseType
      * @param count
      * @return
      */
-    public static BaseTypeArrayReference allocate(String typeDescriptor, int count) {
+    public static BaseTypeArrayReference allocate(JvmClassLoader jvmClassLoader, String typeDescriptor, int count) {
         byte typeCode = ArrayTypeCodes.fromDescriptor(typeDescriptor);
-        return allocate(typeCode, count);
+        return allocate(jvmClassLoader, typeCode, count);
     }
 }

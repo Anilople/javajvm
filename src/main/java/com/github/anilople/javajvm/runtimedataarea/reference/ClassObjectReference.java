@@ -1,6 +1,7 @@
 package com.github.anilople.javajvm.runtimedataarea.reference;
 
 import com.github.anilople.javajvm.heap.JvmClass;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.utils.ReferenceUtils;
 import com.github.anilople.javajvm.utils.ReflectionUtils;
 import org.slf4j.Logger;
@@ -54,11 +55,22 @@ public class ClassObjectReference extends ObjectReference {
     public static ClassObjectReference getInstance(JvmClass jvmClass) {
         // which java.lang.Class<?> this JvmClass should be
         final Class<?> clazz = jvmClass.getRealClassInJvm();
+        return getInstance(jvmClass.getLoader(), clazz);
+    }
+
+    /**
+     * {@code java.lang.Class} -> {@code ClassObjectReference}
+     * @see java.lang.Class
+     * @param jvmClassLoader class loader
+     * @param clazz java.lang.Class in real JVM
+     * @return self-define ClassObjectReference
+     */
+    public static ClassObjectReference getInstance(JvmClassLoader jvmClassLoader, Class<?> clazz) {
         // do not consider concurrent problem
         if(!class2ClassObjectReference.containsKey(clazz)) {
             logger.debug("{} not exists, now try to add it.", clazz);
             // it is special, because we want the object reference to java.lang.Class
-            final JvmClass classJvmClass = jvmClass.getLoader().loadClass(Class.class);
+            final JvmClass classJvmClass = jvmClassLoader.loadClass(Class.class);
             ClassObjectReference classObjectReference = new ClassObjectReference(classJvmClass, clazz);
             class2ClassObjectReference.put(clazz, classObjectReference);
             classObjectReference2Class.put(classObjectReference, clazz);

@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.runtimedataarea;
 
+import com.github.anilople.javajvm.runtimedataarea.reference.ArrayReference;
 import com.github.anilople.javajvm.runtimedataarea.reference.NullReference;
 
 /**
@@ -38,5 +39,15 @@ public interface Reference {
         }
 
         return NULL.equals(reference);
+    }
+
+    /**
+     *
+     * @see ArrayReference
+     * @param reference
+     * @return reference is array or not
+     */
+    static boolean isArray(Reference reference) {
+        return reference instanceof ArrayReference;
     }
 }

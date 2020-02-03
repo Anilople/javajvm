@@ -40,7 +40,7 @@ public class ReferenceUtils {
         // exists in pool or not
         if(!StringPool.exists(utf8)) {
             ObjectReference objectReference = new ObjectReference(stringClass);
-            BaseTypeArrayReference charArrayReference = new BaseTypeArrayReference(utf8.toCharArray());
+            BaseTypeArrayReference charArrayReference = new BaseTypeArrayReference(stringClass.getLoader(), utf8.toCharArray());
             // use hack skill to generate string
             objectReference.setReference(0, charArrayReference);
             StringPool.add(utf8, objectReference);
@@ -157,7 +157,7 @@ public class ReferenceUtils {
             final Class<?> componentType = arrayObject.getClass().getComponentType();
             if(componentType.isPrimitive()) {
                 // primitive should be cached too
-                BaseTypeArrayReference baseTypeArrayReference = singleDimensionPrimitiveArray2ArrayReference(arrayObject);
+                BaseTypeArrayReference baseTypeArrayReference = singleDimensionPrimitiveArray2ArrayReference(jvmClassLoader, arrayObject);
                 cache.put(arrayObject, baseTypeArrayReference);
             } else {
                 ObjectArrayReference objectArrayReference = singleDimensionObjectArray2ObjectArrayReference(cache, jvmClassLoader, arrayObject);
@@ -173,28 +173,29 @@ public class ReferenceUtils {
     }
 
     /**
+     * @param jvmClassLoader class loader of array
      * @param primitiveArrayObject 1 dimension array of primitive type
      * @return self-define array reference
      */
-    static BaseTypeArrayReference singleDimensionPrimitiveArray2ArrayReference(Object primitiveArrayObject) {
+    static BaseTypeArrayReference singleDimensionPrimitiveArray2ArrayReference(JvmClassLoader jvmClassLoader, Object primitiveArrayObject) {
         // get component type
         final Class<?> type = primitiveArrayObject.getClass().getComponentType();
         if(type.equals(boolean.class)) {
-            return new BaseTypeArrayReference((boolean[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (boolean[]) primitiveArrayObject);
         } else if(type.equals(byte.class)) {
-            return new BaseTypeArrayReference((byte[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (byte[]) primitiveArrayObject);
         } else if(type.equals(short.class)) {
-            return new BaseTypeArrayReference((short[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (short[]) primitiveArrayObject);
         } else if(type.equals(char.class)) {
-            return new BaseTypeArrayReference((char[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (char[]) primitiveArrayObject);
         } else if(type.equals(int.class)) {
-            return new BaseTypeArrayReference((int[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (int[]) primitiveArrayObject);
         } else if(type.equals(float.class)) {
-            return new BaseTypeArrayReference((float[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (float[]) primitiveArrayObject);
         } else if(type.equals(long.class)) {
-            return new BaseTypeArrayReference((long[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (long[]) primitiveArrayObject);
         } else if(type.equals(double.class)) {
-            return new BaseTypeArrayReference((double[]) primitiveArrayObject);
+            return new BaseTypeArrayReference(jvmClassLoader, (double[]) primitiveArrayObject);
         } else {
             throw new IllegalArgumentException("Cannot set type " + type);
         }

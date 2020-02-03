@@ -1,6 +1,6 @@
 package com.github.anilople.javajvm.runtimedataarea.reference;
 
-import com.github.anilople.javajvm.constants.ArrayTypeCodes;
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 
 /**
@@ -10,11 +10,18 @@ import com.github.anilople.javajvm.runtimedataarea.Reference;
 public abstract class ArrayReference implements Reference {
 
     /**
+     * array exists component,
+     * this field represents the type of component
+     */
+    private JvmClass componentType;
+
+    /**
      * array length
      */
     private final int count;
 
-    public ArrayReference(int count) {
+    public ArrayReference(JvmClass componentType, int count) {
+        this.componentType = componentType;
         this.count = count;
     }
 
@@ -31,4 +38,7 @@ public abstract class ArrayReference implements Reference {
         }
     }
 
+    public JvmClass getComponentType() {
+        return componentType;
+    }
 }

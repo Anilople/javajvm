@@ -68,11 +68,35 @@ public class JvmClassLoader {
      * @return
      */
     public JvmClass loadClass(Class<?> clazz) {
-        // name like java.lang.Object
+        if(clazz.isPrimitive()) {
+            // char, byte, boolean ...
+            return loadPrimitiveClass(clazz);
+        } else {
+            // name like java.lang.Object
+            String className = clazz.getName();
+            // change to java/lang/Object
+            String standardFormatInRuntimeClassName = className.replace('.', '/');
+            return loadClass(standardFormatInRuntimeClassName);
+        }
+    }
+
+    /**
+     * load primitive class (boolean.class, char.class etc.)
+     * @param clazz
+     * @return
+     */
+    private JvmClass loadPrimitiveClass(Class<?> clazz) {
+        if(!clazz.isPrimitive()) {
+            throw new IllegalArgumentException(clazz + " is not primitive class");
+        }
         String className = clazz.getName();
-        // change to java/lang/Object
-        String standardFormatInRuntimeClassName = className.replace('.', '/');
-        return loadClass(standardFormatInRuntimeClassName);
+
+        if(!classConcurrentMap.containsKey(className)) {
+            JvmClass primitiveClass = new JvmClass(this, className);
+            classConcurrentMap.put(className, primitiveClass);
+        }
+
+        return classConcurrentMap.get(className);
     }
 
     /**
