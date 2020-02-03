@@ -7,12 +7,12 @@ import com.github.anilople.javajvm.runtimedataarea.LocalVariables;
 import com.github.anilople.javajvm.utils.ClassNameConverterUtils;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.utils.JvmClassUtils;
+import com.github.anilople.javajvm.utils.ReflectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -309,19 +309,24 @@ public class JvmClass {
     }
 
     public Class<?> getRealClassInJvm() {
+        // maybe "char" etc..
         final String javaClassName = ClassNameConverterUtils.jvm2java(this.getName());
         try {
-            Class<?> clazz = Class.forName(javaClassName);
-            return clazz;
+            // but Class.forName("char") not work, must use Class.getPrimitiveType("char")
+            if(this.isPrimitiveType()) {
+                return ReflectionUtils.getPrimitiveClass(javaClassName);
+            } else {
+                return Class.forName(javaClassName);
+            }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * we know int.class void.class boolean.class ...
-     * return true if this class is primitive class
-     * @return
+     * We know that int.class void.class boolean.class ... are primitive class
+     * java.lang.Object, java.lang.Integer, ... are not primitive class
+     * @return this jvm class is primitive class or not
      */
     public boolean isPrimitiveType() {
         switch (this.getName()) {
@@ -333,9 +338,10 @@ public class JvmClass {
             case "long":
             case "float":
             case "double":
+            case "void":
                 return true;
             default:
-                throw new IllegalStateException("Unexpected value: " + this.getName());
+                return false;
         }
     }
 
@@ -474,8 +480,23 @@ public class JvmClass {
                 '}';
     }
 
+    /**
+     * @see #getJavaLevelClassName()
+     * @return Class's name in jvm level
+     */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Class's name is different between java level and jvm level.
+     * In java level, {@code java.lang.Integer.class.getName()} is "java.lang.Integer",
+     * But in jvm level, it will be "java/lang/Integer".
+     * @return Class's name in java level
+     */
+    public String getJavaLevelClassName() {
+        String jvmLevelClassName = this.getName();
+        return ClassNameConverterUtils.jvm2java(jvmLevelClassName);
     }
 
     public String getSuperClassName() {

@@ -107,6 +107,12 @@ public class ReflectionUtils {
      * long.class
      * float.class
      * double.class
+     * void.class
+     * for the primitive class,
+     * java.lang.Character.TYPE == char.class
+     * java.lang.Byte.TYPE      == byte.class
+     * ...
+     * @see java.lang.Class#getPrimitiveClass(String)
      * @see java.lang.Class
      * @param name
      * @return
