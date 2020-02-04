@@ -24,12 +24,16 @@ class ATHROWTest {
         throw new Exception("try it out!");
     }
 
-    public static void runtime() {
+    public static void runtimeException() {
         throw new RuntimeException("sdf");
     }
 
+    public static void illegalArgumentException() {
+        throw new IllegalArgumentException("arg");
+    }
+
     public static void main(String[] args) {
-        catchOne();
+        throw new RuntimeException("sdf");
     }
 
     @Test
@@ -42,16 +46,31 @@ class ATHROWTest {
     }
 
     @Test
-    void uncaughtException() {
+    void uncaughtRuntimeException() {
         JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
                 JvmThreadFactory.createFromStaticMethod(
                         this.getClass(),
-                        "runtime",
+                        "runtimeException",
                         "()V"
                 )
         );
 
-        jvmThreadRunner.run();
+        assertThrows(RuntimeException.class, () -> jvmThreadRunner.run());
+
+        assertTrue(jvmThreadRunner.isExecuted(ATHROW.class));
+    }
+
+    @Test
+    void uncaughtIllegalArgumentException() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "illegalArgumentException",
+                        "()V"
+                )
+        );
+
+        assertThrows(RuntimeException.class, () -> jvmThreadRunner.run());
 
         assertTrue(jvmThreadRunner.isExecuted(ATHROW.class));
     }

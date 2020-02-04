@@ -112,6 +112,13 @@ public class ATHROW implements Instruction {
         for(StackTraceElement stackTraceElement : stackTraceElements) {
             System.out.println("\tat " + stackTraceElement);
         }
+
+        try {
+            Object realExceptionObject = ReferenceUtils.reference2Object(throwableObjectReference);
+            throw (RuntimeException) realExceptionObject;
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
