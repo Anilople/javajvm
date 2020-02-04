@@ -20,31 +20,25 @@ public class VM {
 
     private static final Logger logger = LoggerFactory.getLogger(VM.class);
 
-    private static boolean isBoot = false;
-
     public static void initial(JvmClassLoader jvmClassLoader) {
-        if(!isBoot) {
+        logger.info("boot vm. initialize");
 
-            logger.info("boot vm. initialize");
+        Properties properties = new Properties();
+        // add something
+        properties.setProperty("nothing", "nothing");
 
-            Properties properties = new Properties();
-            // add something
-            properties.setProperty("nothing", "nothing");
-
-            final Reference propertiesReference;
-            try {
-                propertiesReference = ReferenceUtils.object2Reference(jvmClassLoader, properties);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException();
-            }
-
-            JvmClass vm = jvmClassLoader.loadClass(sun.misc.VM.class);
-            // private static final Properties savedProps;
-            JvmField savedProps = vm.getJvmFieldByNameIncludeAncestors("savedProps");
-            int staticFieldOffset = savedProps.getStaticFieldOffset();
-            vm.getStaticFieldsValue().setReference(staticFieldOffset, propertiesReference);
+        final Reference propertiesReference;
+        try {
+            propertiesReference = ReferenceUtils.object2Reference(jvmClassLoader, properties);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException();
         }
-        isBoot = true;
+
+        JvmClass vm = jvmClassLoader.loadClass(sun.misc.VM.class);
+        // private static final Properties savedProps;
+        JvmField savedProps = vm.getJvmFieldByNameIncludeAncestors("savedProps");
+        int staticFieldOffset = savedProps.getStaticFieldOffset();
+        vm.getStaticFieldsValue().setReference(staticFieldOffset, propertiesReference);
     }
 
 }
