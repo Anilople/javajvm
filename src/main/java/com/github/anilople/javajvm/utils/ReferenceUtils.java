@@ -731,12 +731,7 @@ public class ReferenceUtils {
 
     /**
      * emulator "arraycopy" in System
-     * @see java.lang.System arraycopy
-     * @param src
-     * @param srcPos
-     * @param dest
-     * @param destPos
-     * @param length
+     * @see java.lang.System#arraycopy(Object, int, Object, int, int)
      */
     public static void arrayCopy(
             ArrayReference src, int srcPos,
@@ -749,7 +744,7 @@ public class ReferenceUtils {
         if(src instanceof BaseTypeArrayReference) {
             arrayCopy((BaseTypeArrayReference) src, srcPos, (BaseTypeArrayReference) dest, destPos, length);
         } else if(src instanceof ObjectArrayReference) {
-            throw new RuntimeException("Now cannot support array copy " + ObjectArrayReference.class);
+            arrayCopy((ObjectArrayReference) src, srcPos, (ObjectArrayReference) dest, destPos, length);
         } else {
             throw new IllegalStateException("Wrong type " + src);
         }
@@ -757,11 +752,6 @@ public class ReferenceUtils {
 
     /**
      * copy the primitive values of self-define bast type array
-     * @param src
-     * @param srcPos
-     * @param dest
-     * @param destPos
-     * @param length
      */
     private static void arrayCopy(
             BaseTypeArrayReference src, int srcPos,
@@ -777,11 +767,20 @@ public class ReferenceUtils {
     }
 
     /**
+     * array copy of Object Array
+     */
+    private static void arrayCopy(
+            ObjectArrayReference src, int srcPos,
+            ObjectArrayReference dest, int destPos,
+            int length) {
+        for(int i = 0; i < length; i++) {
+            Reference temp = src.getReference(srcPos + i);
+            dest.setReference(destPos + i, temp);
+        }
+    }
+
+    /**
      * just copy 1 primitive element in array
-     * @param src
-     * @param srcIndex
-     * @param dest
-     * @param destIndex
      */
     private static void arrayCopyPrimitiveOne(
             BaseTypeArrayReference src, int srcIndex,
