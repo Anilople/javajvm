@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * write some sort algorithms,
@@ -16,31 +17,42 @@ import java.util.List;
  */
 public class SortAlgorithmTest {
 
-    private static List<Integer> add(List<Integer> list) {
-        list.add(3);
-        return list;
+    private static String concat2String(int[] values, char separator) {
+        StringBuilder s = new StringBuilder();
+        for(int value : values) {
+            s.append(value);
+            s.append(separator);
+        }
+        return s.toString();
     }
 
-    public static void main(String[] args) throws NoSuchFieldException {
-//        for(Field field : Throwable.class.getDeclaredFields()) {
-//            System.out.println(field);
-//        }
-//        System.out.println("##############");
-//        Field backtrace = Throwable.class.getDeclaredField("backtrace");
-//        System.out.println(backtrace);
-//        System.out.println(ReflectionUtils.getNonStaticFieldsFromAncestor(IllegalAccessException.class));
-//        System.out.println(Throwable.class.getDeclaredFields().length);
-        List<Integer> integers = new ArrayList<>();
-        integers.add(3);
-        for(Integer integer : integers) {
-            System.out.println(integer);
+    private static void bubbleSort(int[] values) {
+        for(int i = 0; i < values.length; i++) {
+            for(int j = 0; j < values.length - 1; j++) {
+                if(values[j] > values[j+1]) {
+                    int temp = values[j];
+                    values[j] = values[j+1];
+                    values[j+1] = temp;
+                }
+            }
         }
     }
 
-    @Test
-    void mainTest() {
-        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(JvmThreadFactory.makeSimpleInstance(this.getClass()));
+    private static void runBubbleSort() {
+        int[] values = new int[]{3, 6, 1, 2};
+        bubbleSort(values);
+        System.out.println(concat2String(values, ','));
+    }
 
+    @Test
+    void runBubbleSortTest() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "runBubbleSort",
+                        "()V"
+                )
+        );
         jvmThreadRunner.run();
     }
 
