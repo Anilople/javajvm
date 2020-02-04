@@ -64,7 +64,7 @@ public class LDC implements Instruction {
         JvmClass currentClass = frame.getJvmMethod().getJvmClass();
         int index = PrimitiveTypeUtils.intFormUnsignedByte(unsignedByteIndex);
         JvmConstant jvmConstant = currentClass.getJvmConstantPool().getJvmConstant(index);
-        logger.info("jvmConstant: {}", jvmConstant);
+        logger.trace("jvmConstant: {}", jvmConstant);
         if(jvmConstant instanceof JvmConstantInteger) {
             int intValue = ((JvmConstantInteger) jvmConstant).getIntValue();
             frame.getOperandStacks().pushIntValue(intValue);

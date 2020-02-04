@@ -206,7 +206,7 @@ public class PUTFIELD implements Instruction {
             throw new NullPointerException();
         }
         // type conform check, to do
-        logger.warn("without type conform check with {} and {}", reference, referenceValue);
+//        logger.warn("without type conform check with {} and {}", reference, referenceValue);
         ObjectReference objectReference = (ObjectReference) reference;
         objectReference.setReference(nonStaticFieldOffset, referenceValue);
     }
@@ -219,7 +219,7 @@ public class PUTFIELD implements Instruction {
             throw new NullPointerException();
         }
         // type conform check, to do
-        logger.warn("without type conform check with {} and {}", reference, arrayReference);
+//        logger.warn("without type conform check with {} and {}", reference, arrayReference);
         ObjectReference objectReference = (ObjectReference) reference;
         objectReference.setReference(nonStaticFieldOffset, arrayReference);
     }

@@ -6,6 +6,8 @@ import com.github.anilople.javajvm.heap.JvmField;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import com.github.anilople.javajvm.utils.ReferenceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
@@ -16,10 +18,15 @@ import java.util.Properties;
  */
 public class VM {
 
+    private static final Logger logger = LoggerFactory.getLogger(VM.class);
+
     private static boolean isBoot = false;
 
     public static void initial(JvmClassLoader jvmClassLoader) {
         if(!isBoot) {
+
+            logger.info("boot vm. initialize");
+
             Properties properties = new Properties();
             // add something
             properties.setProperty("nothing", "nothing");

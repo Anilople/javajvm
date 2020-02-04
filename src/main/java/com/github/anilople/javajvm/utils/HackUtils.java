@@ -34,7 +34,7 @@ public class HackUtils {
      */
     public static boolean isInHackMethods(JvmMethod jvmMethod) {
         if(jvmMethod.isNative()) {
-            logger.warn("Hack judgement for class {} 's native method: {} {}",
+            logger.debug("Hack judgement for class {} 's native method: {} {}",
                     jvmMethod.getJvmClass().getName(),
                     jvmMethod.getName(),
                     jvmMethod.getDescriptor()
