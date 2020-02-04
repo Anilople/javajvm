@@ -33,7 +33,7 @@ class ATHROWTest {
     }
 
     public static void main(String[] args) {
-        throw new RuntimeException("sdf");
+        catchOne();
     }
 
     @Test
@@ -70,7 +70,7 @@ class ATHROWTest {
                 )
         );
 
-        assertThrows(RuntimeException.class, () -> jvmThreadRunner.run());
+        assertThrows(IllegalArgumentException.class, () -> jvmThreadRunner.run());
 
         assertTrue(jvmThreadRunner.isExecuted(ATHROW.class));
     }
