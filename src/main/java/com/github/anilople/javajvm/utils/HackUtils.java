@@ -216,6 +216,21 @@ public class HackUtils {
                 }
                 break;
             }
+            case "Ljava/lang/Object;": {
+                Reference reference = localVariables.getReference(1);
+                if(reference instanceof NullReference) {
+                    System.out.print("null");
+                } else {
+                    // object reference, may be array!!!
+                    try {
+                        Object object = ReferenceUtils.reference2Object(reference);
+                        System.out.print(object);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+                break;
             default:
                 throw new IllegalStateException("Unexpected value: " + parameterDescriptor);
         }
