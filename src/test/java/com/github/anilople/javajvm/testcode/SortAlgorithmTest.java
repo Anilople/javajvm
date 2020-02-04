@@ -56,4 +56,137 @@ public class SortAlgorithmTest {
         jvmThreadRunner.run();
     }
 
+    /**
+     * concat the arrays together
+     * @param arrays
+     * @return
+     */
+    private static int[] concat(int[] ... arrays) {
+        int allLength = 0;
+        for(int[] ints : arrays) {
+            allLength += ints.length;
+        }
+        final int[] afterConcatArray = new int[allLength];
+        int index = 0;
+        for(int[] ints : arrays) {
+            for(int value : ints) {
+                afterConcatArray[index++] = value;
+            }
+        }
+        return afterConcatArray;
+    }
+
+    private static void runConcat2Array() {
+        int[] a = new int[]{1, 2, 3, 4};
+        int[] b = new int[]{-1, -2, -3, -4};
+        int[] ab = concat(a, b);
+        System.out.println(concat2String(ab, ','));
+    }
+
+    @Test
+    void runConcat2ArrayTest() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "runConcat2Array",
+                        "()V"
+                )
+        );
+        jvmThreadRunner.run();
+    }
+
+    private static void runConcat3Array() {
+        int[] a = new int[]{1, 2, 3, 4};
+        int[] b = new int[]{5, 6};
+        int[] c = new int[]{7, 8, 9};
+        int[] abc = concat(a, b, c);
+        System.out.println(concat2String(abc, ','));
+    }
+
+    @Test
+    void runConcat3ArrayTest() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "runConcat3Array",
+                        "()V"
+                )
+        );
+        jvmThreadRunner.run();
+    }
+
+    /**
+     * use quick sort algorithm to sort array
+     * @param values
+     * @return not increase array
+     */
+    private static int[] quickSort(int[] values) {
+        if(values.length <= 1) {
+            return values;
+            // Object#clone() is not support, todo
+//            return values.clone();
+        }
+
+        final int midValue = values[0];
+
+        int smallerPartLength = 0;
+        int midPartLength = 0;
+        int biggerPartLength = 0;
+
+        for(int value : values) {
+            if(value < midValue) {
+                smallerPartLength += 1;
+            } else if(value == midValue) {
+                midPartLength += 1;
+            } else {
+                biggerPartLength += 1;
+            }
+        }
+
+        final int[] smallerPart = new int[smallerPartLength];
+        final int[] midPart = new int[midPartLength];
+        final int[] biggerPart = new int[biggerPartLength];
+
+        int smallerPartIndex = 0;
+        int midPartIndex = 0;
+        int biggerPartIndex = 0;
+
+        for(int value : values) {
+            if(value < midValue) {
+                smallerPart[smallerPartIndex++] = value;
+            } else if(value == midValue) {
+                midPart[midPartIndex++] = value;
+            } else {
+                biggerPart[biggerPartIndex++] = value;
+            }
+        }
+
+        return concat(
+                quickSort(smallerPart), // sort smaller part
+                midPart,
+                quickSort(biggerPart) // sort bigger part
+        );
+    }
+
+    private static void runQuickSort() {
+        final int[] values = new int[]{5, 4, 3, -1, 9, 10};
+        final int[] afterSorted = quickSort(values);
+        System.out.println(concat2String(afterSorted, ','));
+    }
+
+    @Test
+    void runQuickSortTest() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "runQuickSort",
+                        "()V"
+                )
+        );
+        jvmThreadRunner.run();
+    }
+
+    public static void main(String[] args) {
+        runQuickSort();
+    }
 }
