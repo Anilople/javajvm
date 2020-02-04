@@ -439,6 +439,19 @@ public class JvmClass {
         return false;
     }
 
+    /**
+     * wrapper array of this class
+     * java.lang.Object -> [Ljava.lang.Object;
+     * int              -> [I
+     * [I               -> [[I
+     * @return
+     */
+    public JvmClass wrapperArray() {
+        Class<?> thisClass = this.getRealClassInJvm();
+        Class<?> arrayClass = ReflectionUtils.wrapperArrayOf(thisClass);
+        return this.getLoader().loadClass(arrayClass);
+    }
+
     public boolean isPublic() {
         return 0 != (this.accessFlags & AccessFlags.ClassFlags.ACC_PUBLIC);
     }

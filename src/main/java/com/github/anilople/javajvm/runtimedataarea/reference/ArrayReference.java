@@ -1,7 +1,9 @@
 package com.github.anilople.javajvm.runtimedataarea.reference;
 
 import com.github.anilople.javajvm.heap.JvmClass;
+import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
+import com.github.anilople.javajvm.utils.ReflectionUtils;
 
 /**
  * array reference
@@ -40,5 +42,19 @@ public abstract class ArrayReference implements Reference {
 
     public JvmClass getComponentType() {
         return componentType;
+    }
+
+    /**
+     * We know the component type of this array,
+     * but what is its type?
+     * Example:
+     *      type        component type
+     *      Object[]    Object
+     *      int[][]     int[]
+     * Can we get its type byte its component type?
+     * @return this array's type
+     */
+    public JvmClass resolveType() {
+        return this.getComponentType().wrapperArray();
     }
 }

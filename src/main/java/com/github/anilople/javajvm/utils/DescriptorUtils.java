@@ -569,4 +569,37 @@ public class DescriptorUtils {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     * convert a primitive class's name to its descriptor in jvm
+     * @param clazz must be primitive class
+     * @return
+     */
+    public static String primitiveClass2BaseTypeDescriptor(Class<?> clazz) {
+        if(!clazz.isPrimitive()) {
+            throw new IllegalStateException(clazz + " is not primitive type");
+        }
+        final String name = clazz.getName();
+        switch (name) {
+            case "boolean":
+                return Descriptors.BaseType.BOOLEAN;
+            case "byte":
+                return Descriptors.BaseType.BYTE;
+            case "short":
+                return Descriptors.BaseType.SHORT;
+            case "char":
+                return Descriptors.BaseType.CHAR;
+            case "int":
+                return Descriptors.BaseType.INT;
+            case "long":
+                return Descriptors.BaseType.LONG;
+            case "float":
+                return Descriptors.BaseType.FLOAT;
+            case "double":
+                return Descriptors.BaseType.DOUBLE;
+            case "void":
+            default:
+                throw new IllegalStateException("Unexpected value: " + name);
+        }
+    }
 }

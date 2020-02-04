@@ -23,4 +23,12 @@ class ReflectionUtilsTest {
         assertEquals(6, ReflectionUtils.getNonStaticOffset(this.getClass(), "booleanValue"));
         assertEquals(7, ReflectionUtils.getNonStaticOffset(this.getClass(), "shortValue"));
     }
+
+    @Test
+    void wrapperArrayOf() {
+        assertEquals(char[].class, ReflectionUtils.wrapperArrayOf(char.class));
+        assertEquals(int[][][].class, ReflectionUtils.wrapperArrayOf(int[][].class));
+        assertEquals(Object[].class, ReflectionUtils.wrapperArrayOf(Object.class));
+        assertEquals(String[][].class, ReflectionUtils.wrapperArrayOf(String[].class));
+    }
 }

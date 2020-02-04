@@ -150,4 +150,41 @@ public class ReflectionUtils {
         }
         throw new RuntimeException("field name " + fieldName + " not in class " + clazz);
     }
+
+    /**
+     * java.lang.Object -> [Ljava.lang.Object;
+     * int              -> [I
+     * [I               -> [[I
+     * @param clazz
+     * @return the array of class given
+     */
+    public static Class<?> wrapperArrayOf(Class<?> clazz) {
+        String arrayClassName = getClassNameAfterWrapperArrayOf(clazz);
+        try {
+            return Class.forName(arrayClassName);
+        } catch (ClassNotFoundException e) {
+            // the new class must be found!
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * class name          after wrapper to array class name
+     * java.lang.Object -> [Ljava.lang.Object;
+     * int              -> [I
+     * [I               -> [[I
+     * @param clazz
+     * @return
+     */
+    private static String getClassNameAfterWrapperArrayOf(Class<?> clazz) {
+        if(clazz.isPrimitive()) {
+            String baseTypeDescriptor = DescriptorUtils.primitiveClass2BaseTypeDescriptor(clazz);
+            return "[" + baseTypeDescriptor;
+        } else if(clazz.isArray()) {
+            return "[" + clazz.getName();
+        } else {
+            // normal object
+            return "[L" + clazz.getName() + ";";
+        }
+    }
 }
