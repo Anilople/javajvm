@@ -63,9 +63,9 @@ public class INVOKEVIRTUAL implements Instruction {
     @Override
     public void execute(Frame frame) {
         int index = this.resolveIndex();
-        JvmConstant jvmConstant = frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
-        JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) jvmConstant;
-        JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
+        final JvmConstant jvmConstant = frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
+        final JvmConstantMethodref jvmConstantMethodref = (JvmConstantMethodref) jvmConstant;
+        final JvmMethod jvmMethod = jvmConstantMethodref.resolveJvmMethod();
         if(jvmMethod.isStatic()) {
             throw new IncompatibleClassChangeError(jvmMethod.getName() + " " + ((JvmConstantMethodref) jvmConstant).getDescriptor());
         }
@@ -93,22 +93,21 @@ public class INVOKEVIRTUAL implements Instruction {
         // get object reference which has pop already
         Reference reference = localVariables.getReference(0);
         Reference.assertIsNotNull(reference);
+
+        // may the reference is array reference, todo
         ObjectReference objectReference = (ObjectReference) reference;
         // check the object ref, todo
 
-        if(jvmMethod.isNative()) {
-            logger.debug("class {}, native method: {}, {}", jvmMethod.getJvmClass().getName(), jvmMethod.getName(), jvmMethod.getDescriptor());
-            // check register or not, to do
-            // early return here
-            int nextPc = frame.getNextPc() + this.size();
-            frame.setNextPc(nextPc);
-            return;
-        }
+        // resolve the real jvm method (dispatch based on class)
+        final JvmMethod jvmMethodResolved =
+                objectReference.getJvmClass().getMethod(
+                        jvmMethod.getName(), jvmMethod.getDescriptor()
+                );
 
         // make a new frame of this method
         Frame methodFrame = new Frame(
                 frame.getJvmThread(),
-                jvmMethod,
+                jvmMethodResolved,
                 localVariables
         );
         // before invoke new method, we need to save pc in current method
