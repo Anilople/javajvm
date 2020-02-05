@@ -363,7 +363,7 @@ public class JvmClass {
      * @return true if this class is a class type
      */
     public boolean isClassType() {
-        if(this.isArrayType()) {
+        if(this.isArrayType() || this.isInterface()) {
             return false;
         }
         // non array type and first char of name is

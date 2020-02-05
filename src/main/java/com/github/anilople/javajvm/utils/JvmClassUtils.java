@@ -359,6 +359,6 @@ public class JvmClassUtils {
             }
         }
 
-        return false;
+        throw new IllegalArgumentException("not match any branch! S = " + S + ", T = " + T);
     }
 }
