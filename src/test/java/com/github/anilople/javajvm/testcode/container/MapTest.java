@@ -64,6 +64,25 @@ public class MapTest {
         jvmThreadRunner.run();
     }
 
+    private static void stringValueOfMap() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("a", 1);
+        String.valueOf(map);
+    }
+
+    @Test
+    void stringValueOfMapTest() {
+        JvmThreadRunner jvmThreadRunner = new JvmThreadRunner(
+                JvmThreadFactory.createFromStaticMethod(
+                        this.getClass(),
+                        "stringValueOfMap",
+                        "()V"
+                )
+        );
+
+        jvmThreadRunner.run();
+    }
+
     private static void hashMapToStringImplicitly() {
         // name -> age
         Map<String, Integer> name2age = new HashMap<>();
