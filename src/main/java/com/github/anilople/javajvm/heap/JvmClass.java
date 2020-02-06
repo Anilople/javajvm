@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * a class in runtime,
@@ -59,11 +60,6 @@ public class JvmClass {
      * to save current class's static fields's value
      */
     private LocalVariables staticFieldsValue;
-
-
-    private JvmClass() {
-
-    }
 
     /**
      * just new a instance, not initial it
@@ -510,6 +506,29 @@ public class JvmClass {
     public String getJavaLevelClassName() {
         String jvmLevelClassName = this.getName();
         return ClassNameConverterUtils.jvm2java(jvmLevelClassName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JvmClass jvmClass = (JvmClass) o;
+        if(this.getName().equals(jvmClass.getName())) {
+            // same name? They should be identical
+            throw new IllegalStateException("same type but not same object address, may exist some problems with class loader");
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(accessFlags, getName(), getSuperClassName(), getJvmConstantPool(), getLoader(), getSuperClass(), getStaticFieldsValue());
+        result = 31 * result + Arrays.hashCode(getInterfaceNames());
+        result = 31 * result + Arrays.hashCode(getJvmFields());
+        result = 31 * result + Arrays.hashCode(getJvmMethods());
+        result = 31 * result + Arrays.hashCode(getInterfaces());
+        return result;
     }
 
     public String getSuperClassName() {

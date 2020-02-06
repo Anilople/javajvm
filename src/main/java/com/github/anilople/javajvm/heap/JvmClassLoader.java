@@ -18,44 +18,52 @@ public class JvmClassLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(JvmClassLoader.class);
 
+    // single instance
+    private static volatile JvmClassLoader INSTANCE = new JvmClassLoader(Classpath.getInstance());
+
     private Classpath classpath;
 
     /**
      * memory the class which has been loaded
      */
-    private ConcurrentMap<String, JvmClass> classConcurrentMap;
+    private final ConcurrentMap<String, JvmClass> classConcurrentMap = new ConcurrentHashMap<>();;
 
-    private JvmClassLoader() {
 
-    }
-
-    public JvmClassLoader(Classpath classpath) {
+    private JvmClassLoader(Classpath classpath) {
         this.classpath = classpath;
-        this.classConcurrentMap = new ConcurrentHashMap<>();
         // initial the vm
         VM.initial(this);
     }
 
     /**
+     * @return Single case {@link JvmClassLoader}
+     * @throws
+     */
+    synchronized public static JvmClassLoader getInstance() {
+        return INSTANCE;
+    }
+
+    /**
      * if a class has been loaded,
      * then simply return
-     * @param className
-     * @return
+     * @return {@link JvmClass} in cache, if not exist create new one
      */
     public JvmClass loadClass(String className) {
-        // if exists already, return it
-        if(classConcurrentMap.containsKey(className)) {
-            return classConcurrentMap.get(className);
-        }
-
-        // load a new class
-        logger.debug("load a new class not in cache: {}", className);
-        if(DescriptorUtils.isArrayType(className)) {
-            // array class
-            this.loadArrayClass(className);
-        } else {
-            // non-array class
-            this.loadNonArrayClass(className);
+        if(!classConcurrentMap.containsKey(className)) {
+            // forbid concurrent problem
+            synchronized (classConcurrentMap) {
+                if(!classConcurrentMap.containsKey(className)) {
+                    // load a new class
+                    logger.debug("load a new class not in cache: {}", className);
+                    if(DescriptorUtils.isArrayType(className)) {
+                        // array class
+                        this.loadArrayClass(className);
+                    } else {
+                        // non-array class
+                        this.loadNonArrayClass(className);
+                    }
+                }
+            }
         }
 
         return classConcurrentMap.get(className);
@@ -90,20 +98,26 @@ public class JvmClassLoader {
         }
         String className = clazz.getName();
 
-        if(!classConcurrentMap.containsKey(className)) {
-            JvmClass primitiveClass = new JvmClass(this, className);
-            classConcurrentMap.put(className, primitiveClass);
-        }
+        classConcurrentMap.computeIfAbsent(
+                className,
+                key -> new JvmClass(this, key)
+        );
 
         return classConcurrentMap.get(className);
     }
 
     /**
      * load a non array class
+     * class must not exists before
      * @param className
      * @return
+     * @throws IllegalArgumentException if class given initializes already.
      */
     private JvmClass loadNonArrayClass(String className) {
+        if(classConcurrentMap.containsKey(className)) {
+            throw new IllegalArgumentException(className + " initial already");
+        }
+
         // loading
         byte[] bytes = classpath.readClass(className);
         // define
@@ -148,8 +162,10 @@ public class JvmClassLoader {
      * @return
      */
     private JvmClass loadArrayClass(String className) {
-        JvmClass jvmClass = new JvmClass(this, className);
-        classConcurrentMap.put(className, jvmClass);
-        return jvmClass;
+        classConcurrentMap.computeIfAbsent(
+                className,
+                key -> new JvmClass(this, className)
+        );
+        return classConcurrentMap.get(className);
     }
 }

@@ -11,11 +11,12 @@ import com.github.anilople.javajvm.heap.JvmClassLoader;
 public class JvmClassLoaderFactory {
 
     public static JvmClassLoader getInstance() {
-        String[] args = CommandConfig.getArgs(JvmClassLoaderFactory.class.getName());
-        Command command = Command.parse(args);
-        Classpath classpath = new Classpath(command);
-        JvmClassLoader jvmClassLoader = new JvmClassLoader(classpath);
-        return jvmClassLoader;
+        if(!Classpath.isInitialized()) {
+            String[] args = CommandConfig.getArgs(JvmClassLoaderFactory.class.getName());
+            Command command = Command.parse(args);
+            Classpath.initialize(command.getOptions().getXjre());
+        }
+        return JvmClassLoader.getInstance();
     }
 
 }
