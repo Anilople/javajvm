@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -19,28 +20,37 @@ public class ClassPathUtils {
     private static final Logger logger = LoggerFactory.getLogger(ClassPathUtils.class);
 
     /**
+     * cache the results to forbid
+     * {@code
+     *      java.nio.file.FileSystemException: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib: Too many open files
+     * }
+     */
+    private static final Map<String, Collection<Path>> pathname2PathCollection = new ConcurrentHashMap<>();
+
+    /**
      * @param pathname one path or multiple path split by path separator
      * @return all path under pathname
      */
     public static Collection<Path> getAllPathNested(String pathname) {
-
-        // multiple paths
-        if (pathname.contains(File.pathSeparator)) {
-            return Arrays.asList(pathname.split(File.pathSeparator))
-                    .stream()
-                    .flatMap(s -> getAllPathNested(s).stream())
-                    .collect(Collectors.toSet());
+        if(!pathname2PathCollection.containsKey(pathname)) {
+            if (pathname.contains(File.pathSeparator)) {
+                // multiple paths
+                Collection<Path> pathCollection = Arrays.stream(pathname.split(File.pathSeparator))
+                        .flatMap(s -> getAllPathNested(s).stream())
+                        .collect(Collectors.toSet());
+                pathname2PathCollection.put(pathname, pathCollection);
+            } else if (pathname.contains("*")) {
+                // wildcard *
+                Collection<Path> pathCollection = getAllPathNested(pathname.substring(0, pathname.length() - 1));
+                pathname2PathCollection.put(pathname, pathCollection);
+            } else {
+                // make sure that there is no path separator here
+                Path path = Paths.get(pathname);
+                pathname2PathCollection.put(pathname, getAllPathNested(path));
+            }
         }
 
-        // wildcard *
-        if (pathname.contains("*")) {
-            return getAllPathNested(pathname.substring(0, pathname.length() - 1));
-        }
-
-
-        // make sure that there is no path separator here
-        Path path = Paths.get(pathname);
-        return getAllPathNested(path);
+        return pathname2PathCollection.get(pathname);
     }
 
     /**
