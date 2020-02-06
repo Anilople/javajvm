@@ -1,6 +1,5 @@
 package com.github.anilople.javajvm.classpath;
 
-import com.github.anilople.javajvm.command.Command;
 import com.github.anilople.javajvm.utils.ClassPathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +19,10 @@ import java.util.stream.Collectors;
 public class Classpath implements ClassContext {
 
     private static final Logger logger = LoggerFactory.getLogger(Classpath.class);
+
+    private static volatile Classpath INSTANCE = null;
+
+    private static final Map<String, byte[]> classBytesCaches = new ConcurrentHashMap<>();
 
     /**
      * class under
@@ -37,16 +42,42 @@ public class Classpath implements ClassContext {
      */
     List<ClassContext> userList;
 
-    private Classpath() {
+    /**
+     * initialize {@link Classpath}
+     * @throws IllegalStateException if initializes already
+     */
+    synchronized public static void initialize(String jreDirectory) {
+        if(null != INSTANCE) {
+            throw new IllegalStateException(INSTANCE + " initializes already.");
+        }
+        INSTANCE = new Classpath(jreDirectory);
+    }
+
+    /**
+     * @return single case {@link Classpath} initializes or not
+     */
+    public static boolean isInitialized() {
+        return null != INSTANCE;
+    }
+
+    /**
+     *
+     * @return single case of {@link Classpath}
+     * @throws IllegalStateException if not initialize
+     */
+    public static Classpath getInstance() {
+        if(null == INSTANCE) {
+            throw new IllegalStateException("Not initializes yet.");
+        }
+        return INSTANCE;
     }
 
     /**
      * initial a class context from command
      *
-     * @param command
+     * @param jreDirectory jre path
      */
-    public Classpath(Command command) {
-        String jreDirectory = ClassPathUtils.getJreDirectory(command.getOptions().getXjre());
+    private Classpath(String jreDirectory) {
 
         // jre/lib/*
         String jrelibDirectory = String.join(File.separator, jreDirectory, "lib", "*");
@@ -75,8 +106,11 @@ public class Classpath implements ClassContext {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public byte[] readClass(String className) {
+    /**
+     * just read class's byte one time,
+     * {@link this#readClass(String)} will cache the result
+     */
+    private byte[] readClassOneTime(String className) {
         // add ".class" suffix
         className = className + ".class";
 
@@ -106,5 +140,14 @@ public class Classpath implements ClassContext {
 
         logger.error("{} not exist", className);
         return null;
+    }
+
+    @Override
+    public byte[] readClass(String className) {
+        classBytesCaches.computeIfAbsent(
+                className,
+                this::readClassOneTime
+        );
+        return classBytesCaches.get(className);
     }
 }

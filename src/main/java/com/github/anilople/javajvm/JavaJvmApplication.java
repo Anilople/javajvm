@@ -27,7 +27,12 @@ public class JavaJvmApplication {
      */
     public JavaJvmApplication(Command command) {
         this.command = command;
-        this.classpath = new Classpath(command);
+        if(!Classpath.isInitialized()) {
+            // just use jre now
+            // may add classpath todo
+            Classpath.initialize(command.getOptions().getXjre());
+        }
+        this.classpath = Classpath.getInstance();
     }
 
     /**
@@ -89,7 +94,7 @@ public class JavaJvmApplication {
         String className = command.getClassName().replace('.', '/');
         logger.debug("class name = {}", className);
 
-        JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classpath);
+        JvmClassLoader jvmClassLoader = JvmClassLoader.getInstance();
         JvmClass jvmClass = jvmClassLoader.loadClass(className);
 
         if(!jvmClass.existMethod("main", "([Ljava/lang/String;)V")) {
