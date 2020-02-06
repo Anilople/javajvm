@@ -8,6 +8,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -19,6 +21,8 @@ public class Classpath implements ClassContext {
     private static final Logger logger = LoggerFactory.getLogger(Classpath.class);
 
     private static volatile Classpath INSTANCE = null;
+
+    private static final Map<String, byte[]> classBytesCaches = new ConcurrentHashMap<>();
 
     /**
      * class under
@@ -102,8 +106,11 @@ public class Classpath implements ClassContext {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public byte[] readClass(String className) {
+    /**
+     * just read class's byte one time,
+     * {@link this#readClass(String)} will cache the result
+     */
+    private byte[] readClassOneTime(String className) {
         // add ".class" suffix
         className = className + ".class";
 
@@ -133,5 +140,14 @@ public class Classpath implements ClassContext {
 
         logger.error("{} not exist", className);
         return null;
+    }
+
+    @Override
+    public byte[] readClass(String className) {
+        classBytesCaches.computeIfAbsent(
+                className,
+                this::readClassOneTime
+        );
+        return classBytesCaches.get(className);
     }
 }
