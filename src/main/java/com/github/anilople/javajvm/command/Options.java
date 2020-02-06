@@ -3,6 +3,8 @@ package com.github.anilople.javajvm.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 /**
  * [-options]
  */
@@ -68,6 +70,22 @@ public class Options {
             }
         }
         return newStart;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Options options = (Options) o;
+        return isVersionFlag() == options.isVersionFlag() &&
+                isHelpFlag() == options.isHelpFlag() &&
+                getClasspath().equals(options.getClasspath()) &&
+                getXjre().equals(options.getXjre());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(isVersionFlag(), isHelpFlag(), getClasspath(), getXjre());
     }
 
     public boolean isVersionFlag() {

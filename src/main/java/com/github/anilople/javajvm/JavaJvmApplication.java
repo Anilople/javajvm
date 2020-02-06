@@ -1,21 +1,16 @@
 package com.github.anilople.javajvm;
 
-import com.github.anilople.javajvm.classpath.ClassContext;
 import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.command.Command;
 import com.github.anilople.javajvm.constants.JvmProperties;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
-import com.github.anilople.javajvm.instructions.BytecodeReader;
 import com.github.anilople.javajvm.instructions.Instruction;
 import com.github.anilople.javajvm.runtimedataarea.Frame;
 import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.util.Arrays;
 
 public class JavaJvmApplication {
 
@@ -23,7 +18,7 @@ public class JavaJvmApplication {
 
     private Command command;
 
-    private ClassContext classContext;
+    private Classpath classpath;
 
     /**
      * initial a jvm
@@ -32,7 +27,7 @@ public class JavaJvmApplication {
      */
     public JavaJvmApplication(Command command) {
         this.command = command;
-        this.classContext = new Classpath(command);
+        this.classpath = new Classpath(command);
     }
 
     /**
@@ -94,7 +89,7 @@ public class JavaJvmApplication {
         String className = command.getClassName().replace('.', '/');
         logger.debug("class name = {}", className);
 
-        JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classContext);
+        JvmClassLoader jvmClassLoader = new JvmClassLoader(this.classpath);
         JvmClass jvmClass = jvmClassLoader.loadClass(className);
 
         if(!jvmClass.existMethod("main", "([Ljava/lang/String;)V")) {

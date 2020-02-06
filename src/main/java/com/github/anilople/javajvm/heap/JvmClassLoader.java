@@ -2,8 +2,7 @@ package com.github.anilople.javajvm.heap;
 
 import com.github.anilople.javajvm.JavaJvmApplication;
 import com.github.anilople.javajvm.classfile.ClassFile;
-import com.github.anilople.javajvm.classpath.ClassContext;
-import com.github.anilople.javajvm.constants.SpecialMethods;
+import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.utils.DescriptorUtils;
 import com.github.anilople.javajvm.vm.VM;
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ public class JvmClassLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(JvmClassLoader.class);
 
-    private ClassContext classContext;
+    private Classpath classpath;
 
     /**
      * memory the class which has been loaded
@@ -30,8 +29,8 @@ public class JvmClassLoader {
 
     }
 
-    public JvmClassLoader(ClassContext classContext) {
-        this.classContext = classContext;
+    public JvmClassLoader(Classpath classpath) {
+        this.classpath = classpath;
         this.classConcurrentMap = new ConcurrentHashMap<>();
         // initial the vm
         VM.initial(this);
@@ -106,7 +105,7 @@ public class JvmClassLoader {
      */
     private JvmClass loadNonArrayClass(String className) {
         // loading
-        byte[] bytes = classContext.readClass(className);
+        byte[] bytes = classpath.readClass(className);
         // define
         ClassFile.ClassReader classReader = new ClassFile.ClassReader(bytes);
         ClassFile classFile = ClassFile.parse(classReader);

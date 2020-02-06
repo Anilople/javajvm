@@ -11,7 +11,7 @@ import java.nio.file.Path;
  * class file warpper
  * class file mean that exist suffix ".class"
  */
-public class ClassFileClassContextImpl implements ClassContext {
+class ClassFileClassContextImpl implements ClassContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ClassFileClassContextImpl.class);
 

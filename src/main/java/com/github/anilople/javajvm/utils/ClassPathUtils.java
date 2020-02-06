@@ -1,8 +1,5 @@
 package com.github.anilople.javajvm.utils;
 
-import com.github.anilople.javajvm.classpath.ClassContext;
-import com.github.anilople.javajvm.classpath.ClassFileClassContextImpl;
-import com.github.anilople.javajvm.classpath.ZipClassContextImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,56 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
  * utils for handling something about ClassContext
  */
-public class ClassContextUtils {
+public class ClassPathUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClassContextUtils.class);
-
-    /**
-     * Path -> ClassContext
-     * Because ClassContext do not modify and read only,
-     * so we can cache it to forbid {@code java.nio.file.FileSystemException: .: Too many open files}
-     */
-    private static final Map<Path, ClassContext> path2ClassContextCaches = new ConcurrentHashMap<>();
-
-    /**
-     * forbidden to pass a path of directory
-     *
-     * @param path a file, maybe endsWith ".class" or ".jar" or other
-     * @return ClassContext
-     */
-    public static ClassContext newClassContext(Path path) {
-        if(!path2ClassContextCaches.containsKey(path)) {
-            String pathname = path.toString();
-            if (pathname.endsWith(".class")) {
-                return new ClassFileClassContextImpl(path);
-            } else if (
-                    pathname.endsWith(".jar") || pathname.endsWith(".JAR")
-                            || pathname.endsWith(".zip") || pathname.endsWith(".ZIP")) {
-                return new ZipClassContextImpl(path);
-            } else {
-//            logger.trace("{} cannot be recognized", path);
-                return null;
-            }
-        }
-        return path2ClassContextCaches.get(path);
-    }
-
-    public static byte[] readClass(Iterable<ClassContext> classContexts, String className) throws IOException {
-        for (ClassContext classContext : classContexts) {
-            byte[] data = classContext.readClass(className);
-            if (null != data) {
-                return data;
-            }
-        }
-        logger.error("{} not in {}", className, classContexts);
-        return null;
-    }
+    private static final Logger logger = LoggerFactory.getLogger(ClassPathUtils.class);
 
     /**
      * @param pathname one path or multiple path split by path separator
