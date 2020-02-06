@@ -1,7 +1,7 @@
 package com.github.anilople.javajvm.classpath;
 
 import com.github.anilople.javajvm.command.Command;
-import com.github.anilople.javajvm.utils.ClassContextUtils;
+import com.github.anilople.javajvm.utils.ClassPathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,31 +46,31 @@ public class Classpath implements ClassContext {
      * @param command
      */
     public Classpath(Command command) {
-        String jreDirectory = ClassContextUtils.getJreDirectory(command.getOptions().getXjre());
+        String jreDirectory = ClassPathUtils.getJreDirectory(command.getOptions().getXjre());
 
         // jre/lib/*
         String jrelibDirectory = String.join(File.separator, jreDirectory, "lib", "*");
-        Collection<Path> jrelibPaths = ClassContextUtils.getAllPathNested(jrelibDirectory);
+        Collection<Path> jrelibPaths = ClassPathUtils.getAllPathNested(jrelibDirectory);
         this.bootList = jrelibPaths
                 .stream()
-                .map(ClassContextUtils::newClassContext)
+                .map(ClassContextFactory::getInstance)
                 .filter(classContext -> null != classContext)
                 .collect(Collectors.toList());
 
         // jre/lib/ext/*
         String jrelibextDirectory = String.join(File.separator, jreDirectory, "lib", "ext", "*");
-        Collection<Path> jrelibextPaths = ClassContextUtils.getAllPathNested(jrelibextDirectory);
+        Collection<Path> jrelibextPaths = ClassPathUtils.getAllPathNested(jrelibextDirectory);
         this.extList = jrelibextPaths
                 .stream()
-                .map(ClassContextUtils::newClassContext)
+                .map(ClassContextFactory::getInstance)
                 .filter(classContext -> null != classContext)
                 .collect(Collectors.toList());
 
         // user class
-        Collection<Path> userPaths = ClassContextUtils.getAllPathNested(".");
+        Collection<Path> userPaths = ClassPathUtils.getAllPathNested(".");
         this.userList = userPaths
                 .stream()
-                .map(ClassContextUtils::newClassContext)
+                .map(ClassContextFactory::getInstance)
                 .filter(classContext -> null != classContext)
                 .collect(Collectors.toList());
     }

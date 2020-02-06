@@ -6,7 +6,7 @@ package com.github.anilople.javajvm.classpath;
  * use this interface, jvm can read a class file,
  * and doesn't care about where the class from
  */
-public interface ClassContext {
+interface ClassContext {
 
     /**
      * given a class name with package path

@@ -13,8 +13,9 @@ import java.util.zip.ZipFile;
 
 /**
  * read class from a compressed file
+ * .jar file
  */
-public class ZipClassContextImpl implements ClassContext {
+class ZipClassContextImpl implements ClassContext {
 
     private static final Logger logger = LoggerFactory.getLogger(ZipClassContextImpl.class);
 

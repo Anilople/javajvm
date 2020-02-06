@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * common pattern in
@@ -65,6 +66,24 @@ public class Command {
                 jarfileName,
                 Arrays.copyOfRange(args, start, args.length)
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Command command = (Command) o;
+        return getOptions().equals(command.getOptions()) &&
+                getClassName().equals(command.getClassName()) &&
+                getJarfileName().equals(command.getJarfileName()) &&
+                Arrays.equals(getArgs(), command.getArgs());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(getOptions(), getClassName(), getJarfileName());
+        result = 31 * result + Arrays.hashCode(getArgs());
+        return result;
     }
 
     public Options getOptions() {
