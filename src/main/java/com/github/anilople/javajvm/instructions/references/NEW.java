@@ -59,13 +59,13 @@ public class NEW implements Instruction {
         JvmConstantClass jvmConstantClass = (JvmConstantClass) frame.getJvmMethod().getJvmClass().getJvmConstantPool().getJvmConstant(index);
 
         // some type cannot be allocated to an instance
-        if(jvmConstantClass.getJvmClass().isInterface()
-            || jvmConstantClass.getJvmClass().isAbstract()) {
-            throw new InstantiationError("cannot initial " + jvmConstantClass);
+        final JvmClass targetJvmClass = jvmConstantClass.resolveJvmClass();
+        if(targetJvmClass.isInterface()
+            || targetJvmClass.isAbstract()) {
+            throw new InstantiationError("cannot initial " + targetJvmClass);
         }
 
         // allocate an object without initial
-        JvmClass targetJvmClass = jvmConstantClass.resolveJvmClass();
         logger.debug("try to allocate an object: {}", targetJvmClass);
         ObjectReference objectReference = ObjectReference.makeObjectReference(targetJvmClass);
         frame.getOperandStacks().pushReference(objectReference);
