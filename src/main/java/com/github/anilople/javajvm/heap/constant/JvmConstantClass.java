@@ -37,6 +37,16 @@ public class JvmConstantClass extends JvmConstant {
      */
     public JvmClass resolveJvmClass() {
         String jvmClassName = this.getName();
-        return this.getJvmClass().getLoader().loadClass(jvmClassName);
+        // remember that use "super" not "this"
+        return super.getJvmClass().getLoader().loadClass(jvmClassName);
+    }
+
+    /**
+     * same as {@link this#resolveJvmClass()}
+     * @see this#resolveJvmClass()
+     */
+    @Override
+    public JvmClass getJvmClass() {
+        return this.resolveJvmClass();
     }
 }

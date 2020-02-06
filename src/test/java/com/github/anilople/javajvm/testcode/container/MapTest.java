@@ -67,7 +67,8 @@ public class MapTest {
     private static void stringValueOfMap() {
         Map<String, Integer> map = new HashMap<>();
         map.put("a", 1);
-        String.valueOf(map);
+        String s = String.valueOf(map);
+        System.out.println(s);
     }
 
     @Test
