@@ -35,6 +35,10 @@ public class Options {
     /**
      * value after
      * -Xjre
+     *
+     * if no value in user's input,
+     * the default is get by method {@link System#getProperty(String)}
+     * {@code System.getProperty("java.home")}
      */
     private String Xjre;
 
@@ -69,6 +73,13 @@ public class Options {
                 break;
             }
         }
+
+        // parse finished,
+        // set the default values
+        if(null == options.Xjre) {
+            options.Xjre = System.getProperty("java.home");
+        }
+
         return newStart;
     }
 

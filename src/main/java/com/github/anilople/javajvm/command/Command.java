@@ -24,9 +24,6 @@ public class Command {
 
     private String[] args;
 
-    private Command() {
-    }
-
     public Command(Options options, String className, String jarfileName, String[] args) {
         this.options = options;
         this.className = className;
@@ -57,7 +54,7 @@ public class Command {
             className = args[start];
             start += 1;
         } else {
-            logger.warn("there are no class or jarfile");
+            logger.debug("there are no class or jarfile");
         }
 
         return new Command(

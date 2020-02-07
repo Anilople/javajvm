@@ -7,32 +7,14 @@
     <groupId>com.github.anilople</groupId>
     <artifactId>javajvm</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                </configuration>
-                <version>3.5.1</version>
-            </plugin>
-
-            <!-- for mvn test -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
-                <version>2.22.0</version>
-            </plugin>
-        </plugins>
-    </build>
 
     <properties>
+        <fully.qualified.main.class>com.github.anilople.javajvm.JavaJvmApplication</fully.qualified.main.class>
         <project.java.version>1.8</project.java.version>
         <maven.compiler.source>${project.java.version}</maven.compiler.source>
         <maven.compiler.target>${project.java.version}</maven.compiler.target>
+        <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
+        <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.jupiter.version>5.5.2</junit.jupiter.version>
@@ -83,5 +65,46 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+                <version>3.5.1</version>
+            </plugin>
+
+            <!-- for mvn test -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
+                <version>2.22.0</version>
+            </plugin>
+
+            <!-- for package -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+<!--                            <classifier>spring-boot</classifier>-->
+                            <mainClass>
+                                ${fully.qualified.main.class}
+                            </mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
