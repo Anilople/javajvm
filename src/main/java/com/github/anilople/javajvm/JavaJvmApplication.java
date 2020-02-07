@@ -2,7 +2,6 @@ package com.github.anilople.javajvm;
 
 import com.github.anilople.javajvm.classpath.Classpath;
 import com.github.anilople.javajvm.command.Command;
-import com.github.anilople.javajvm.constants.JvmProperties;
 import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.heap.JvmMethod;
@@ -47,15 +46,20 @@ public class JavaJvmApplication {
      * @param args [args...] above
      */
     public static void main(String[] args) {
-        Command command = Command.parse(args);
-        logger.info("command : {}", command);
-        if (command.getOptions().isVersionFlag()) {
-            logger.info("java version {}", JvmProperties.VERSION);
-        } else if (command.getOptions().isHelpFlag()) {
+        if(args.length <= 0) {
             printUsage();
-        } else if (null != command.getClassName()) {
-            JavaJvmApplication javaJvmApplication = new JavaJvmApplication(command);
-            javaJvmApplication.start();
+        } else {
+            Command command = Command.parse(args);
+            logger.debug("command : {}", command);
+            if (command.getOptions().isVersionFlag()) {
+                System.out.println("java version " + "0.0.1");
+                System.out.println("Interpreted Mode");
+            } else if (command.getOptions().isHelpFlag()) {
+                printUsage();
+            } else if (null != command.getClassName()) {
+                JavaJvmApplication javaJvmApplication = new JavaJvmApplication(command);
+                javaJvmApplication.start();
+            }
         }
     }
 
@@ -63,7 +67,19 @@ public class JavaJvmApplication {
      * print usage to user
      */
     public static void printUsage() {
-
+        // copy them from official
+        System.out.println("Usage: java [-options] class [args...]\n" +
+                "           (to execute a class)\n" +
+                "   or  java [-options] -jar jarfile [args...]\n" +
+                "           (to execute a jar file)\n" +
+                "where options include:");
+        System.out.println("    -cp -classpath  <class search path of directories and zip/jar files>\n" +
+                "                  A : separated list of directories, JAR archives,\n" +
+                "                  and ZIP archives to search for class files.\n" +
+                "    -version      print product version and exit\n" +
+                "    -? -help      print this help message\n" +
+                "    -Xjre         java runtime environment, default value is System.getProperty(\"java.home\")\n" +
+                "See https://github.com/Anilople/javajvm for more details.");
     }
 
     public static void interpret(JvmMethod jvmMethod) {
