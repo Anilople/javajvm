@@ -94,6 +94,31 @@ java -jar javajvm-xxx.jar HelloWorld
 
 [所有字节码](src/main/java/com/github/anilople/javajvm/instructions)
 
+[比较](src/main/java/com/github/anilople/javajvm/instructions/comparisons)
+
+[常量操作](src/main/java/com/github/anilople/javajvm/instructions/constants)
+
+[分支控制](src/main/java/com/github/anilople/javajvm/instructions/control)
+
+[数据类型转换](src/main/java/com/github/anilople/javajvm/instructions/conversions)
+
+[扩展字节码](src/main/java/com/github/anilople/javajvm/instructions/extended)
+
+[加载操作数](src/main/java/com/github/anilople/javajvm/instructions/loads)
+
+[数学运算](src/main/java/com/github/anilople/javajvm/instructions/math)
+
+[引用](src/main/java/com/github/anilople/javajvm/instructions/references)：
+
+* [异常抛出](src/main/java/com/github/anilople/javajvm/instructions/references/ATHROW.java)
+* [方法调用](src/main/java/com/github/anilople/javajvm/instructions/references/INVOKEVIRTUAL.java)
+* [new对象](src/main/java/com/github/anilople/javajvm/instructions/references/NEW.java)
+* [new数组](src/main/java/com/github/anilople/javajvm/instructions/references/NEWARRAY.java)
+
+[栈操作](src/main/java/com/github/anilople/javajvm/instructions/stack)
+
+[存储操作数到本地变量表](src/main/java/com/github/anilople/javajvm/instructions/stores)
+
 # 我的开发环境
 
 Windows 10 1903
