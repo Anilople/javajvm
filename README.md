@@ -34,6 +34,66 @@ java -jar javajvm-xxx.jar HelloWorld
 
 即可使用。
 
+# 这个JVM是如何实现的？
+
+以下为实现对应的具体代码，目前暂无blog介绍
+
+## 准备阶段
+
+[解析命令行](src/main/java/com/github/anilople/javajvm/command/Command.java)
+
+[获取jre路径](src/main/java/com/github/anilople/javajvm/command/Options.java)
+
+[创建虚拟机](src/main/java/com/github/anilople/javajvm/JavaJvmApplication.java)
+
+## 运行阶段
+
+### 解析原始的二进制数据
+
+[获取class的原始信息（二进制数据）](src/main/java/com/github/anilople/javajvm/classpath/Classpath.java)
+
+[解析class文件的数据结构](src/main/java/com/github/anilople/javajvm/classfile/ClassFile.java)
+
+### 解析后产生的数据结构进一步抽象
+
+[常量 - constant](src/main/java/com/github/anilople/javajvm/heap/constant)
+
+[常量池 - constant pool](src/main/java/com/github/anilople/javajvm/heap/JvmConstantPool.java)
+
+[类加载器 - class loader](src/main/java/com/github/anilople/javajvm/heap/JvmClassLoader.java)
+
+[类 - class](src/main/java/com/github/anilople/javajvm/heap/JvmClass.java)
+
+[成员 - field](src/main/java/com/github/anilople/javajvm/heap/JvmField.java)
+
+[方法 - method](src/main/java/com/github/anilople/javajvm/heap/JvmMethod.java)
+
+### 运行时
+
+[线程 - thread](src/main/java/com/github/anilople/javajvm/runtimedataarea/JvmThread.java)
+
+[栈帧 - frame](src/main/java/com/github/anilople/javajvm/runtimedataarea/Frame.java)
+
+[本地变量 - local variables](src/main/java/com/github/anilople/javajvm/runtimedataarea/LocalVariables.java)
+
+[操作数栈 - operand stack](src/main/java/com/github/anilople/javajvm/runtimedataarea/OperandStacks.java)
+
+### 引用的表示
+
+[引用 - reference](src/main/java/com/github/anilople/javajvm/runtimedataarea/Reference.java)
+
+[null的表示 - the represent of null reference](src/main/java/com/github/anilople/javajvm/runtimedataarea/reference/NullReference.java)
+
+[对象 - object](src/main/java/com/github/anilople/javajvm/runtimedataarea/reference/ObjectReference.java)
+
+[数组 -  array](src/main/java/com/github/anilople/javajvm/runtimedataarea/reference/ArrayReference.java)
+
+[java.lang.Class](src/main/java/com/github/anilople/javajvm/runtimedataarea/reference/ClassObjectReference.java)
+
+### 字节码
+
+[所有字节码](src/main/java/com/github/anilople/javajvm/instructions)
+
 # 我的开发环境
 
 Windows 10 1903
