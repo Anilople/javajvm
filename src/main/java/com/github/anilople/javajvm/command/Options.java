@@ -54,23 +54,28 @@ public class Options {
         int newStart = start;
         while (newStart < args.length) {
             String nowArg = args[newStart];
-            if ("-version".equals(nowArg)) {
-                options.versionFlag = true;
-                newStart += 1;
-            } else if ("-?".equals(nowArg) || "-help".equals(nowArg)) {
-                options.helpFlag = true;
-                newStart += 1;
-            } else if ("-classpath".equals(nowArg) || "-cp".equals(nowArg)) {
-                options.classpath = args[newStart + 1];
-                newStart += 2;
-            } else if ("-Xjre".equals(nowArg)) {
-                options.Xjre = args[newStart + 1];
-                newStart += 2;
-            } else if (args[newStart].startsWith("-")) {
-                logger.warn("{} is not recognized", nowArg);
-                newStart += 1;
-            } else {
-                break;
+            switch (nowArg) {
+                case "-version":
+                    options.versionFlag = true;
+                    newStart += 1;
+                    break;
+                case "-?":
+                case "-help":
+                    options.helpFlag = true;
+                    newStart += 1;
+                    break;
+                case "-classpath":
+                case "-cp":
+                    options.classpath = args[newStart + 1];
+                    newStart += 2;
+                    break;
+                case "-Xjre":
+                    options.Xjre = args[newStart + 1];
+                    newStart += 2;
+                    break;
+                default:
+                    logger.warn("[{}] cannot be recognized", nowArg);
+                    newStart += 1;
             }
         }
 
