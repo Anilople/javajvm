@@ -22,7 +22,7 @@ public class IOUtils {
 
         byte[] buffer = new byte[1024 * 1024];
         for(int nowLen = inputStream.read(buffer);
-            -1 != nowLen;
+            -1 != nowLen && len < n;
             nowLen = inputStream.read(buffer)
         ) {
             while(len + nowLen >= target.length) {
