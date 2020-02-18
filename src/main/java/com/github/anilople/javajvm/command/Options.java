@@ -52,8 +52,8 @@ public class Options {
      */
     public static int parse(Options options, String[] args, int start) {
         int newStart = start;
-        while (newStart < args.length) {
-            String nowArg = args[newStart];
+        String nowArg = args[newStart];
+        while (newStart < args.length && nowArg.startsWith("-")) {
             switch (nowArg) {
                 case "-version":
                     options.versionFlag = true;
@@ -77,6 +77,8 @@ public class Options {
                     logger.warn("[{}] cannot be recognized", nowArg);
                     newStart += 1;
             }
+            // update arg
+            nowArg = args[newStart];
         }
 
         // parse finished,
