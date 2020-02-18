@@ -94,9 +94,9 @@ public class ATHROW implements Instruction {
             throw new RuntimeException(e);
         }
         if(detailMessage.length() > 0) {
-            System.out.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName() + ": " + detailMessage);
+            System.err.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName() + ": " + detailMessage);
         } else {
-            System.out.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName());
+            System.err.println("Exception in thread \"main\" " + throwableObjectReference.getJvmClass().getName());
         }
 
         // print stack trace
@@ -110,7 +110,7 @@ public class ATHROW implements Instruction {
         }
 
         for(StackTraceElement stackTraceElement : stackTraceElements) {
-            System.out.println("\tat " + stackTraceElement);
+            System.err.println("\tat " + stackTraceElement);
         }
 
         try {
