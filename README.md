@@ -10,9 +10,14 @@
 
 # 怎么跑起来？
 
-## 第一次使用
+## hello, world
 
-从[release](https://github.com/Anilople/javajvm/releases)中下载最新的版本`javajvm-xxx.jar`。
+从[release](https://github.com/Anilople/javajvm/releases)中下载最新的版本的压缩包，解压后，你会看到2个文件
+
+* `HelloWorld.java`：未编译的Java代码，里面的内容即将运行在实现的JVM上
+* `javajvm-xxx.jar`：JVM的实现，本质上是一个jar包，里面放着编译好的Java代码。
+
+`xxx`代表版本号，不要在Shell中真的输入`xxx`，请将`javajvm-xxx.jar`自行换成对应的文件。
 
 在`javajvm-xxx.jar`所在的目录下，命令行中执行
 
@@ -20,19 +25,18 @@
 java -jar javajvm-xxx.jar
 ```
 
-没错，这个`JVM`本质上是一个jar包，里面放着编译好的Java代码。
-
 运行上面的命令后，你会看到一些提示信息。
+
+现在，将`HelloWorld.java`编译成`HelloWorld.class`，然后用JVM运行。
+
+```shell
+javac HelloWorld.java # 编译，会生成文件 HelloWorld.java
+java -jar javajvm-xxx.jar HelloWorld # 运行刚刚编译出来的文件
+```
 
 ## 如何用这个`JVM`跑自己的代码？
 
-假设你写了个`HelloWorld.java`，然后把它通过`javac`编译成了`HelloWorld.class`，将`HelloWorld.class`与`javajvm-xxx.jar`放至相同的目录下，然后在那个目录下，执行
-
-```shell
-java -jar javajvm-xxx.jar HelloWorld
-```
-
-即可使用。
+修改上述中的文件`HelloWorld.java`，加入自己写的代码，再重复一次上述的流程即可。
 
 # 这个JVM是如何实现的？
 

@@ -6,7 +6,7 @@
 
     <groupId>com.github.anilople</groupId>
     <artifactId>javajvm</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <properties>
         <fully.qualified.main.class>com.github.anilople.javajvm.JavaJvmApplication</fully.qualified.main.class>
@@ -88,19 +88,34 @@
 
             <!-- for package -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <descriptors>src/assembly/assembly-descriptor.xml</descriptors>
+                    <archive>
+                        <manifest>
+                            <mainClass>${fully.qualified.main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
                         <goals>
-                            <goal>repackage</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-<!--                            <classifier>spring-boot</classifier>-->
-                            <mainClass>
-                                ${fully.qualified.main.class}
-                            </mainClass>
-                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
