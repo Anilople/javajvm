@@ -6,7 +6,7 @@
 
     <groupId>com.github.anilople</groupId>
     <artifactId>javajvm</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
 
     <properties>
         <fully.qualified.main.class>com.github.anilople.javajvm.JavaJvmApplication</fully.qualified.main.class>
