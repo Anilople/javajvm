@@ -141,21 +141,22 @@ public class ReferenceUtils {
 
         final Class<?> clazz = object.getClass();
         // get the JvmClass of object
-        JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
-        ObjectReference objectReference = ObjectReference.makeObjectReference(jvmClass);
+        final JvmClass jvmClass = jvmClassLoader.loadClass(clazz);
+        final ObjectReference objectReference = ObjectReference.makeObjectReference(jvmClass);
         // cache it
         cache.put(object, objectReference);
 
-        // converter the static fields, todo
+        // converter the static fields
+        setClassStaticFields2JvmClass(cache, clazz, jvmClass);
 
         // converter the non-static fields
         List<Field> nonStaticFields = ReflectionUtils.getNonStaticFieldsFromAncestor(clazz);
         int nonStaticFieldCurrentOffset = 0;
         for(Field nonStaticField : nonStaticFields) {
             if(nonStaticField.getType().isPrimitive()) {
-                setPrimitive2ObjectField(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
+                setPrimitiveFieldValue2SelfJvm(objectReference, nonStaticFieldCurrentOffset, object, nonStaticField);
             } else {
-                setObjectField2ObjectReference(
+                setObjectFieldValue2SelfJvm(
                         cache,
                         objectReference, nonStaticFieldCurrentOffset,
                         jvmClassLoader,
@@ -268,7 +269,7 @@ public class ReferenceUtils {
      * @param offset position in the object
      * @param field must be primitive type
      */
-    private static void setPrimitive2ObjectField(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
+    static void setPrimitiveFieldValue2SelfJvm(LocalVariables localVariables, int offset, Object object, Field field) throws IllegalAccessException {
         field.setAccessible(true);
         final Class<?> fieldType = field.getType();
         final Class<?> type = fieldType;
@@ -302,6 +303,41 @@ public class ReferenceUtils {
     }
 
     /**
+     * set static fields value from {@link Class} and its all super classes
+     * to {@link JvmClass#getStaticFieldsValue()}
+     * @param cache
+     * @param clazz
+     * @param jvmClass
+     */
+    static void setClassStaticFields2JvmClass(
+            final Map<Object, Reference> cache,
+            final Class<?> clazz,
+            final JvmClass jvmClass
+    ) throws IllegalAccessException {
+        for (Class<?> nowClass = clazz; null != nowClass; nowClass = nowClass.getSuperclass()) {
+            setClassDeclaredStaticFields2JvmClass(cache, nowClass, jvmClass);
+        }
+    }
+
+    static void setClassDeclaredStaticFields2JvmClass(
+            Map<Object, Reference> cache,
+            Class<?> clazz,
+            JvmClass jvmClass
+    ) throws IllegalAccessException {
+        List<Field> declaredStaticFields = ReflectionUtils.getDeclaredStaticFields(clazz);
+        final LocalVariables staticFieldsValue = jvmClass.getStaticFieldsValue();
+        int offset = 0;
+        for (Field declaredStaticField : declaredStaticFields) {
+            if (declaredStaticField.getType().isPrimitive()) {
+                setPrimitiveFieldValue2SelfJvm(staticFieldsValue, offset, null, declaredStaticField);
+            } else {
+                setObjectFieldValue2SelfJvm(cache, staticFieldsValue, offset, jvmClass.getLoader(), null, declaredStaticField);
+            }
+            offset += ReflectionUtils.getFieldSize(declaredStaticField);
+        }
+    }
+
+    /**
      * set the value to position offset
      * according to the value's type
      * the value must be object reference
@@ -312,7 +348,7 @@ public class ReferenceUtils {
      * @param object
      * @param field
      */
-    private static void setObjectField2ObjectReference(
+    private static void setObjectFieldValue2SelfJvm(
             Map<Object, Reference> cache,
             LocalVariables localVariables, int fieldCurrentOffset,
             JvmClassLoader jvmClassLoader,
@@ -464,7 +500,7 @@ public class ReferenceUtils {
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             if(field.getType().isPrimitive()) {
-                setPrimitive2ObjectField(object, field, objectReference, realOffset);
+                setPrimitiveFieldValue2Object(object, field, objectReference, realOffset);
             } else {
                 setReference2ObjectField(cache, object, field, jvmClassLoader, objectReference, realOffset);
             }
@@ -512,7 +548,7 @@ public class ReferenceUtils {
         for(int i = 0; i < fields.size(); i++) {
             Field field = fields.get(i);
             if(field.getType().isPrimitive()) {
-                setPrimitive2ObjectField(object, field, objectReference, realOffset);
+                setPrimitiveFieldValue2Object(object, field, objectReference, realOffset);
             } else {
                 setReference2ObjectField(cache, object, field, jvmClassLoader, objectReference, realOffset);
             }
@@ -529,7 +565,7 @@ public class ReferenceUtils {
      * @param offset
      * @throws IllegalAccessException
      */
-    private static void setPrimitive2ObjectField(
+    private static void setPrimitiveFieldValue2Object(
             Object object, Field field,
             ObjectReference objectReference, int offset
     ) throws IllegalAccessException {

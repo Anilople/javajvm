@@ -1,5 +1,6 @@
 package com.github.anilople.javajvm.utils;
 
+import com.github.anilople.javajvm.heap.JvmClass;
 import com.github.anilople.javajvm.heap.JvmClassLoader;
 import com.github.anilople.javajvm.helper.JvmClassLoaderFactory;
 import com.github.anilople.javajvm.runtimedataarea.Reference;
@@ -8,6 +9,7 @@ import com.github.anilople.javajvm.runtimedataarea.reference.ObjectArrayReferenc
 import com.github.anilople.javajvm.runtimedataarea.reference.ObjectReference;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -134,6 +136,16 @@ class ReferenceUtilsTest {
             assertEquals(valuesCharArray[i], valuesImageCharArray[i]);
         }
     }
+
+    @Test
+    void setClassStaticFields2JvmClass() throws IllegalAccessException {
+        final int value = 899;
+        JvmClass jvmClass = jvmClassLoader.loadClass(Values.class);
+        assertNotEquals(value, jvmClass.getStaticFieldsValue().getIntValue(0));
+        Values.staticInt = value;
+        ReferenceUtils.setClassStaticFields2JvmClass(Collections.emptyMap(), Values.class, jvmClass);
+        assertEquals(value, jvmClass.getStaticFieldsValue().getIntValue(0));
+    }
 }
 
 /**
@@ -146,6 +158,8 @@ class Values {
     private long longValue = 666L;
     private char[] chars = new char[]{'1', '+'};
     private double doubleValue = 8.888D;
+
+    static int staticInt = 100;
 
     public int getIntValue() {
         return intValue;

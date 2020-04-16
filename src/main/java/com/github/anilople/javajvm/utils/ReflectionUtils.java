@@ -80,6 +80,17 @@ public class ReflectionUtils {
         return nonStaticFields;
     }
 
+    public static List<Field> getDeclaredStaticFields(Class<?> clazz) {
+        final Field[] fields = clazz.getDeclaredFields();
+        List<Field> declaredStaticFields = new ArrayList<>();
+        for (Field field : fields) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                declaredStaticFields.add(field);
+            }
+        }
+        return Collections.unmodifiableList(declaredStaticFields);
+    }
+
     /**
      * get all static fields of a class (from ancestor to current)
      * keep the order
