@@ -11,6 +11,9 @@ import com.github.anilople.javajvm.runtimedataarea.JvmThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class JavaJvmApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(JavaJvmApplication.class);
@@ -68,18 +71,16 @@ public class JavaJvmApplication {
      */
     public static void printUsage() {
         // copy them from official
-        System.out.println("Usage: java [-options] class [args...]\n" +
-                "           (to execute a class)\n" +
-                "   or  java [-options] -jar jarfile [args...]\n" +
-                "           (to execute a jar file)\n" +
-                "where options include:");
-        System.out.println("    -cp -classpath  <class search path of directories and zip/jar files>\n" +
-                "                  A : separated list of directories, JAR archives,\n" +
-                "                  and ZIP archives to search for class files.\n" +
-                "    -version      print product version and exit\n" +
-                "    -? -help      print this help message\n" +
-                "    -Xjre         java runtime environment, default value is System.getProperty(\"java.home\")\n" +
-                "See https://github.com/Anilople/javajvm for more details.");
+        final InputStream inputStream = JavaJvmApplication.class.getClassLoader().getResourceAsStream("usage.txt");
+        final byte[] buffer = new byte[1024 * 1024];
+        final int length;
+        try {
+            length = inputStream.read(buffer);
+        } catch (IOException e) {
+            throw new RuntimeException("cannot read usage.txt", e);
+        }
+        String usageContent = new String(buffer, 0, length);
+        System.out.println(usageContent);
     }
 
     public static void interpret(JvmMethod jvmMethod) {

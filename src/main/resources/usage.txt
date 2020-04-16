@@ -1,0 +1,12 @@
+Usage: java [-options] class [args...]
+           (to execute a class)
+   or  java [-options] -jar jarfile [args...]
+           (to execute a jar file)
+where options include:
+    -cp -classpath  <class search path of directories and zip/jar files>
+                  A : separated list of directories, JAR archives,
+                  and ZIP archives to search for class files.
+    -version      print product version and exit
+    -? -help      print this help message
+    -Xjre         java runtime environment, default value is System.getProperty("java.home")
+See https://github.com/Anilople/javajvm for more details.
