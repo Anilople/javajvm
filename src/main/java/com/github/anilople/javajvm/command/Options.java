@@ -51,34 +51,35 @@ public class Options {
      * @return location of the part which need to parse
      */
     public static int parse(Options options, String[] args, int start) {
-        int newStart = start;
-        String nowArg = args[newStart];
-        while (newStart < args.length && nowArg.startsWith("-")) {
+        int i = start;
+        while (i < args.length) {
+            String nowArg = args[i];
+            if (!nowArg.startsWith("-")) {
+                break;
+            }
             switch (nowArg) {
                 case "-version":
                     options.versionFlag = true;
-                    newStart += 1;
+                    i += 1;
                     break;
                 case "-?":
                 case "-help":
                     options.helpFlag = true;
-                    newStart += 1;
+                    i += 1;
                     break;
                 case "-classpath":
                 case "-cp":
-                    options.classpath = args[newStart + 1];
-                    newStart += 2;
+                    options.classpath = args[i + 1];
+                    i += 2;
                     break;
                 case "-Xjre":
-                    options.Xjre = args[newStart + 1];
-                    newStart += 2;
+                    options.Xjre = args[i + 1];
+                    i += 2;
                     break;
                 default:
                     logger.warn("[{}] cannot be recognized", nowArg);
-                    newStart += 1;
+                    i += 1;
             }
-            // update arg
-            nowArg = args[newStart];
         }
 
         // parse finished,
@@ -87,7 +88,7 @@ public class Options {
             options.Xjre = System.getProperty("java.home");
         }
 
-        return newStart;
+        return i;
     }
 
     @Override
